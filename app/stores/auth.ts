@@ -12,29 +12,19 @@ interface User {
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null as User | null,
-    token: (import.meta.client ? localStorage.getItem('auth_token') : null) as string | null,
   }),
 
   getters: {
-    isAuthenticated: (state) => !!state.token,
     isEmailVerified: (state) => !!state.user?.email_verified_at,
   },
 
   actions: {
-    setAuth(user: User, token: string) {
+    setUser(user: User) {
       this.user = user
-      this.token = token
-      if (import.meta.client) {
-        localStorage.setItem('auth_token', token)
-      }
     },
 
-    logout() {
+    clearUser() {
       this.user = null
-      this.token = null
-      if (import.meta.client) {
-        localStorage.removeItem('auth_token')
-      }
     },
   },
 })

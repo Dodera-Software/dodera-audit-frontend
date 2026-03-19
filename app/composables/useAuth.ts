@@ -29,13 +29,15 @@ interface MeResponse {
 export function useAuth() {
   const { $api } = useApi()
   const authStore = useAuthStore()
+  const token = useAuthToken()
 
   async function login(payload: LoginPayload) {
     const data = await $api<AuthResponse>('/auth/login', {
       method: 'POST',
       body: payload,
     })
-    authStore.setAuth(data.user, data.token)
+    token.value = data.token
+    authStore.setUser(data.user)
     return data.user
   }
 
@@ -44,7 +46,8 @@ export function useAuth() {
       method: 'POST',
       body: payload,
     })
-    authStore.setAuth(data.user, data.token)
+    token.value = data.token
+    authStore.setUser(data.user)
     return data.user
   }
 
@@ -53,15 +56,14 @@ export function useAuth() {
       await $api('/auth/logout', { method: 'POST' })
     }
     finally {
-      authStore.logout()
+      token.value = null
+      authStore.clearUser()
     }
   }
 
   async function fetchMe() {
     const data = await $api<MeResponse>('/auth/me')
-    if (authStore.token) {
-      authStore.setAuth(data.data, authStore.token)
-    }
+    authStore.setUser(data.data)
     return data.data
   }
 

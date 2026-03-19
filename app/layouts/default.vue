@@ -17,14 +17,16 @@
       <!-- Topbar -->
       <header class="flex h-16 items-center justify-between border-b border-(--ui-border) bg-(--ui-bg-elevated) px-6">
         <div />
-        <div class="flex items-center gap-4">
-          <span v-if="authStore.user" class="text-sm text-(--ui-text-muted)">
-            {{ authStore.user.name }}
-          </span>
-          <UButton variant="ghost" size="sm" icon="i-lucide-log-out" :loading="loggingOut" @click="handleLogout">
-            {{ t('Logout') }}
-          </UButton>
-        </div>
+        <ClientOnly>
+          <div class="flex items-center gap-4">
+            <span v-if="authStore.user" class="text-sm text-(--ui-text-muted)">
+              {{ authStore.user.name }}
+            </span>
+            <UButton variant="ghost" size="sm" icon="i-lucide-log-out" :loading="loggingOut" @click="handleLogout">
+              {{ t('Logout') }}
+            </UButton>
+          </div>
+        </ClientOnly>
       </header>
 
       <!-- Page content -->

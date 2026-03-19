@@ -1,6 +1,6 @@
 export function useApi() {
   const config = useRuntimeConfig()
-  const authStore = useAuthStore()
+  const token = useAuthToken()
 
   async function $api<T>(path: string, options: Parameters<typeof $fetch>[1] = {}): Promise<T> {
     const headers: Record<string, string> = {
@@ -8,8 +8,8 @@ export function useApi() {
       ...((options.headers as Record<string, string>) || {}),
     }
 
-    if (authStore.token) {
-      headers.Authorization = `Bearer ${authStore.token}`
+    if (token.value) {
+      headers.Authorization = `Bearer ${token.value}`
     }
 
     try {
@@ -20,7 +20,8 @@ export function useApi() {
     }
     catch (error: any) {
       if (error?.response?.status === 401) {
-        authStore.logout()
+        token.value = null
+        useAuthStore().clearUser()
         const route = useRoute()
         navigateTo(`/login?redirect=${encodeURIComponent(route.fullPath)}`)
       }

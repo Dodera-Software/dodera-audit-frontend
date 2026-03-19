@@ -55,5 +55,22 @@
   "Audit Report": "Audit Report",
   "Optimization Board": "Optimization Board",
   "Project Details": "Project Details",
-  "Logout": "Logout"
+  "Logout": "Logout",
+  "Account": "Account",
+  "Profile": "Profile",
+  "Profile updated.": "Profile updated.",
+  "Plan": "Plan",
+  "Projects": "Projects",
+  "Audits this month": "Audits this month",
+  "Save changes": "Save changes",
+  "Security": "Security",
+  "Password updated.": "Password updated.",
+  "Current password": "Current password",
+  "Change password": "Change password",
+  "Danger zone": "Danger zone",
+  "Once you delete your account, there is no going back.": "Once you delete your account, there is no going back.",
+  "Delete account": "Delete account",
+  "Current password is required": "Current password is required",
+  "Failed to update profile.": "Failed to update profile.",
+  "Failed to update password.": "Failed to update password."
 }
