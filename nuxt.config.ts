@@ -4,16 +4,27 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   modules: [
-    '@nuxtjs/tailwindcss',
+    '@nuxt/ui',
     '@nuxtjs/google-fonts',
+    '@nuxtjs/i18n',
     '@pinia/nuxt',
     '@vueuse/nuxt',
   ],
 
+  css: ['~/assets/css/main.css'],
+
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/api',
+      apiBase: 'http://localhost:8000/api',
     },
+  },
+
+  i18n: {
+    locales: [
+      { code: 'en', file: 'en.json', name: 'English' },
+    ],
+    defaultLocale: 'en',
+    strategy: 'no_prefix',
   },
 
   googleFonts: {
@@ -25,7 +36,13 @@ export default defineNuxtConfig({
     display: 'swap',
   },
 
-  tailwindcss: {
-    cssPath: '~/assets/css/tailwind.css',
-  },
+  vite: {
+    optimizeDeps: {
+      include: [
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+        'zod',
+      ]
+    }
+  }
 })

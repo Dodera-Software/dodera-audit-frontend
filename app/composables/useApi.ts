@@ -21,7 +21,8 @@ export function useApi() {
     catch (error: any) {
       if (error?.response?.status === 401) {
         authStore.logout()
-        navigateTo('/login')
+        const route = useRoute()
+        navigateTo(`/login?redirect=${encodeURIComponent(route.fullPath)}`)
       }
       throw error
     }

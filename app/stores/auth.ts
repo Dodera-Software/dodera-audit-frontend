@@ -5,16 +5,19 @@ interface User {
   name: string
   email: string
   plan: string
+  email_verified_at: string | null
+  created_at: string
 }
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null as User | null,
-    token: null as string | null,
+    token: (import.meta.client ? localStorage.getItem('auth_token') : null) as string | null,
   }),
 
   getters: {
     isAuthenticated: (state) => !!state.token,
+    isEmailVerified: (state) => !!state.user?.email_verified_at,
   },
 
   actions: {
@@ -31,12 +34,6 @@ export const useAuthStore = defineStore('auth', {
       this.token = null
       if (import.meta.client) {
         localStorage.removeItem('auth_token')
-      }
-    },
-
-    loadFromStorage() {
-      if (import.meta.client) {
-        this.token = localStorage.getItem('auth_token')
       }
     },
   },

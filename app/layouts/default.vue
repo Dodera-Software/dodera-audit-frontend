@@ -1,9 +1,9 @@
 <template>
-  <div class="flex min-h-screen bg-surface-950">
+  <div class="flex min-h-screen bg-(--ui-bg)">
     <!-- Sidebar -->
-    <aside class="hidden w-64 flex-shrink-0 border-r border-surface-800 bg-surface-900 lg:block">
+    <aside class="hidden w-64 flex-shrink-0 border-r border-(--ui-border) bg-(--ui-bg-elevated) lg:block">
       <div class="flex h-16 items-center px-6">
-        <h1 class="font-display text-xl font-bold text-white">
+        <h1 class="font-display text-xl font-bold text-(--ui-text-highlighted)">
           GhostAudit
         </h1>
       </div>
@@ -15,10 +15,15 @@
     <!-- Main content -->
     <div class="flex flex-1 flex-col">
       <!-- Topbar -->
-      <header class="flex h-16 items-center justify-between border-b border-surface-800 bg-surface-900 px-6">
+      <header class="flex h-16 items-center justify-between border-b border-(--ui-border) bg-(--ui-bg-elevated) px-6">
         <div />
         <div class="flex items-center gap-4">
-          <slot name="topbar" />
+          <span v-if="authStore.user" class="text-sm text-(--ui-text-muted)">
+            {{ authStore.user.name }}
+          </span>
+          <UButton variant="ghost" size="sm" icon="i-lucide-log-out" :loading="loggingOut" @click="handleLogout">
+            {{ t('Logout') }}
+          </UButton>
         </div>
       </header>
 
@@ -29,3 +34,22 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const { t } = useI18n()
+const { logout } = useAuth()
+const authStore = useAuthStore()
+
+const loggingOut = ref(false)
+
+async function handleLogout() {
+  loggingOut.value = true
+  try {
+    await logout()
+    navigateTo('/login')
+  }
+  finally {
+    loggingOut.value = false
+  }
+}
+</script>
