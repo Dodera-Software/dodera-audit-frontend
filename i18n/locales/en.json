@@ -72,5 +72,11 @@
   "Delete account": "Delete account",
   "Current password is required": "Current password is required",
   "Failed to update profile.": "Failed to update profile.",
-  "Failed to update password.": "Failed to update password."
+  "Failed to update password.": "Failed to update password.",
+  "Desktop": "Desktop",
+  "Mobile": "Mobile",
+  "Failed to load screenshot": "Failed to load screenshot",
+  "Retry": "Retry",
+  "Website screenshot": "Website screenshot",
+  "No screenshot available": "No screenshot available"
 }
