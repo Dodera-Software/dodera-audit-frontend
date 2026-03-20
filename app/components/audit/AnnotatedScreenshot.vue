@@ -118,8 +118,6 @@ const error = ref(false)
 const naturalWidth = ref(0)
 const pinVisible = ref<boolean[]>([])
 
-const SCAN_VIEWPORTS = { desktop: 1440, mobile: 390 }
-
 const currentUrl = computed(() =>
   activeViewport.value === 'desktop' ? props.desktopUrl : props.mobileUrl,
 )
