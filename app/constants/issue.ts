@@ -1,5 +1,5 @@
 export const CATEGORY_BADGE_COLORS: Record<string, string> = {
-  clarity: 'purple',
+  clarity: 'info',
   trust: 'warning',
   conversion: 'primary',
   performance: 'success',
