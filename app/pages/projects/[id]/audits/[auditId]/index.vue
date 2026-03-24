@@ -55,6 +55,19 @@
           {{ t('Scores are not available for this audit.') }}
         </p>
       </UCard>
+
+      <!-- Persona verdict cards -->
+      <div v-if="personaOutputs.length" class="mt-10">
+        <h2 class="mb-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Persona verdicts') }}</h2>
+        <div class="grid gap-6 lg:grid-cols-3">
+          <PersonaCard
+            v-for="persona in personaOutputs"
+            :key="persona.persona"
+            :persona="persona"
+            :is-lowest-intent="persona.persona === lowestIntentPersona"
+          />
+        </div>
+      </div>
     </div>
 
     <div v-else class="py-16 text-center">
@@ -69,6 +82,7 @@
 
 <script setup lang="ts">
 import ScoreDashboard from '~/components/audit/ScoreDashboard.vue'
+import PersonaCard from '~/components/audit/PersonaCard.vue'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -87,6 +101,21 @@ interface AuditWarning {
   agent?: string
 }
 
+interface PersonaOutput {
+  persona: string
+  narrative: string
+  scores: { trust: number, clarity: number, action_intent: number }
+  would_convert: string
+  top_issue?: string
+}
+
+interface PersonaOutputEntry {
+  agent: string
+  output: PersonaOutput
+  tokens_used: number
+  duration_ms: number
+}
+
 interface AuditDetail {
   id: string
   status: string
@@ -94,6 +123,7 @@ interface AuditDetail {
   overall_score: number | null
   scores: Record<string, number> | null
   annotations: any[] | null
+  persona_outputs: PersonaOutputEntry[] | null
   warnings: AuditWarning[] | null
   scan_duration_ms: number | null
   analysis_duration_ms: number | null
@@ -134,6 +164,23 @@ async function loadAudit() {
     loading.value = false
   }
 }
+
+const personaOutputs = computed<PersonaOutput[]>(() => {
+  if (!audit.value?.persona_outputs) return []
+  return audit.value.persona_outputs.map(entry => entry.output)
+})
+
+const lowestIntentPersona = computed<string | null>(() => {
+  if (personaOutputs.value.length === 0) return null
+
+  let lowest: PersonaOutput | null = null
+  for (const p of personaOutputs.value) {
+    if (!lowest || p.scores.action_intent < lowest.scores.action_intent) {
+      lowest = p
+    }
+  }
+  return lowest?.persona ?? null
+})
 
 const WARNING_TITLES: Record<string, () => string> = {
   screenshot_missing: () => t('Screenshot unavailable'),

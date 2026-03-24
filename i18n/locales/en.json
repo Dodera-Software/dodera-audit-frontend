@@ -166,5 +166,19 @@
   "Brain synthesis incomplete": "Brain synthesis incomplete",
   "Brain synthesis failed": "Brain synthesis failed",
   "Annotations unavailable": "Annotations unavailable",
-  "Warning": "Warning"
+  "Warning": "Warning",
+  "Read full narrative": "Read full narrative",
+  "Top issue": "Top issue",
+  "Close": "Close",
+  "The Skeptic": "The Skeptic",
+  "The Impulse Visitor": "The Impulse Visitor",
+  "The Comparison Shopper": "The Comparison Shopper",
+  "Needs proof before trusting any claim": "Needs proof before trusting any claim",
+  "Decides in seconds based on first impression": "Decides in seconds based on first impression",
+  "Evaluates multiple options before committing": "Evaluates multiple options before committing",
+  "Would convert": "Would convert",
+  "Would not convert": "Would not convert",
+  "Uncertain": "Uncertain",
+  "Action": "Action",
+  "Persona verdicts": "Persona verdicts"
 }
