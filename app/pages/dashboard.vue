@@ -79,6 +79,7 @@ const { t } = useI18n()
 const { $api } = useApi()
 const apiError = useApiError()
 const { siteTypeLabel } = useProjectOptions()
+const { formatDate } = useFormatters()
 
 interface ProjectItem {
   id: string
@@ -106,7 +107,4 @@ onMounted(async () => {
   }
 })
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString()
-}
 </script>
