@@ -10,7 +10,7 @@
         <UButton
           variant="ghost"
           icon="i-lucide-arrow-left"
-          :to="`/projects/${projectId}`"
+          @click="router.back()"
         />
         <div>
           <h1 class="font-display text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Audit Report') }}</h1>
@@ -112,6 +112,7 @@ import TopIssuesSummary from '~/components/audit/TopIssuesSummary.vue'
 definePageMeta({ middleware: 'auth' })
 
 const { t } = useI18n()
+const router = useRouter()
 const route = useRoute()
 const { $api } = useApi()
 const apiError = useApiError()
