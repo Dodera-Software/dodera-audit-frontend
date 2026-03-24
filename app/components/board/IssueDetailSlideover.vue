@@ -69,7 +69,7 @@
       <!-- Element reference -->
       <div v-if="issue.element_reference">
         <p class="text-xs font-medium text-(--ui-text-muted)">{{ t('Element') }}</p>
-        <code class="mt-1 block rounded bg-(--ui-bg-elevated) px-2 py-1 text-xs">{{ issue.element_reference }}</code>
+        <p class="mt-1 rounded bg-(--ui-bg-elevated) px-2 py-1 text-sm text-(--ui-text-highlighted)">{{ formatElementReference(issue.element_reference) }}</p>
       </div>
 
       <!-- Occurrences -->
@@ -126,6 +126,12 @@ interface IssueDetail {
 
 const issue = ref<IssueDetail | null>(null)
 const loading = ref(false)
+
+function formatElementReference(ref: string): string {
+  return ref
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase())
+}
 
 watch(() => props.issueId, async (id) => {
   if (!id) return

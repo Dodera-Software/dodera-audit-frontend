@@ -1,10 +1,6 @@
 <template>
   <ClientOnly>
-    <div v-if="loading" class="flex justify-center py-16">
-      <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
-    </div>
-
-    <div v-else>
+    <div>
       <!-- Header -->
       <div class="mb-6 flex items-center justify-between">
         <div class="flex items-center gap-4">
@@ -23,6 +19,7 @@
       <!-- Kanban board -->
       <KanbanBoard
         :issues="allIssues"
+        :loading="loading"
         :update-status-fn="updateIssueStatus"
         @issue-click="openDetail"
       />
