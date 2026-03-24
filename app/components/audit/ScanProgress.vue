@@ -45,13 +45,29 @@
           />
         </div>
 
-        <!-- Label -->
-        <span
-          class="font-medium transition-colors duration-300"
-          :class="STEP_TEXT_CLASSES[stepStatus(step.key)]"
-        >
-          {{ stepLabel(step.key) }}
-        </span>
+        <!-- Label + agent progress -->
+        <div class="flex-1">
+          <span
+            class="font-medium transition-colors duration-300"
+            :class="STEP_TEXT_CLASSES[stepStatus(step.key)]"
+          >
+            {{ stepLabel(step.key) }}
+          </span>
+          <div
+            v-if="step.key === 'analyzing' && stepStatus(step.key) === 'active' && state.agentsCompleted > 0"
+            class="mt-1 flex items-center gap-2"
+          >
+            <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-(--ui-border)">
+              <div
+                class="h-full rounded-full bg-blue-500 transition-all duration-500"
+                :style="{ width: `${(state.agentsCompleted / state.agentsTotal) * 100}%` }"
+              />
+            </div>
+            <span class="shrink-0 text-xs text-(--ui-text-muted)">
+              {{ state.agentsCompleted }}/{{ state.agentsTotal }}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -81,6 +97,8 @@ const props = defineProps<{
     stepStatuses: Record<string, ScanStepStatus>
     error: string | null
     estimatedSecondsRemaining: number
+    agentsCompleted: number
+    agentsTotal: number
   }
 }>()
 

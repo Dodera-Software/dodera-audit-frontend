@@ -1,6 +1,6 @@
 import Pusher from 'pusher-js'
 import type { ScanStepStatus } from '~/constants/scan'
-import { SCAN_STEP_KEYS, ESTIMATED_STEP_SECONDS, TOTAL_ESTIMATED_SECONDS, POLL_INTERVAL_MS } from '~/constants/scan'
+import { SCAN_STEP_KEYS, ESTIMATED_STEP_SECONDS, TOTAL_ESTIMATED_SECONDS, POLL_INTERVAL_MS, ANALYSIS_AGENTS_TOTAL } from '~/constants/scan'
 
 interface ScanState {
   status: 'idle' | 'scanning' | 'complete' | 'failed'
@@ -8,6 +8,8 @@ interface ScanState {
   stepStatuses: Record<string, ScanStepStatus>
   error: string | null
   estimatedSecondsRemaining: number
+  agentsCompleted: number
+  agentsTotal: number
 }
 
 export function useScanProgress(auditId: Ref<string | null>) {
@@ -20,6 +22,8 @@ export function useScanProgress(auditId: Ref<string | null>) {
     stepStatuses: Object.fromEntries(SCAN_STEP_KEYS.map(k => [k, 'pending' as ScanStepStatus])),
     error: null,
     estimatedSecondsRemaining: TOTAL_ESTIMATED_SECONDS,
+    agentsCompleted: 0,
+    agentsTotal: ANALYSIS_AGENTS_TOTAL,
   })
 
   let pollTimer: ReturnType<typeof setInterval> | null = null
@@ -27,6 +31,10 @@ export function useScanProgress(auditId: Ref<string | null>) {
   let pusherInstance: Pusher | null = null
   let pusherChannel: any = null
   let wsConnected = false
+
+  // Track agent timing for accurate estimates
+  let analysisStartTime: number | null = null
+  let lastAgentCompletedAt: number | null = null
 
   function markStepActive(step: string) {
     for (const key of SCAN_STEP_KEYS) {
@@ -62,6 +70,19 @@ export function useScanProgress(auditId: Ref<string | null>) {
   }
 
   function updateEstimate() {
+    // During analysis, use real agent timing if available
+    if (state.currentStep === 'analyzing' && state.agentsCompleted > 0 && analysisStartTime) {
+      const elapsedMs = Date.now() - analysisStartTime
+      const avgPerAgent = elapsedMs / state.agentsCompleted
+      const remainingAgents = state.agentsTotal - state.agentsCompleted
+      const estimatedAnalysisRemaining = (avgPerAgent * remainingAgents) / 1000
+      const assemblingTime = ESTIMATED_STEP_SECONDS.assembling ?? 5
+
+      state.estimatedSecondsRemaining = Math.max(0, Math.round(estimatedAnalysisRemaining + assemblingTime))
+      return
+    }
+
+    // For other steps, use static estimates
     let remaining = 0
     let foundCurrent = false
 
@@ -79,6 +100,17 @@ export function useScanProgress(auditId: Ref<string | null>) {
     state.estimatedSecondsRemaining = Math.max(0, Math.round(remaining))
   }
 
+  function handleAnalysisProgress(agentsCompleted: number, agentsTotal: number) {
+    if (!analysisStartTime) {
+      analysisStartTime = Date.now()
+    }
+
+    state.agentsCompleted = agentsCompleted
+    state.agentsTotal = agentsTotal
+    lastAgentCompletedAt = Date.now()
+    updateEstimate()
+  }
+
   function startCountdown() {
     stopCountdown()
     countdownTimer = setInterval(() => {
@@ -89,17 +121,15 @@ export function useScanProgress(auditId: Ref<string | null>) {
   }
 
   function stopCountdown() {
-    if (countdownTimer) {
-      clearInterval(countdownTimer)
-      countdownTimer = null
-    }
+    if (!countdownTimer) return
+    clearInterval(countdownTimer)
+    countdownTimer = null
   }
 
   function stopPolling() {
-    if (pollTimer) {
-      clearInterval(pollTimer)
-      pollTimer = null
-    }
+    if (!pollTimer) return
+    clearInterval(pollTimer)
+    pollTimer = null
   }
 
   function connectWebSocket() {
@@ -132,11 +162,15 @@ export function useScanProgress(auditId: Ref<string | null>) {
         stopPolling()
       })
 
-      pusherChannel.bind('ScanProgress', (e: { step: string }) => {
+      pusherChannel.bind('ScanProgress', (e: { step: string, agents_completed?: number, agents_total?: number }) => {
         state.status = 'scanning'
         markStepActive(e.step)
         wsConnected = true
         stopPolling()
+
+        if (e.step === 'analyzing' && e.agents_completed != null && e.agents_total != null) {
+          handleAnalysisProgress(e.agents_completed, e.agents_total)
+        }
       })
 
       pusherChannel.bind('ScanComplete', () => {
@@ -210,7 +244,11 @@ export function useScanProgress(auditId: Ref<string | null>) {
     state.error = null
     state.currentStep = null
     state.estimatedSecondsRemaining = TOTAL_ESTIMATED_SECONDS
+    state.agentsCompleted = 0
+    state.agentsTotal = ANALYSIS_AGENTS_TOTAL
     wsConnected = false
+    analysisStartTime = null
+    lastAgentCompletedAt = null
 
     for (const key of SCAN_STEP_KEYS) {
       state.stepStatuses[key] = 'pending'

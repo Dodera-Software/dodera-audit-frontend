@@ -49,9 +49,19 @@
               </div>
               <span v-else class="text-sm text-(--ui-text-muted)">{{ t('Score pending') }}</span>
             </div>
-            <div class="text-right text-sm text-(--ui-text-muted)">
-              <div>{{ project.audits_count }} {{ t('audits') }}</div>
-              <div v-if="project.latest_audit_date">{{ formatDate(project.latest_audit_date) }}</div>
+            <div class="flex items-center gap-4">
+              <div class="text-right text-sm text-(--ui-text-muted)">
+                <div>{{ project.audits_count }} {{ t('audits') }}</div>
+                <div v-if="project.latest_audit_date">{{ formatDate(project.latest_audit_date) }}</div>
+              </div>
+              <UButton
+                v-if="project.latest_audit_id"
+                icon="i-lucide-arrow-right"
+                variant="soft"
+                :to="`/projects/${projectId}/audits/${project.latest_audit_id}`"
+              >
+                {{ t('View report') }}
+              </UButton>
             </div>
           </div>
         </UCard>
@@ -92,6 +102,7 @@ interface ProjectDetail {
   name: string
   url: string
   site_type: string
+  latest_audit_id: string | null
   latest_score: number | null
   latest_audit_date: string | null
   audits_count: number
@@ -140,5 +151,8 @@ async function triggerAudit() {
 watch(() => scanProgress.state.status, async (status) => {
   if (status !== 'complete') return
   await loadProject()
+  if (auditId.value) {
+    navigateTo(`/projects/${projectId}/audits/${auditId.value}`)
+  }
 })
 </script>
