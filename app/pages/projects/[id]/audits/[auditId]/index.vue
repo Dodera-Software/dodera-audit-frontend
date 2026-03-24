@@ -56,6 +56,22 @@
         </p>
       </UCard>
 
+      <!-- 5-second test -->
+      <FiveSecondTest
+        v-if="fiveSecondImpression"
+        class="mt-10"
+        :impression="fiveSecondImpression"
+      />
+
+      <!-- Brain narrative -->
+      <AuditNarrative
+        v-if="audit.brain_update"
+        class="mt-6"
+        :narrative="audit.brain_update?.progress_narrative ?? null"
+        :momentum="audit.brain_update?.momentum ?? null"
+        :is-first-audit="scoreHistory.length <= 1"
+      />
+
       <!-- Persona verdict cards -->
       <div v-if="personaOutputs.length" class="mt-10">
         <h2 class="mb-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Persona verdicts') }}</h2>
@@ -88,6 +104,8 @@
 
 <script setup lang="ts">
 import ScoreDashboard from '~/components/audit/ScoreDashboard.vue'
+import FiveSecondTest from '~/components/audit/FiveSecondTest.vue'
+import AuditNarrative from '~/components/audit/AuditNarrative.vue'
 import PersonaCard from '~/components/audit/PersonaCard.vue'
 import TopIssuesSummary from '~/components/audit/TopIssuesSummary.vue'
 
@@ -140,6 +158,11 @@ interface AuditDetail {
   scores: Record<string, number> | null
   annotations: any[] | null
   persona_outputs: PersonaOutputEntry[] | null
+  brain_update: {
+    visual_analysis?: { impression_5sec?: string } | null
+    progress_narrative?: string
+    momentum?: string
+  } | null
   warnings: AuditWarning[] | null
   scan_duration_ms: number | null
   analysis_duration_ms: number | null
@@ -199,6 +222,10 @@ const lowestIntentPersona = computed<string | null>(() => {
     }
   }
   return lowest?.persona ?? null
+})
+
+const fiveSecondImpression = computed<string | null>(() => {
+  return audit.value?.brain_update?.visual_analysis?.impression_5sec ?? null
 })
 
 const WARNING_TITLES: Record<string, () => string> = {
