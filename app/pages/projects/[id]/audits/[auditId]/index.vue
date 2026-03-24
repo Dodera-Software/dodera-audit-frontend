@@ -68,6 +68,12 @@
           />
         </div>
       </div>
+
+      <!-- Top issues -->
+      <div class="mt-10">
+        <h2 class="mb-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Top issues') }}</h2>
+        <TopIssuesSummary :issues="topIssues" :project-id="projectId" />
+      </div>
     </div>
 
     <div v-else class="py-16 text-center">
@@ -83,6 +89,7 @@
 <script setup lang="ts">
 import ScoreDashboard from '~/components/audit/ScoreDashboard.vue'
 import PersonaCard from '~/components/audit/PersonaCard.vue'
+import TopIssuesSummary from '~/components/audit/TopIssuesSummary.vue'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -116,6 +123,15 @@ interface PersonaOutputEntry {
   duration_ms: number
 }
 
+interface IssueItem {
+  id: string
+  category: string
+  severity: string
+  effort: string
+  title: string
+  impact_score: number
+}
+
 interface AuditDetail {
   id: string
   status: string
@@ -139,6 +155,7 @@ interface ScoreHistoryEntry {
 const audit = ref<AuditDetail | null>(null)
 const delta = ref<{ overall: number | null, scores: Record<string, number | null> } | null>(null)
 const scoreHistory = ref<ScoreHistoryEntry[]>([])
+const topIssues = ref<IssueItem[]>([])
 const loading = ref(true)
 
 onMounted(async () => {
@@ -151,11 +168,13 @@ async function loadAudit() {
       data: AuditDetail
       delta: { overall: number | null, scores: Record<string, number | null> }
       score_history: ScoreHistoryEntry[]
+      top_issues: IssueItem[]
     }>(`/audits/${auditId}`)
 
     audit.value = data.data
     delta.value = data.delta
     scoreHistory.value = data.score_history
+    topIssues.value = data.top_issues
   }
   catch (e) {
     apiError.parse(e, t('Failed to load audit.'))

@@ -180,5 +180,19 @@
   "Would not convert": "Would not convert",
   "Uncertain": "Uncertain",
   "Action": "Action",
-  "Persona verdicts": "Persona verdicts"
+  "Persona verdicts": "Persona verdicts",
+  "No issues found": "No issues found",
+  "Your site looks great! No critical issues were detected.": "Your site looks great! No critical issues were detected.",
+  "View on board": "View on board",
+  "View full board": "View full board",
+  "Code": "Code",
+  "Accessibility": "Accessibility",
+  "Critical": "Critical",
+  "High": "High",
+  "Medium": "Medium",
+  "Low": "Low",
+  "Quick fix": "Quick fix",
+  "Medium effort": "Medium effort",
+  "Big effort": "Big effort",
+  "Top issues": "Top issues"
 }
