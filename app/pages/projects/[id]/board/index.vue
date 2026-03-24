@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <div>
+    <div class="min-w-0 overflow-hidden">
       <!-- Header -->
       <div class="mb-6 flex items-center justify-between">
         <div class="flex items-center gap-4">
@@ -26,8 +26,10 @@
 
       <!-- Issue detail slideover -->
       <IssueDetailSlideover
+        ref="slideoverRef"
         v-model:open="slideoverOpen"
         :issue-id="selectedIssueId"
+        @status-changed="onStatusChangedFromPanel"
       />
     </div>
   </ClientOnly>
@@ -51,6 +53,7 @@ const projectId = route.params.id as string
 
 const { confirm } = useConfirm()
 
+const slideoverRef = ref<{ reload: () => void } | null>(null)
 const allIssues = ref<BoardIssue[]>([])
 const loading = ref(true)
 const triggeringAudit = ref(false)
@@ -95,6 +98,11 @@ async function updateIssueStatus(issueId: string, targetStatus: string) {
     apiError.parse(e, t('Failed to update issue status.'))
     toast.add({ title: apiError.displayMessage.value, color: 'error', icon: 'i-lucide-alert-circle' })
   }
+  finally {
+    if (selectedIssueId.value === issueId && slideoverOpen.value) {
+      slideoverRef.value?.reload()
+    }
+  }
 }
 
 async function handleRunAudit() {
@@ -125,6 +133,12 @@ async function handleRunAudit() {
   finally {
     triggeringAudit.value = false
   }
+}
+
+function onStatusChangedFromPanel(issueId: string, newStatus: string) {
+  const index = allIssues.value.findIndex(i => i.id === issueId)
+  if (index === -1) return
+  allIssues.value[index] = { ...allIssues.value[index], current_status: newStatus }
 }
 
 function openDetail(issue: BoardIssue) {

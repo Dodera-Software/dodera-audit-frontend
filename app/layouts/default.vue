@@ -13,7 +13,7 @@
     </aside>
 
     <!-- Main content -->
-    <div class="flex flex-1 flex-col">
+    <div class="flex min-w-0 flex-1 flex-col">
       <!-- Topbar -->
       <header class="flex h-16 items-center justify-between border-b border-(--ui-border) bg-(--ui-bg-elevated) px-6">
         <div />
@@ -31,7 +31,7 @@
       </header>
 
       <!-- Page content -->
-      <main class="flex-1 p-6">
+      <main class="min-w-0 flex-1 overflow-hidden p-6">
         <slot />
       </main>
     </div>

@@ -17,7 +17,7 @@
     </div>
 
     <!-- Kanban columns -->
-    <div class="flex gap-4 overflow-x-auto pb-4">
+    <div class="flex min-w-0 gap-4 overflow-auto pb-4" style="max-height: calc(100vh - 220px)">
       <div
         v-for="col in COLUMNS"
         :key="col.status"
@@ -104,6 +104,8 @@ const COLUMNS = [
   { status: 'in_progress', color: '#3b82f6', label: () => t('In Progress'), emptyMessage: () => t('Nothing in progress') },
   { status: 'in_review', color: '#f59e0b', label: () => t('In Review'), emptyMessage: () => t('No issues in review') },
   { status: 'fixed', color: '#22c55e', label: () => t('Fixed'), emptyMessage: () => t('No fixed issues yet') },
+  { status: 'verified', color: '#8b5cf6', label: () => t('Verified'), emptyMessage: () => t('No verified issues') },
+  { status: 'wont_fix', color: '#9ca3af', label: () => t('Archived'), emptyMessage: () => t('No archived issues') },
 ]
 
 const filters = reactive({

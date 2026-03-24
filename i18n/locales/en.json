@@ -258,5 +258,19 @@
   "Re-audit site": "Re-audit site",
   "Re-audit anyway": "Re-audit anyway",
   "In Review": "In Review",
-  "No issues in review": "No issues in review"
+  "No issues in review": "No issues in review",
+  "Verified fixed": "Verified fixed",
+  "First detected": "First detected",
+  "AI recommends": "AI recommends",
+  "Mark fixed": "Mark fixed",
+  "Won't fix": "Won't fix",
+  "Failed to update status.": "Failed to update status.",
+  "Dismiss this issue": "Dismiss this issue",
+  "Timeline": "Timeline",
+  "via audit": "via audit",
+  "manual": "manual",
+  "Verified": "Verified",
+  "No verified issues": "No verified issues",
+  "Archived": "Archived",
+  "No archived issues": "No archived issues"
 }
