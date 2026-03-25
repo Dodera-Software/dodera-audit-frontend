@@ -9,8 +9,8 @@
           </h1>
           <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t("Here's what's happening with your audits.") }}</p>
         </div>
-        <UButton icon="i-lucide-plus" to="/projects/new">
-          {{ t('New project') }}
+        <UButton icon="i-lucide-plus" @click="showCreateDialog = true">
+          {{ t('New page audit') }}
         </UButton>
       </div>
 
@@ -36,7 +36,7 @@
         <!-- Recent projects -->
         <div class="mt-8">
           <div class="flex items-center justify-between">
-            <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Recent projects') }}</h2>
+            <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Recent pages') }}</h2>
             <UButton v-if="projects.length > 0" variant="ghost" size="sm" to="/projects" trailing-icon="i-lucide-arrow-right">
               {{ t('View all') }}
             </UButton>
@@ -45,10 +45,10 @@
           <!-- Empty -->
           <div v-if="projects.length === 0" class="mt-4 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
             <UIcon name="i-lucide-globe" class="mx-auto h-10 w-10 text-(--ui-text-muted)" />
-            <h3 class="mt-3 font-semibold text-(--ui-text-highlighted)">{{ t('No projects yet') }}</h3>
-            <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Create your first project to start auditing.') }}</p>
-            <UButton class="mt-4" icon="i-lucide-plus" size="sm" to="/projects/new">
-              {{ t('Create your first project') }}
+            <h3 class="mt-3 font-semibold text-(--ui-text-highlighted)">{{ t('No pages to audit yet') }}</h3>
+            <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Add a page URL to get a detailed AI-powered audit.') }}</p>
+            <UButton class="mt-4" icon="i-lucide-plus" size="sm" @click="showCreateDialog = true">
+              {{ t('Audit your first page') }}
             </UButton>
           </div>
 
@@ -119,12 +119,16 @@
           </div>
         </div>
       </template>
+
+      <CreateProjectDialog v-model:open="showCreateDialog" />
     </div>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
+
+const showCreateDialog = ref(false)
 
 const { t } = useI18n()
 const { $api } = useApi()

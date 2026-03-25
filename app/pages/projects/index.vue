@@ -3,8 +3,8 @@
     <div>
       <div class="flex items-center justify-between">
         <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Projects') }}</h1>
-        <UButton icon="i-lucide-plus" to="/projects/new">
-          {{ t('New project') }}
+        <UButton icon="i-lucide-plus" @click="showCreateDialog = true">
+          {{ t('New page audit') }}
         </UButton>
       </div>
 
@@ -27,17 +27,17 @@
       <!-- Empty state -->
       <div v-else-if="projects.length === 0" class="mt-6 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
         <UIcon name="i-lucide-globe" class="mx-auto h-12 w-12 text-(--ui-text-muted)" />
-        <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No projects yet') }}</h3>
-        <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Create your first project to start auditing.') }}</p>
-        <UButton class="mt-6" icon="i-lucide-plus" to="/projects/new">
-          {{ t('Create your first project') }}
+        <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No pages to audit yet') }}</h3>
+        <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Add a page URL to get a detailed AI-powered audit.') }}</p>
+        <UButton class="mt-6" icon="i-lucide-plus" @click="showCreateDialog = true">
+          {{ t('Audit your first page') }}
         </UButton>
       </div>
 
       <!-- No search results -->
       <div v-else-if="filteredProjects.length === 0" class="mt-6 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
         <UIcon name="i-lucide-search-x" class="mx-auto h-12 w-12 text-(--ui-text-muted)" />
-        <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No projects found') }}</h3>
+        <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No pages found') }}</h3>
         <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Try a different search term.') }}</p>
       </div>
 
@@ -115,12 +115,15 @@
           </div>
         </div>
       </div>
+      <CreateProjectDialog v-model:open="showCreateDialog" />
     </div>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
+
+const showCreateDialog = ref(false)
 
 const { t } = useI18n()
 const { $api } = useApi()

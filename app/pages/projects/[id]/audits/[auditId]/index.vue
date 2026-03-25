@@ -5,24 +5,28 @@
     </div>
 
     <div v-else-if="audit">
-      <!-- Back link + header -->
-      <div class="mb-8 flex items-center gap-4">
-        <UButton
-          variant="ghost"
-          icon="i-lucide-arrow-left"
-          @click="router.back()"
-        />
-        <div>
-          <h1 class="text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Audit Report') }}</h1>
-          <p class="text-sm text-(--ui-text-muted)">
-            {{ formatDateTime(audit.created_at) }}
-            <span v-if="audit.scan_duration_ms" class="ml-2">
-              {{ t('Scan') }}: {{ formatMs(audit.scan_duration_ms) }}
-            </span>
-            <span v-if="audit.analysis_duration_ms" class="ml-2">
-              {{ t('Analysis') }}: {{ formatMs(audit.analysis_duration_ms) }}
-            </span>
-          </p>
+      <!-- Header -->
+      <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h1 class="text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Audit Report') }}</h1>
+        <div class="flex items-center gap-3">
+          <UTooltip :text="t('When this audit was run')">
+            <div class="flex items-center gap-1.5 rounded-lg border border-(--ui-border) px-3 py-1.5">
+              <UIcon name="i-lucide-calendar" class="h-3.5 w-3.5 text-(--ui-text-dimmed)" />
+              <span class="text-xs text-(--ui-text-muted)">{{ formatDateTime(audit.created_at) }}</span>
+            </div>
+          </UTooltip>
+          <UTooltip v-if="audit.scan_duration_ms" :text="t('Time to load and capture your page')">
+            <div class="flex items-center gap-1.5 rounded-lg border border-(--ui-border) px-3 py-1.5">
+              <UIcon name="i-lucide-scan" class="h-3.5 w-3.5 text-(--ui-text-dimmed)" />
+              <span class="text-xs text-(--ui-text-muted)">{{ formatMs(audit.scan_duration_ms) }}</span>
+            </div>
+          </UTooltip>
+          <UTooltip v-if="audit.analysis_duration_ms" :text="t('Time for AI agents to analyze your page')">
+            <div class="flex items-center gap-1.5 rounded-lg border border-(--ui-border) px-3 py-1.5">
+              <UIcon name="i-lucide-brain" class="h-3.5 w-3.5 text-(--ui-text-dimmed)" />
+              <span class="text-xs text-(--ui-text-muted)">{{ formatMs(audit.analysis_duration_ms) }}</span>
+            </div>
+          </UTooltip>
         </div>
       </div>
 
@@ -72,9 +76,31 @@
         :is-first-audit="scoreHistory.length <= 1"
       />
 
+      <!-- Top issues -->
+      <div class="mt-12">
+        <div class="mb-6 flex items-center gap-3">
+          <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-(--ui-bg-accented)">
+            <UIcon name="i-lucide-alert-triangle" class="h-5 w-5 text-(--ui-text-muted)" />
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Top issues') }}</h2>
+            <p class="text-xs text-(--ui-text-dimmed)">{{ t('Highest impact issues to fix first') }}</p>
+          </div>
+        </div>
+        <TopIssuesSummary :issues="topIssues" :project-id="projectId" />
+      </div>
+
       <!-- Persona verdict cards -->
-      <div v-if="personaOutputs.length" class="mt-10">
-        <h2 class="mb-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Persona verdicts') }}</h2>
+      <div v-if="personaOutputs.length" class="mt-12">
+        <div class="mb-6 flex items-center gap-3">
+          <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-(--ui-bg-accented)">
+            <UIcon name="i-lucide-users" class="h-5 w-5 text-(--ui-text-muted)" />
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Persona verdicts') }}</h2>
+            <p class="text-xs text-(--ui-text-dimmed)">{{ t('How different visitor types experience your page') }}</p>
+          </div>
+        </div>
         <div class="grid gap-6 lg:grid-cols-3">
           <PersonaCard
             v-for="persona in personaOutputs"
@@ -83,12 +109,6 @@
             :is-lowest-intent="persona.persona === lowestIntentPersona"
           />
         </div>
-      </div>
-
-      <!-- Top issues -->
-      <div class="mt-10">
-        <h2 class="mb-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Top issues') }}</h2>
-        <TopIssuesSummary :issues="topIssues" :project-id="projectId" />
       </div>
     </div>
 
@@ -112,7 +132,6 @@ import TopIssuesSummary from '~/components/audit/TopIssuesSummary.vue'
 definePageMeta({ middleware: 'auth' })
 
 const { t } = useI18n()
-const router = useRouter()
 const route = useRoute()
 const { $api } = useApi()
 const apiError = useApiError()

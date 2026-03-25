@@ -30,7 +30,7 @@
           :disabled="scanProgress.state.status === 'scanning'"
           @click="triggerAudit"
         >
-          {{ t('Run audit') }}
+          {{ t('Audit this page') }}
         </UButton>
       </div>
 
@@ -43,11 +43,15 @@
 
       <!-- Success celebration -->
       <div v-if="showSuccess" class="mt-12 flex flex-col items-center justify-center py-8">
-        <div class="flex h-24 w-24 items-center justify-center rounded-full bg-green-500/10">
-          <UIcon name="i-lucide-check-circle" class="h-16 w-16 text-green-500 animate-[scale-in_0.5s_ease-out]" />
-        </div>
-        <h2 class="mt-4 text-xl font-bold text-(--ui-text-highlighted)">{{ t('Audit complete!') }}</h2>
-        <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Redirecting to your report...') }}</p>
+        <Vue3Lottie
+          :animation-data="successAnimation"
+          :height="160"
+          :width="160"
+          :loop="false"
+          :auto-play="true"
+        />
+        <h2 class="mt-4 text-xl font-bold text-(--ui-text-highlighted)">{{ t('Your page audit is ready!') }}</h2>
+        <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Taking you to your results...') }}</p>
       </div>
 
       <template v-else>
@@ -55,10 +59,10 @@
         <div v-if="project.audits_count === 0" class="mt-8">
           <UCard class="py-16 text-center">
             <UIcon name="i-lucide-scan" class="mx-auto h-12 w-12 text-(--ui-text-muted)" />
-            <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No audits yet') }}</h3>
-            <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Run your first audit to see results.') }}</p>
+            <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Page not audited yet') }}</h3>
+            <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Run an audit to see how this page performs for clarity, trust, and conversion.') }}</p>
             <UButton class="mt-6" icon="i-lucide-scan" :loading="triggeringAudit" @click="triggerAudit">
-              {{ t('Run first audit') }}
+              {{ t('Audit this page') }}
             </UButton>
           </UCard>
         </div>
@@ -229,6 +233,8 @@
 </template>
 
 <script setup lang="ts">
+import { Vue3Lottie } from 'vue3-lottie'
+import successAnimation from '~/assets/lottie/success.json'
 import { scoreColor } from '~/constants/audit'
 import ScanProgress from '~/components/audit/ScanProgress.vue'
 

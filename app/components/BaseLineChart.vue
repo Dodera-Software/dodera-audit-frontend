@@ -1,12 +1,14 @@
 <template>
-  <div :style="{ height: `${height}px` }">
-    <apexchart
-      type="area"
-      :height="height"
-      :options="chartOptions"
-      :series="series"
-    />
-  </div>
+  <ClientOnly>
+    <div :style="{ height: `${height}px` }">
+      <apexchart
+        type="area"
+        :height="height"
+        :options="chartOptions"
+        :series="series"
+      />
+    </div>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">

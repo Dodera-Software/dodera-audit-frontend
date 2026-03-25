@@ -1,11 +1,11 @@
 <template>
-  <ClientOnly>
-    <div class="mx-auto max-w-2xl">
-      <h1 class="text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Create new project') }}</h1>
-      <p class="mt-1 text-(--ui-text-muted)">{{ t('Add a page URL to start auditing.') }}</p>
+  <UModal v-model:open="open">
+    <template #content>
+      <div class="p-6">
+        <h2 class="text-lg font-bold text-(--ui-text-highlighted)">{{ t('Audit a new page') }}</h2>
+        <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Each project tracks one page. Enter the exact URL you want to audit.') }}</p>
 
-      <UCard class="mt-6">
-        <UForm :schema="schema" :state="form" class="space-y-5" @submit="handleCreate">
+        <UForm :schema="schema" :state="form" class="mt-5 space-y-4" @submit="handleCreate">
           <UAlert
             v-if="apiError.hasErrors.value"
             color="error"
@@ -19,16 +19,15 @@
               v-model="form.url"
               type="url"
               placeholder="https://example.com"
-              size="lg"
               class="w-full"
             />
+            <p class="mt-1 text-xs text-(--ui-text-dimmed)">{{ t('GhostAudit analyzes one page at a time — not your entire website.') }}</p>
           </UFormField>
 
           <UFormField :label="t('Project name')" name="name">
             <UInput
               v-model="form.name"
               :placeholder="t('My Landing Page')"
-              size="lg"
               class="w-full"
             />
           </UFormField>
@@ -37,7 +36,6 @@
             <USelect
               v-model="form.site_type"
               :items="siteTypes"
-              size="lg"
               class="w-full"
             />
           </UFormField>
@@ -46,7 +44,6 @@
             <USelect
               v-model="form.conversion_goal"
               :items="conversionGoals"
-              size="lg"
               class="w-full"
             />
           </UFormField>
@@ -55,29 +52,29 @@
             <UTextarea
               v-model="form.target_audience_description"
               :placeholder="t('Describe your target audience (optional)')"
-              :rows="3"
+              :rows="2"
               class="w-full"
             />
           </UFormField>
 
-          <div class="flex gap-3">
-            <UButton type="submit" :loading="loading" size="lg">
-              {{ t('Create project') }}
-            </UButton>
-            <UButton variant="outline" size="lg" to="/dashboard">
+          <div class="flex justify-end gap-3 pt-2">
+            <UButton variant="outline" @click="open = false">
               {{ t('Cancel') }}
+            </UButton>
+            <UButton type="submit" :loading="loading">
+              {{ t('Start page audit') }}
             </UButton>
           </div>
         </UForm>
-      </UCard>
-    </div>
-  </ClientOnly>
+      </div>
+    </template>
+  </UModal>
 </template>
 
 <script setup lang="ts">
 import { createProjectSchema } from '~/schemas/project'
 
-definePageMeta({ middleware: 'auth' })
+const open = defineModel<boolean>('open', { default: false })
 
 const { t } = useI18n()
 const { $api } = useApi()
@@ -96,6 +93,19 @@ const form = reactive({
 
 const loading = ref(false)
 
+function resetForm() {
+  form.name = ''
+  form.url = ''
+  form.site_type = ''
+  form.conversion_goal = ''
+  form.target_audience_description = ''
+  apiError.clear()
+}
+
+watch(open, (val) => {
+  if (val) resetForm()
+})
+
 async function handleCreate() {
   loading.value = true
   apiError.clear()
@@ -105,6 +115,7 @@ async function handleCreate() {
       method: 'POST',
       body: form,
     })
+    open.value = false
     navigateTo(`/projects/${data.data.id}`)
   }
   catch (e) {

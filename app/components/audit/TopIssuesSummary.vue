@@ -9,50 +9,57 @@
     :description="t('Your page looks great! No critical issues were detected.')"
   />
 
-  <!-- Issues list -->
+  <!-- Issues grid -->
   <div v-else class="space-y-3">
     <div
       v-for="(issue, index) in issues"
       :key="issue.id"
-      class="flex items-center gap-3 rounded-lg border border-(--ui-border) p-4 transition-all duration-300"
-      :style="{ animationDelay: `${index * 80}ms` }"
-      :class="mounted ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'"
+      class="group rounded-xl border border-(--ui-border) bg-(--ui-bg) p-4 transition-all duration-300 hover:shadow-md"
+      :style="{ transitionDelay: `${index * 60}ms` }"
+      :class="mounted ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'"
     >
-      <!-- Category badge -->
-      <UBadge :color="(CATEGORY_BADGE_COLORS[issue.category] as any)" variant="subtle" class="shrink-0">
-        {{ categoryLabel(issue.category) }}
-      </UBadge>
+      <div class="flex items-start gap-3">
+        <!-- Impact score circle -->
+        <div
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+          :class="impactBg(issue.impact_score)"
+        >
+          {{ Number(issue.impact_score).toFixed(1) }}
+        </div>
 
-      <!-- Severity badge -->
-      <UBadge :color="(SEVERITY_BADGE_COLORS[issue.severity] as any)" variant="soft" class="shrink-0">
-        {{ severityLabel(issue.severity) }}
-      </UBadge>
+        <!-- Content -->
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold text-(--ui-text-highlighted)">
+            {{ issue.title }}
+          </p>
+          <div class="mt-2 flex flex-wrap items-center gap-2">
+            <UBadge :color="(CATEGORY_BADGE_COLORS[issue.category] as any)" variant="subtle" size="xs">
+              {{ categoryLabel(issue.category) }}
+            </UBadge>
+            <UBadge :color="(SEVERITY_BADGE_COLORS[issue.severity] as any)" variant="soft" size="xs">
+              {{ severityLabel(issue.severity) }}
+            </UBadge>
+            <UBadge :color="(EFFORT_BADGE_COLORS[issue.effort] as any)" variant="outline" size="xs">
+              {{ effortLabel(issue.effort) }}
+            </UBadge>
+          </div>
+        </div>
 
-      <!-- Title -->
-      <p class="min-w-0 flex-1 truncate text-sm text-(--ui-text-highlighted)">
-        {{ issue.title }}
-      </p>
-
-      <!-- Effort badge -->
-      <UBadge :color="(EFFORT_BADGE_COLORS[issue.effort] as any)" variant="outline" class="shrink-0">
-        {{ effortLabel(issue.effort) }}
-      </UBadge>
-
-      <!-- Link to board -->
-      <UButton
-        variant="link"
-        size="xs"
-        :to="`/projects/${projectId}/board`"
-        trailing-icon="i-lucide-arrow-right"
-      >
-        {{ t('View on board') }}
-      </UButton>
+        <!-- Arrow -->
+        <UButton
+          variant="ghost"
+          size="xs"
+          icon="i-lucide-arrow-right"
+          :to="`/projects/${projectId}/board`"
+          class="shrink-0 opacity-0 transition group-hover:opacity-100"
+        />
+      </div>
     </div>
 
     <!-- View full board -->
-    <div class="pt-2 text-center">
+    <div class="pt-3 text-center">
       <UButton
-        variant="ghost"
+        variant="soft"
         icon="i-lucide-kanban"
         :to="`/projects/${projectId}/board`"
       >
@@ -86,6 +93,12 @@ onMounted(() => {
     mounted.value = true
   })
 })
+
+function impactBg(score: number): string {
+  if (score >= 7) return 'bg-red-500'
+  if (score >= 5) return 'bg-yellow-500'
+  return 'bg-blue-500'
+}
 
 function categoryLabel(category: string): string {
   const labels: Record<string, () => string> = {
