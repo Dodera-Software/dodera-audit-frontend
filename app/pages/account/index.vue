@@ -1,7 +1,10 @@
 <template>
   <ClientOnly>
   <div class="max-w-2xl space-y-8">
-    <h1 class="font-display text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Account') }}</h1>
+    <div class="flex items-center gap-4">
+      <UButton variant="ghost" icon="i-lucide-arrow-left" size="xs" @click="router.back()" />
+      <h1 class="font-display text-xl font-bold text-(--ui-text-highlighted)">{{ t('Profile') }}</h1>
+    </div>
 
     <!-- Profile section -->
     <UCard>
@@ -88,16 +91,6 @@
       </UForm>
     </UCard>
 
-    <!-- Danger zone -->
-    <UCard>
-      <template #header>
-        <h2 class="text-lg font-semibold text-red-500">{{ t('Danger zone') }}</h2>
-      </template>
-      <p class="text-sm text-(--ui-text-muted)">{{ t('Once you delete your account, there is no going back.') }}</p>
-      <UButton class="mt-4" color="error" variant="outline" disabled>
-        {{ t('Delete account') }}
-      </UButton>
-    </UCard>
   </div>
   </ClientOnly>
 </template>
@@ -108,6 +101,7 @@ import { z } from 'zod'
 definePageMeta({ middleware: 'auth' })
 
 const { t } = useI18n()
+const router = useRouter()
 const { $api } = useApi()
 const { fetchMe } = useAuth()
 const authStore = useAuthStore()

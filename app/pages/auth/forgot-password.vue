@@ -35,9 +35,11 @@
         {{ t('Send reset link') }}
       </UButton>
 
-      <p class="text-center text-sm">
-        <NuxtLink to="/login" class="text-(--ui-text-highlighted) hover:underline">{{ t('Back to login') }}</NuxtLink>
-      </p>
+      <div class="text-center">
+        <UButton variant="link" size="sm" to="/login" icon="i-lucide-arrow-left">
+          {{ t('Back to login') }}
+        </UButton>
+      </div>
     </UForm>
   </div>
 </template>

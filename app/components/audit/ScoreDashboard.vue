@@ -49,27 +49,20 @@
     <!-- Sparkline -->
     <div v-if="scoreHistory.length >= 2" class="mx-auto max-w-md">
       <p class="mb-2 text-center text-xs font-medium text-(--ui-text-muted)">{{ t('Score trend') }}</p>
-      <div class="h-20">
-        <Line :data="chartData" :options="chartOptions" />
-      </div>
+      <BaseLineChart
+        :labels="scoreHistory.map(h => formatDate(h.created_at))"
+        :values="scoreHistory.map(h => h.overall_score)"
+        :height="80"
+        sparkline
+        color="emerald"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Line } from 'vue-chartjs'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-} from 'chart.js'
 import { scoreColor, SCORE_CATEGORIES } from '~/constants/audit'
 import type { ScoreCategoryKey } from '~/constants/audit'
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler)
 
 const props = defineProps<{
   overallScore: number
@@ -161,33 +154,4 @@ function categoryTooltip(key: ScoreCategoryKey): string {
   return tooltips[key]()
 }
 
-// Sparkline chart
-const chartData = computed(() => ({
-  labels: props.scoreHistory.map(h => formatDate(h.created_at)),
-  datasets: [
-    {
-      data: props.scoreHistory.map(h => h.overall_score),
-      borderColor: '#3b82f6',
-      backgroundColor: 'rgba(59, 130, 246, 0.1)',
-      borderWidth: 2,
-      pointRadius: 3,
-      pointBackgroundColor: '#3b82f6',
-      tension: 0.3,
-      fill: true,
-    },
-  ],
-}))
-
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-    tooltip: { enabled: true },
-  },
-  scales: {
-    x: { display: false },
-    y: { display: false, min: 0, max: 100 },
-  },
-} as const
 </script>

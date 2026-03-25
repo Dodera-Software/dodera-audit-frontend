@@ -4,9 +4,9 @@
     @click="$emit('click', issue)"
   >
     <!-- Regression banner -->
-    <div v-if="issue.is_regression" class="mb-2 rounded bg-amber-500/15 px-2 py-0.5 text-center text-xs font-semibold text-amber-500">
+    <UBadge v-if="issue.is_regression" color="warning" variant="subtle" size="xs" class="mb-2 w-full justify-center">
       {{ t('REGRESSION') }}
-    </div>
+    </UBadge>
 
     <!-- Badges row -->
     <div class="flex flex-wrap items-center gap-1.5">

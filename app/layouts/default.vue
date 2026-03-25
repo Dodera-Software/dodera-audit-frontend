@@ -1,51 +1,58 @@
 <template>
-  <div class="flex min-h-screen bg-(--ui-bg)">
-    <!-- Sidebar -->
-    <aside class="hidden w-64 flex-shrink-0 border-r border-(--ui-border) bg-(--ui-bg-elevated) lg:block">
-      <div class="flex h-16 items-center px-6">
-        <NuxtLink to="/dashboard" class="font-display text-xl font-bold text-(--ui-text-highlighted) hover:opacity-80">
-          GhostAudit
-        </NuxtLink>
-      </div>
-      <nav class="mt-4 px-3">
-        <slot name="sidebar" />
-      </nav>
-    </aside>
+  <div class="flex h-screen bg-zinc-50 dark:bg-zinc-950">
+    <!-- Desktop sidebar -->
+    <ClientOnly>
+      <AppSidebar @navigate="mobileOpen = false" @logout="handleLogout" />
+    </ClientOnly>
 
     <!-- Main content -->
     <div class="flex min-w-0 flex-1 flex-col">
-      <!-- Topbar -->
-      <header class="flex h-16 items-center justify-between border-b border-(--ui-border) bg-(--ui-bg-elevated) px-6">
-        <div />
-        <ClientOnly>
-          <div class="flex items-center gap-3">
-            <span v-if="authStore.user" class="text-sm text-(--ui-text-muted)">
-              {{ authStore.user.name }}
-            </span>
-            <ThemeSwitcher />
-            <UButton variant="ghost" size="sm" icon="i-lucide-log-out" :loading="loggingOut" @click="handleLogout">
-              {{ t('Logout') }}
-            </UButton>
-          </div>
-        </ClientOnly>
-      </header>
+      <ClientOnly>
+        <AppNavbar v-if="showNavbar" @toggle-mobile="mobileOpen = true" />
+        <!-- Mobile-only: just a hamburger row when navbar is hidden -->
+        <div v-else class="flex h-12 items-center border-b border-(--ui-border) bg-(--ui-bg) px-4 lg:hidden">
+          <UButton variant="ghost" size="xs" icon="i-lucide-menu" square @click="mobileOpen = true" />
+          <NuxtLink to="/dashboard" class="ml-2 font-display text-sm font-bold text-(--ui-text-highlighted)">
+            GhostAudit
+          </NuxtLink>
+        </div>
+      </ClientOnly>
 
-      <!-- Page content -->
-      <main class="min-w-0 flex-1 overflow-hidden p-6">
+      <main class="min-w-0 flex-1 overflow-y-auto p-5">
         <slot />
       </main>
     </div>
+
+    <!-- Mobile sidebar overlay -->
+    <ClientOnly>
+      <Teleport to="body">
+        <Transition name="fade">
+          <div v-if="mobileOpen" class="fixed inset-0 z-50 bg-black/50 lg:hidden" @click="mobileOpen = false" />
+        </Transition>
+        <Transition name="slide">
+          <div v-if="mobileOpen" class="fixed inset-y-0 left-0 z-50 lg:hidden">
+            <AppSidebar mobile @navigate="mobileOpen = false" @logout="handleLogout" />
+          </div>
+        </Transition>
+      </Teleport>
+    </ClientOnly>
   </div>
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n()
-const { logout } = useAuth()
-const authStore = useAuthStore()
+const props = withDefaults(defineProps<{
+  showNavbar?: boolean
+}>(), {
+  showNavbar: false,
+})
 
+const { logout } = useAuth()
+
+const mobileOpen = ref(false)
 const loggingOut = ref(false)
 
 async function handleLogout() {
+  if (loggingOut.value) return
   loggingOut.value = true
   try {
     await logout()
@@ -56,3 +63,23 @@ async function handleLogout() {
   }
 }
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.2s ease;
+}
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateX(-100%);
+}
+</style>

@@ -1,85 +1,128 @@
 <template>
   <ClientOnly>
     <div>
+      <!-- Welcome header -->
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="font-display text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Dashboard') }}</h1>
-          <p class="mt-1 text-(--ui-text-muted)">{{ t('Your projects overview') }}</p>
+          <h1 class="font-display text-xl font-bold text-(--ui-text-highlighted)">
+            {{ t('Welcome back, {name}', { name: authStore.user?.name?.split(' ')[0] ?? '' }) }}
+          </h1>
+          <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t("Here's what's happening with your audits.") }}</p>
         </div>
-        <UButton icon="i-lucide-plus" to="/projects/new">
+        <UButton icon="i-lucide-plus" size="sm" to="/projects/new">
           {{ t('New project') }}
         </UButton>
       </div>
 
       <!-- Loading -->
-      <div v-if="loading" class="mt-8 flex justify-center py-16">
+      <div v-if="loading" class="mt-6 flex justify-center py-16">
         <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
       </div>
 
-      <!-- Empty state -->
-      <div v-else-if="projects.length === 0" class="mt-8">
-        <UCard class="text-center py-12">
-          <UIcon name="i-lucide-globe" class="mx-auto h-12 w-12 text-(--ui-text-muted)" />
-          <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No projects yet') }}</h3>
-          <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Create your first project to start auditing.') }}</p>
-          <UButton class="mt-6" icon="i-lucide-plus" to="/projects/new">
-            {{ t('Create your first project') }}
-          </UButton>
-        </UCard>
-      </div>
+      <template v-else>
+        <!-- Stats row -->
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <UCard v-for="stat in statCards" :key="stat.label">
+            <div class="flex items-start gap-3">
+              <UIcon :name="stat.icon" class="mt-0.5 h-5 w-5 shrink-0 text-(--ui-text-muted)" />
+              <div>
+                <p class="text-xs font-medium text-(--ui-text-muted)">{{ stat.label }}</p>
+                <p class="mt-0.5 text-2xl font-bold text-(--ui-text-highlighted)">{{ stat.value }}</p>
+              </div>
+            </div>
+          </UCard>
+        </div>
 
-      <!-- Project grid -->
-      <div v-else class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <UCard
-          v-for="project in projects"
-          :key="project.id"
-          class="cursor-pointer transition-shadow hover:shadow-lg"
-          @click="navigateTo(`/projects/${project.id}`)"
-        >
-          <div class="flex items-start gap-3">
-            <img
-              :src="`https://www.google.com/s2/favicons?domain=${encodeURIComponent(project.url)}&sz=32`"
-              :alt="project.name"
-              class="h-8 w-8 rounded"
-              loading="lazy"
+        <!-- Recent projects -->
+        <div class="mt-8">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Recent projects') }}</h2>
+            <UButton v-if="projects.length > 0" variant="ghost" size="sm" to="/projects" trailing-icon="i-lucide-arrow-right">
+              {{ t('View all') }}
+            </UButton>
+          </div>
+
+          <!-- Empty -->
+          <div v-if="projects.length === 0" class="mt-4 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
+            <UIcon name="i-lucide-globe" class="mx-auto h-10 w-10 text-(--ui-text-muted)" />
+            <h3 class="mt-3 font-semibold text-(--ui-text-highlighted)">{{ t('No projects yet') }}</h3>
+            <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Create your first project to start auditing.') }}</p>
+            <UButton class="mt-4" icon="i-lucide-plus" size="sm" to="/projects/new">
+              {{ t('Create your first project') }}
+            </UButton>
+          </div>
+
+          <!-- Project cards with thumbnails -->
+          <div v-else class="mt-3 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div
+              v-for="project in recentProjects"
+              :key="project.id"
+              class="group cursor-pointer overflow-hidden rounded-xl border border-(--ui-border) bg-(--ui-bg) transition-all hover:shadow-lg"
+              @click="navigateTo(`/projects/${project.id}`)"
             >
-            <div class="min-w-0 flex-1">
-              <h3 class="truncate font-semibold text-(--ui-text-highlighted)">{{ project.name }}</h3>
-              <p class="truncate text-sm text-(--ui-text-muted)">{{ project.url }}</p>
+              <!-- Thumbnail -->
+              <div class="relative aspect-[16/9] overflow-hidden bg-(--ui-bg-accented)">
+                <img
+                  :src="thumbnailUrl(project.url)"
+                  :alt="project.name"
+                  class="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
+                  loading="lazy"
+                  @error="($event.target as HTMLImageElement).style.display = 'none'"
+                >
+                <!-- Score overlay -->
+                <div
+                  v-if="project.latest_score != null"
+                  class="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full border-2 bg-(--ui-bg)/90 backdrop-blur-sm"
+                  :class="scoreCircleClass(project.latest_score)"
+                >
+                  <span class="text-sm font-bold">{{ project.latest_score }}</span>
+                </div>
+              </div>
+
+              <!-- Info -->
+              <div class="p-4">
+                <div class="flex items-start gap-2.5">
+                  <img
+                    :src="`https://www.google.com/s2/favicons?domain=${encodeURIComponent(project.url)}&sz=32`"
+                    :alt="project.name"
+                    class="mt-0.5 h-5 w-5 rounded"
+                    loading="lazy"
+                  >
+                  <div class="min-w-0 flex-1">
+                    <h3 class="truncate text-sm font-semibold text-(--ui-text-highlighted) group-hover:text-(--ui-primary)">
+                      {{ project.name }}
+                    </h3>
+                    <p class="truncate text-xs text-(--ui-text-dimmed)">{{ project.url }}</p>
+                  </div>
+                </div>
+
+                <div class="mt-3 flex items-center gap-3 text-[11px] text-(--ui-text-dimmed)">
+                  <UBadge size="xs" color="neutral" variant="subtle">{{ siteTypeLabel(project.site_type) }}</UBadge>
+                  <span v-if="project.latest_audit_date" class="flex items-center gap-1">
+                    <UIcon name="i-lucide-clock" class="h-3 w-3" />
+                    {{ formatRelativeDate(project.latest_audit_date) }}
+                  </span>
+                  <span v-if="project.audits_count" class="flex items-center gap-1">
+                    {{ project.audits_count }} {{ project.audits_count === 1 ? 'audit' : 'audits' }}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div class="mt-4 flex items-center justify-between">
-            <UBadge size="sm" color="neutral" variant="subtle">{{ siteTypeLabel(project.site_type) }}</UBadge>
-
-            <div v-if="project.latest_score !== null && project.latest_score !== undefined" class="text-right">
-              <span class="text-2xl font-bold" :class="scoreColor(project.latest_score)">
-                {{ project.latest_score }}
-              </span>
-              <span class="text-xs text-(--ui-text-muted)">/100</span>
-            </div>
-            <span v-else class="text-sm text-(--ui-text-muted)">{{ t('Not audited yet') }}</span>
-          </div>
-
-          <div v-if="project.latest_audit_date" class="mt-2 text-xs text-(--ui-text-muted)">
-            {{ t('Last audit') }}: {{ formatDate(project.latest_audit_date) }}
-          </div>
-        </UCard>
-      </div>
+        </div>
+      </template>
     </div>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
-import { scoreColor } from '~/constants/audit'
-
 definePageMeta({ middleware: 'auth' })
 
 const { t } = useI18n()
 const { $api } = useApi()
-const apiError = useApiError()
+const authStore = useAuthStore()
 const { siteTypeLabel } = useProjectOptions()
-const { formatDate } = useFormatters()
+const { formatRelativeDate } = useFormatters()
 
 interface ProjectItem {
   id: string
@@ -91,20 +134,57 @@ interface ProjectItem {
   audits_count: number
 }
 
+interface UserStats {
+  plan: string
+  projects_count: number
+  audits_this_month: number
+}
+
 const projects = ref<ProjectItem[]>([])
+const stats = ref<UserStats | null>(null)
 const loading = ref(true)
+
+const recentProjects = computed(() => projects.value.slice(0, 6))
+
+function thumbnailUrl(url: string): string {
+  return `https://image.thum.io/get/width/640/crop/360/noanimate/${encodeURIComponent(url)}`
+}
+
+function scoreCircleClass(score: number): string {
+  if (score >= 80) return 'border-green-500 text-green-500'
+  if (score >= 50) return 'border-yellow-500 text-yellow-500'
+  return 'border-red-500 text-red-500'
+}
+
+const statCards = computed(() => {
+  const s = stats.value
+  const scoredProjects = projects.value.filter(p => p.latest_score != null)
+  const avgScore = scoredProjects.length > 0
+    ? Math.round(scoredProjects.reduce((sum, p) => sum + (p.latest_score ?? 0), 0) / scoredProjects.length)
+    : null
+
+  return [
+    { label: t('Projects'), value: s?.projects_count ?? 0, icon: 'i-lucide-folder' },
+    { label: t('Audits this month'), value: s?.audits_this_month ?? 0, icon: 'i-lucide-scan' },
+    { label: t('Average score'), value: avgScore != null ? `${avgScore}/100` : '--', icon: 'i-lucide-gauge' },
+    { label: t('Plan'), value: (s?.plan ?? 'free').charAt(0).toUpperCase() + (s?.plan ?? 'free').slice(1), icon: 'i-lucide-crown' },
+  ]
+})
 
 onMounted(async () => {
   try {
-    const data = await $api<{ data: ProjectItem[] }>('/projects')
-    projects.value = data.data
+    const [projectsData, statsData] = await Promise.all([
+      $api<{ data: ProjectItem[] }>('/projects'),
+      $api<UserStats>('/user/stats'),
+    ])
+    projects.value = projectsData.data
+    stats.value = statsData
   }
-  catch (e) {
-    apiError.parse(e, t('Failed to load projects.'))
+  catch {
+    // Dashboard is best-effort
   }
   finally {
     loading.value = false
   }
 })
-
 </script>

@@ -35,9 +35,9 @@
       </UFormField>
 
       <div class="flex items-center justify-between">
-        <NuxtLink to="/auth/forgot-password" class="text-sm text-(--ui-text-highlighted) hover:underline">
+        <UButton variant="link" size="xs" to="/auth/forgot-password">
           {{ t('Forgot password?') }}
-        </NuxtLink>
+        </UButton>
       </div>
 
       <UButton type="submit" :loading="loading" block size="lg">
@@ -46,7 +46,7 @@
 
       <p class="text-center text-sm text-(--ui-text-muted)">
         {{ t("Don't have an account?") }}
-        <NuxtLink to="/register" class="text-(--ui-text-highlighted) hover:underline">{{ t('Create one') }}</NuxtLink>
+        <UButton variant="link" size="xs" to="/register">{{ t('Create one') }}</UButton>
       </p>
     </UForm>
   </div>

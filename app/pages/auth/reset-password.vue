@@ -19,7 +19,7 @@
         icon="i-lucide-check-circle"
       >
         {{ t('Password reset successfully.') }}
-        <NuxtLink to="/login" class="underline font-medium">{{ t('Sign in') }}</NuxtLink>
+        <UButton variant="link" size="xs" to="/login">{{ t('Sign in') }}</UButton>
       </UAlert>
 
       <template v-if="!success">

@@ -31,12 +31,11 @@
         <template v-else>{{ t('Resend verification email') }}</template>
       </UButton>
 
-      <NuxtLink
-        to="/dashboard"
-        class="block text-center text-sm text-(--ui-text-muted) hover:text-(--ui-text-highlighted)"
-      >
-        {{ t('Continue to dashboard') }}
-      </NuxtLink>
+      <div class="text-center">
+        <UButton variant="link" size="sm" to="/dashboard">
+          {{ t('Continue to dashboard') }}
+        </UButton>
+      </div>
     </div>
   </div>
 </template>

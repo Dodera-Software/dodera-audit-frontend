@@ -34,12 +34,9 @@
       <p class="line-clamp-4 text-sm italic text-(--ui-text-muted)">
         "{{ narrativeExcerpt }}"
       </p>
-      <button
-        class="mt-2 text-xs font-medium text-(--ui-primary) hover:underline"
-        @click="showModal = true"
-      >
+      <UButton variant="link" size="xs" @click="showModal = true">
         {{ t('Read full narrative') }}
-      </button>
+      </UButton>
     </div>
 
     <!-- Top issue -->

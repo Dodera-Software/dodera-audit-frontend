@@ -5,7 +5,7 @@
 
   <div v-else class="space-y-5">
     <!-- First audit state -->
-    <UCard v-if="!brain.progress_narrative && !brain.score_history?.length" class="border-l-4 border-l-purple-500">
+    <UCard v-if="!brain.progress_narrative && !brain.priority_recommendations?.length" class="border-l-4 border-l-purple-500">
       <div class="flex items-start gap-3">
         <UIcon name="i-lucide-brain" class="mt-0.5 h-5 w-5 shrink-0 text-purple-500" />
         <div>
@@ -70,11 +70,6 @@
         </div>
       </div>
 
-      <!-- Score trend -->
-      <div v-if="brain.score_history?.length">
-        <p class="mb-2 text-xs font-medium text-(--ui-text-muted)">{{ t('Score trend') }}</p>
-        <ScoreTrendChart :data="brain.score_history" :height="100" />
-      </div>
     </template>
   </div>
 </template>
@@ -110,8 +105,7 @@ const loading = ref(true)
 
 onMounted(async () => {
   try {
-    const data = await $api<BrainData>(`/projects/${props.projectId}/brain`)
-    brain.value = data
+    brain.value = await $api<BrainData>(`/projects/${props.projectId}/brain`)
   }
   catch {
     // Silent — brain feed is non-critical

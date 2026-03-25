@@ -66,7 +66,7 @@
 
       <p class="text-center text-sm text-(--ui-text-muted)">
         {{ t('Already have an account?') }}
-        <NuxtLink to="/login" class="text-(--ui-text-highlighted) hover:underline">{{ t('Sign in') }}</NuxtLink>
+        <UButton variant="link" size="xs" to="/login">{{ t('Sign in') }}</UButton>
       </p>
     </UForm>
   </div>

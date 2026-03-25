@@ -32,8 +32,8 @@ export default defineNuxtConfig({
 
   googleFonts: {
     families: {
+      Inter: [400, 500, 600, 700],
       Syne: [400, 500, 600, 700, 800],
-      'DM Sans': [400, 500, 600, 700],
       'DM Mono': [400, 500],
     },
     display: 'swap',

@@ -1,10 +1,13 @@
 <template>
   <!-- Empty state -->
-  <div v-if="issues.length === 0" class="rounded-lg border border-green-500/30 bg-green-500/5 p-8 text-center">
-    <UIcon name="i-lucide-party-popper" class="mx-auto h-10 w-10 text-green-500" />
-    <h3 class="mt-3 font-semibold text-green-600">{{ t('No issues found') }}</h3>
-    <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Your page looks great! No critical issues were detected.') }}</p>
-  </div>
+  <UAlert
+    v-if="issues.length === 0"
+    color="success"
+    variant="subtle"
+    icon="i-lucide-party-popper"
+    :title="t('No issues found')"
+    :description="t('Your page looks great! No critical issues were detected.')"
+  />
 
   <!-- Issues list -->
   <div v-else class="space-y-3">
@@ -36,12 +39,14 @@
       </UBadge>
 
       <!-- Link to board -->
-      <NuxtLink
+      <UButton
+        variant="link"
+        size="xs"
         :to="`/projects/${projectId}/board`"
-        class="shrink-0 text-xs font-medium text-(--ui-primary) hover:underline"
+        trailing-icon="i-lucide-arrow-right"
       >
-        {{ t('View on board') }} →
-      </NuxtLink>
+        {{ t('View on board') }}
+      </UButton>
     </div>
 
     <!-- View full board -->

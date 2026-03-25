@@ -34,17 +34,17 @@
         <div class="min-h-[200px] rounded-lg bg-(--ui-bg-elevated) p-2">
           <!-- Loading skeletons -->
           <div v-if="loading" class="space-y-2">
-            <div v-for="n in (col.status === 'to_fix' ? 3 : 1)" :key="n" class="animate-pulse rounded-lg border border-(--ui-border) bg-(--ui-bg) p-3">
+            <div v-for="n in (col.status === 'to_fix' ? 3 : 1)" :key="n" class="rounded-lg border border-(--ui-border) bg-(--ui-bg) p-3">
               <div class="flex gap-1.5">
-                <div class="h-4 w-12 rounded bg-(--ui-border)" />
-                <div class="h-4 w-12 rounded bg-(--ui-border)" />
-                <div class="h-4 w-16 rounded bg-(--ui-border)" />
+                <USkeleton class="h-4 w-12" />
+                <USkeleton class="h-4 w-12" />
+                <USkeleton class="h-4 w-16" />
               </div>
-              <div class="mt-3 h-4 w-full rounded bg-(--ui-border)" />
-              <div class="mt-1.5 h-4 w-3/4 rounded bg-(--ui-border)" />
+              <USkeleton class="mt-3 h-4 w-full" />
+              <USkeleton class="mt-1.5 h-4 w-3/4" />
               <div class="mt-3 flex justify-between">
-                <div class="h-3 w-16 rounded bg-(--ui-border)" />
-                <div class="h-5 w-5 rounded-full bg-(--ui-border)" />
+                <USkeleton class="h-3 w-16" />
+                <USkeleton class="h-5 w-5 rounded-full" />
               </div>
             </div>
           </div>

@@ -57,12 +57,11 @@
             v-if="step.key === 'analyzing' && stepStatus(step.key) === 'active' && state.agentsCompleted > 0"
             class="mt-1 flex items-center gap-2"
           >
-            <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-(--ui-border)">
-              <div
-                class="h-full rounded-full bg-blue-500 transition-all duration-500"
-                :style="{ width: `${(state.agentsCompleted / state.agentsTotal) * 100}%` }"
-              />
-            </div>
+            <UProgress
+              :value="(state.agentsCompleted / state.agentsTotal) * 100"
+              size="xs"
+              class="flex-1"
+            />
             <span class="shrink-0 text-xs text-(--ui-text-muted)">
               {{ state.agentsCompleted }}/{{ state.agentsTotal }}
             </span>
