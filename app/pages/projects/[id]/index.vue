@@ -9,12 +9,12 @@
       <div class="flex items-start justify-between gap-4">
         <div class="flex items-center gap-3">
           <img
-            :src="`https://www.google.com/s2/favicons?domain=${encodeURIComponent(project.url)}&sz=32`"
+            :src="`https://www.google.com/s2/favicons?domain=${project.url.replace(/^https?:\/\//, '').split('/')[0]}&sz=32`"
             :alt="project.name"
             class="h-9 w-9 rounded-lg border border-(--ui-border)"
           >
           <div>
-            <h1 class="font-display text-xl font-bold text-(--ui-text-highlighted)">{{ project.name }}</h1>
+            <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ project.name }}</h1>
             <div class="flex items-center gap-2">
               <a :href="project.url" target="_blank" class="text-sm text-(--ui-text-muted) hover:text-(--ui-primary)">
                 {{ project.url }}
@@ -36,10 +36,19 @@
 
       <!-- Scan progress -->
       <ScanProgress
-        v-if="scanProgress.state.status === 'scanning' || scanProgress.state.status === 'failed'"
+        v-if="(scanProgress.state.status === 'scanning' || scanProgress.state.status === 'failed') && !showSuccess"
         :state="scanProgress.state"
         @retry="triggerAudit"
       />
+
+      <!-- Success celebration -->
+      <div v-if="showSuccess" class="mt-12 flex flex-col items-center justify-center py-8">
+        <div class="flex h-24 w-24 items-center justify-center rounded-full bg-green-500/10">
+          <UIcon name="i-lucide-check-circle" class="h-16 w-16 text-green-500 animate-[scale-in_0.5s_ease-out]" />
+        </div>
+        <h2 class="mt-4 text-xl font-bold text-(--ui-text-highlighted)">{{ t('Audit complete!') }}</h2>
+        <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Redirecting to your report...') }}</p>
+      </div>
 
       <template v-else>
         <!-- No audits -->
@@ -351,11 +360,17 @@ async function triggerAudit() {
   }
 }
 
+const showSuccess = ref(false)
+
 watch(() => scanProgress.state.status, async (status) => {
   if (status !== 'complete') return
+  showSuccess.value = true
   await loadProject()
-  if (auditId.value) {
-    navigateTo(`/projects/${projectId}/audits/${auditId.value}`)
-  }
+  // Show celebration for 2 seconds then navigate
+  setTimeout(() => {
+    if (auditId.value) {
+      navigateTo(`/projects/${projectId}/audits/${auditId.value}`)
+    }
+  }, 2000)
 })
 </script>

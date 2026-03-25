@@ -1,7 +1,7 @@
 <template>
   <ClientOnly>
     <div class="mx-auto max-w-2xl">
-      <h1 class="font-display text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Create new project') }}</h1>
+      <h1 class="text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Create new project') }}</h1>
       <p class="mt-1 text-(--ui-text-muted)">{{ t('Add a page URL to start auditing.') }}</p>
 
       <UCard class="mt-6">

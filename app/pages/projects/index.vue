@@ -2,10 +2,21 @@
   <ClientOnly>
     <div>
       <div class="flex items-center justify-between">
-        <h1 class="font-display text-xl font-bold text-(--ui-text-highlighted)">{{ t('Projects') }}</h1>
-        <UButton icon="i-lucide-plus" size="sm" to="/projects/new">
+        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Projects') }}</h1>
+        <UButton icon="i-lucide-plus" to="/projects/new">
           {{ t('New project') }}
         </UButton>
+      </div>
+
+      <!-- Search -->
+      <div v-if="!loading && projects.length > 0" class="mt-4">
+        <UInput
+          v-model="search"
+          icon="i-lucide-search"
+          :placeholder="t('Search projects...')"
+          size="sm"
+          class="max-w-xs"
+        />
       </div>
 
       <!-- Loading -->
@@ -23,22 +34,36 @@
         </UButton>
       </div>
 
+      <!-- No search results -->
+      <div v-else-if="filteredProjects.length === 0" class="mt-6 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
+        <UIcon name="i-lucide-search-x" class="mx-auto h-12 w-12 text-(--ui-text-muted)" />
+        <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No projects found') }}</h3>
+        <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Try a different search term.') }}</p>
+      </div>
+
       <!-- Project grid with thumbnails -->
       <div v-else class="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         <div
-          v-for="project in projects"
+          v-for="project in filteredProjects"
           :key="project.id"
           class="group cursor-pointer overflow-hidden rounded-xl border border-(--ui-border) bg-(--ui-bg) transition-all hover:shadow-lg"
           @click="navigateTo(`/projects/${project.id}`)"
         >
           <!-- Thumbnail -->
           <div class="relative aspect-[16/9] overflow-hidden bg-(--ui-bg-accented)">
+            <!-- Fallback -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center gap-2">
+              <UIcon name="i-lucide-globe" class="h-8 w-8 text-(--ui-text-dimmed)" />
+              <span class="text-xs text-(--ui-text-dimmed)">{{ hostname(project.url) }}</span>
+            </div>
+            <!-- Thumbnail: hidden until loaded -->
             <img
               :src="thumbnailUrl(project.url)"
               :alt="project.name"
-              class="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
+              class="relative h-full w-full object-cover object-top opacity-0 transition-all duration-500 group-hover:scale-[1.02]"
               loading="lazy"
-              @error="($event.target as HTMLImageElement).style.display = 'none'"
+              @load="($event.target as HTMLImageElement).classList.replace('opacity-0', 'opacity-100')"
+              @error="($event.target as HTMLImageElement).remove()"
             >
             <!-- Score overlay -->
             <div
@@ -63,10 +88,11 @@
           <div class="p-4">
             <div class="flex items-start gap-2.5">
               <img
-                :src="`https://www.google.com/s2/favicons?domain=${encodeURIComponent(project.url)}&sz=32`"
+                :src="faviconUrl(project.url)"
                 :alt="project.name"
                 class="mt-0.5 h-5 w-5 rounded"
                 loading="lazy"
+                @error="($event.target as HTMLImageElement).style.display = 'none'"
               >
               <div class="min-w-0 flex-1">
                 <h3 class="truncate text-sm font-semibold text-(--ui-text-highlighted) group-hover:text-(--ui-primary)">
@@ -114,9 +140,27 @@ interface ProjectItem {
 
 const projects = ref<ProjectItem[]>([])
 const loading = ref(true)
+const search = ref('')
+
+const filteredProjects = computed(() => {
+  const query = search.value.toLowerCase().trim()
+  if (!query) return projects.value
+  return projects.value.filter(p =>
+    p.name.toLowerCase().includes(query) || p.url.toLowerCase().includes(query),
+  )
+})
 
 function thumbnailUrl(url: string): string {
-  return `https://image.thum.io/get/width/640/crop/360/noanimate/${encodeURIComponent(url)}`
+  return `https://s0.wp.com/mshots/v1/${encodeURIComponent(url)}?w=640&h=360`
+}
+
+function faviconUrl(url: string): string {
+  return `https://www.google.com/s2/favicons?domain=${hostname(url)}&sz=32`
+}
+
+function hostname(url: string): string {
+  try { return new URL(url).hostname }
+  catch { return url }
 }
 
 function scoreCircleClass(score: number): string {

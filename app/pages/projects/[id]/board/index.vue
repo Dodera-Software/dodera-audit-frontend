@@ -3,11 +3,9 @@
     <div class="min-w-0 overflow-hidden">
       <!-- Header -->
       <div class="mb-6 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <UButton variant="ghost" icon="i-lucide-arrow-left" @click="router.back()" />
-          <h1 class="font-display text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Optimization Board') }}</h1>
-        </div>
+        <h1 class="text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Optimization Board') }}</h1>
         <UButton
+          v-if="allIssues.length > 0"
           icon="i-lucide-refresh-cw"
           :loading="triggeringAudit"
           @click="handleRunAudit"
@@ -43,7 +41,6 @@ import type { BoardIssue } from '~/components/board/IssueCard.vue'
 definePageMeta({ middleware: 'auth' })
 
 const { t } = useI18n()
-const router = useRouter()
 const route = useRoute()
 const { $api } = useApi()
 const apiError = useApiError()

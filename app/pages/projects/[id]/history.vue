@@ -6,10 +6,7 @@
 
     <div v-else>
       <!-- Header -->
-      <div class="flex items-center gap-3">
-        <UButton variant="ghost" icon="i-lucide-arrow-left" size="sm" square @click="router.back()" />
-        <h1 class="font-display text-xl font-bold text-(--ui-text-highlighted)">{{ t('Audit History') }}</h1>
-      </div>
+      <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Audit History') }}</h1>
 
       <!-- Empty -->
       <div v-if="audits.length === 0" class="mt-8 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">

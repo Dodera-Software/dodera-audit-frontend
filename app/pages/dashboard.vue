@@ -4,12 +4,12 @@
       <!-- Welcome header -->
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="font-display text-xl font-bold text-(--ui-text-highlighted)">
+          <h1 class="text-xl font-bold text-(--ui-text-highlighted)">
             {{ t('Welcome back, {name}', { name: authStore.user?.name?.split(' ')[0] ?? '' }) }}
           </h1>
           <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t("Here's what's happening with your audits.") }}</p>
         </div>
-        <UButton icon="i-lucide-plus" size="sm" to="/projects/new">
+        <UButton icon="i-lucide-plus" to="/projects/new">
           {{ t('New project') }}
         </UButton>
       </div>
@@ -62,12 +62,19 @@
             >
               <!-- Thumbnail -->
               <div class="relative aspect-[16/9] overflow-hidden bg-(--ui-bg-accented)">
+                <!-- Fallback: always visible -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                  <UIcon name="i-lucide-globe" class="h-8 w-8 text-(--ui-text-dimmed)" />
+                  <span class="text-xs text-(--ui-text-dimmed)">{{ hostname(project.url) }}</span>
+                </div>
+                <!-- Thumbnail: hidden until loaded -->
                 <img
                   :src="thumbnailUrl(project.url)"
                   :alt="project.name"
-                  class="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
+                  class="relative h-full w-full object-cover object-top opacity-0 transition-all duration-500 group-hover:scale-[1.02]"
                   loading="lazy"
-                  @error="($event.target as HTMLImageElement).style.display = 'none'"
+                  @load="($event.target as HTMLImageElement).classList.replace('opacity-0', 'opacity-100')"
+                  @error="($event.target as HTMLImageElement).remove()"
                 >
                 <!-- Score overlay -->
                 <div
@@ -83,10 +90,11 @@
               <div class="p-4">
                 <div class="flex items-start gap-2.5">
                   <img
-                    :src="`https://www.google.com/s2/favicons?domain=${encodeURIComponent(project.url)}&sz=32`"
+                    :src="faviconUrl(project.url)"
                     :alt="project.name"
                     class="mt-0.5 h-5 w-5 rounded"
                     loading="lazy"
+                    @error="($event.target as HTMLImageElement).style.display = 'none'"
                   >
                   <div class="min-w-0 flex-1">
                     <h3 class="truncate text-sm font-semibold text-(--ui-text-highlighted) group-hover:text-(--ui-primary)">
@@ -147,7 +155,17 @@ const loading = ref(true)
 const recentProjects = computed(() => projects.value.slice(0, 6))
 
 function thumbnailUrl(url: string): string {
-  return `https://image.thum.io/get/width/640/crop/360/noanimate/${encodeURIComponent(url)}`
+  // s0.wp.com/mshots is WordPress's free screenshot service — no API key needed
+  return `https://s0.wp.com/mshots/v1/${encodeURIComponent(url)}?w=640&h=360`
+}
+
+function faviconUrl(url: string): string {
+  return `https://www.google.com/s2/favicons?domain=${hostname(url)}&sz=32`
+}
+
+function hostname(url: string): string {
+  try { return new URL(url).hostname }
+  catch { return url }
 }
 
 function scoreCircleClass(score: number): string {

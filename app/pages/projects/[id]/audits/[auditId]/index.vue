@@ -13,7 +13,7 @@
           @click="router.back()"
         />
         <div>
-          <h1 class="font-display text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Audit Report') }}</h1>
+          <h1 class="text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Audit Report') }}</h1>
           <p class="text-sm text-(--ui-text-muted)">
             {{ formatDateTime(audit.created_at) }}
             <span v-if="audit.scan_duration_ms" class="ml-2">

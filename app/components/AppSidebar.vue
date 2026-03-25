@@ -13,10 +13,34 @@
       </NuxtLink>
     </div>
 
-    <!-- Navigation -->
-    <nav class="flex-1 space-y-1 overflow-y-auto px-3 pt-2">
+    <!-- Project context header (when inside a project) -->
+    <div v-if="projectId" class="border-b border-(--ui-border) px-3 pb-3">
       <UButton
-        v-for="item in navItems"
+        variant="ghost"
+        color="neutral"
+        size="xs"
+        icon="i-lucide-arrow-left"
+        to="/projects"
+        class="mb-2"
+        @click="$emit('navigate')"
+      >
+        {{ t('All projects') }}
+      </UButton>
+      <div class="flex items-center gap-2 px-2">
+        <img
+          v-if="projectUrl"
+          :src="`https://www.google.com/s2/favicons?domain=${projectUrl.replace(/^https?:\/\//, '').split('/')[0]}&sz=32`"
+          class="h-5 w-5 rounded"
+          loading="lazy"
+        >
+        <span class="truncate text-sm font-semibold text-(--ui-text-highlighted)">{{ projectName }}</span>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 space-y-1 overflow-y-auto px-3 pt-3">
+      <UButton
+        v-for="item in activeNavItems"
         :key="item.to"
         :to="item.to"
         :icon="item.icon"
@@ -48,7 +72,6 @@
 
         <template #content>
           <div class="p-1.5">
-            <!-- User info -->
             <div class="px-2.5 py-2">
               <p class="text-sm font-medium text-(--ui-text-highlighted)">{{ user?.name }}</p>
               <p class="text-xs text-(--ui-text-dimmed)">{{ user?.email }}</p>
@@ -56,7 +79,6 @@
 
             <USeparator class="my-1" />
 
-            <!-- Menu items -->
             <UButton
               v-for="item in menuItems"
               :key="item.to"
@@ -74,7 +96,6 @@
 
             <USeparator class="my-1" />
 
-            <!-- Theme -->
             <div class="flex items-center justify-between px-2.5 py-2">
               <span class="text-xs text-(--ui-text-muted)">{{ t('Theme') }}</span>
               <div class="flex gap-0.5">
@@ -93,7 +114,6 @@
 
             <USeparator class="my-1" />
 
-            <!-- Logout -->
             <UButton
               icon="i-lucide-log-out"
               variant="ghost"
@@ -126,14 +146,57 @@ const { t } = useI18n()
 const route = useRoute()
 const colorMode = useColorMode()
 const authStore = useAuthStore()
+const { $api } = useApi()
 
 const user = computed(() => authStore.user)
 const userInitial = computed(() => (user.value?.name ?? '').charAt(0).toUpperCase())
 
-const navItems = computed(() => [
+// Detect if we're inside a project
+const projectId = computed(() => {
+  const match = route.path.match(/^\/projects\/([^/]+)/)
+  return match?.[1] ?? null
+})
+
+// Project info for sidebar header
+const projectName = ref('')
+const projectUrl = ref('')
+
+watch(projectId, async (id) => {
+  if (!id) {
+    projectName.value = ''
+    projectUrl.value = ''
+    return
+  }
+  try {
+    const data = await $api<{ data: { name: string, url: string } }>(`/projects/${id}`)
+    projectName.value = data.data.name
+    projectUrl.value = data.data.url
+  }
+  catch {
+    projectName.value = ''
+    projectUrl.value = ''
+  }
+}, { immediate: true })
+
+// Global nav items
+const globalNavItems = computed(() => [
   { to: '/dashboard', icon: 'i-lucide-home', label: t('Dashboard') },
   { to: '/projects', icon: 'i-lucide-folder', label: t('Projects') },
 ])
+
+// Project-specific nav items
+const projectNavItems = computed(() => {
+  if (!projectId.value) return []
+  const base = `/projects/${projectId.value}`
+  return [
+    { to: base, icon: 'i-lucide-layout-dashboard', label: t('Overview') },
+    { to: `${base}/board`, icon: 'i-lucide-kanban', label: t('Issue board') },
+    { to: `${base}/history`, icon: 'i-lucide-history', label: t('Audit history') },
+  ]
+})
+
+// Which nav to show
+const activeNavItems = computed(() => projectId.value ? projectNavItems.value : globalNavItems.value)
 
 const menuItems = computed(() => [
   { to: '/account', icon: 'i-lucide-user', label: t('Profile') },
@@ -147,8 +210,12 @@ const themeModes = [
 ]
 
 function isActive(path: string): boolean {
+  // Exact match for project overview
+  if (projectId.value && path === `/projects/${projectId.value}`) {
+    return route.path === path || route.path === `${path}/`
+  }
   if (path === '/dashboard') return route.path === '/dashboard'
-  if (path === '/projects') return route.path.startsWith('/projects')
+  if (path === '/projects') return route.path === '/projects' || route.path === '/projects/'
   return route.path.startsWith(path)
 }
 </script>
