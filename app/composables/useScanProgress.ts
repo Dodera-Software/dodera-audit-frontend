@@ -1,4 +1,4 @@
-import Pusher from 'pusher-js'
+import type { Channel } from 'pusher-js'
 import type { ScanStepStatus } from '~/constants/scan'
 import { SCAN_STEP_KEYS, ESTIMATED_STEP_SECONDS, TOTAL_ESTIMATED_SECONDS, POLL_INTERVAL_MS, ANALYSIS_AGENTS_TOTAL } from '~/constants/scan'
 
@@ -14,7 +14,7 @@ interface ScanState {
 
 export function useScanProgress(auditId: Ref<string | null>) {
   const { $api } = useApi()
-  const config = useRuntimeConfig()
+  const { getChannel, isConnected } = useWebSocket()
 
   const state = reactive<ScanState>({
     status: 'idle',
@@ -28,9 +28,7 @@ export function useScanProgress(auditId: Ref<string | null>) {
 
   let pollTimer: ReturnType<typeof setInterval> | null = null
   let countdownTimer: ReturnType<typeof setInterval> | null = null
-  let pusherInstance: Pusher | null = null
-  let pusherChannel: any = null
-  let wsConnected = false
+  let wsListening = false
 
   // Track agent timing for accurate estimates
   let analysisStartTime: number | null = null
@@ -70,7 +68,6 @@ export function useScanProgress(auditId: Ref<string | null>) {
   }
 
   function updateEstimate() {
-    // During analysis, use real agent timing if available
     if (state.currentStep === 'analyzing' && state.agentsCompleted > 0 && analysisStartTime) {
       const elapsedMs = Date.now() - analysisStartTime
       const avgPerAgent = elapsedMs / state.agentsCompleted
@@ -82,7 +79,6 @@ export function useScanProgress(auditId: Ref<string | null>) {
       return
     }
 
-    // For other steps, use static estimates
     let remaining = 0
     let foundCurrent = false
 
@@ -132,78 +128,67 @@ export function useScanProgress(auditId: Ref<string | null>) {
     pollTimer = null
   }
 
-  function connectWebSocket() {
-    if (!auditId.value) {
+  // Filter events by audit_id since the channel is shared across all user audits
+  function isForThisAudit(e: { audit_id: string }): boolean {
+    return e.audit_id === auditId.value
+  }
+
+  function bindToChannel(channel: Channel) {
+    channel.bind('ScanStarted', (e: { audit_id: string }) => {
+      if (!isForThisAudit(e)) return
+      state.status = 'scanning'
+      markStepActive('validating')
+      wsListening = true
+      stopPolling()
+    })
+
+    channel.bind('ScanProgress', (e: { audit_id: string, step: string, agents_completed?: number, agents_total?: number }) => {
+      if (!isForThisAudit(e)) return
+      state.status = 'scanning'
+      markStepActive(e.step)
+      wsListening = true
+      stopPolling()
+
+      if (e.step === 'analyzing' && e.agents_completed != null && e.agents_total != null) {
+        handleAnalysisProgress(e.agents_completed, e.agents_total)
+      }
+    })
+
+    channel.bind('ScanComplete', (e: { audit_id: string }) => {
+      if (!isForThisAudit(e)) return
+      markComplete()
+    })
+
+    channel.bind('ScanFailed', (e: { audit_id: string, reason: string }) => {
+      if (!isForThisAudit(e)) return
+      markFailed(e.reason)
+    })
+  }
+
+  function unbindFromChannel(channel: Channel) {
+    channel.unbind('ScanStarted')
+    channel.unbind('ScanProgress')
+    channel.unbind('ScanComplete')
+    channel.unbind('ScanFailed')
+  }
+
+  function listenOnWebSocket() {
+    const channel = getChannel()
+    if (!channel || !isConnected()) {
       startPolling()
       return
     }
 
-    const key = config.public.reverbKey || 'ghostaudit-key'
-    const host = config.public.reverbHost || 'localhost'
-    const port = Number(config.public.reverbPort) || 8080
+    bindToChannel(channel)
 
-    try {
-      pusherInstance = new Pusher(key as string, {
-        cluster: 'mt1',
-        wsHost: host as string,
-        wsPort: port,
-        wssPort: port,
-        forceTLS: false,
-        enabledTransports: ['ws'],
-        disableStats: true,
-      })
-
-      pusherChannel = pusherInstance.subscribe(`audits.${auditId.value}`)
-
-      pusherChannel.bind('ScanStarted', () => {
-        state.status = 'scanning'
-        markStepActive('validating')
-        wsConnected = true
-        stopPolling()
-      })
-
-      pusherChannel.bind('ScanProgress', (e: { step: string, agents_completed?: number, agents_total?: number }) => {
-        state.status = 'scanning'
-        markStepActive(e.step)
-        wsConnected = true
-        stopPolling()
-
-        if (e.step === 'analyzing' && e.agents_completed != null && e.agents_total != null) {
-          handleAnalysisProgress(e.agents_completed, e.agents_total)
-        }
-      })
-
-      pusherChannel.bind('ScanComplete', () => {
-        markComplete()
-      })
-
-      pusherChannel.bind('ScanFailed', (e: { reason: string }) => {
-        markFailed(e.reason)
-      })
-
-      // Fallback to polling if no WS event within 5s
-      setTimeout(() => {
-        if (!wsConnected) startPolling()
-      }, 5000)
-    }
-    catch {
-      startPolling()
-    }
-  }
-
-  function disconnectWebSocket() {
-    if (pusherChannel) {
-      try { pusherChannel.unbind_all() } catch {}
-      pusherChannel = null
-    }
-    if (pusherInstance) {
-      try { pusherInstance.disconnect() } catch {}
-      pusherInstance = null
-    }
+    // Fallback to polling if no WS event within 5s
+    setTimeout(() => {
+      if (!wsListening) startPolling()
+    }, 5000)
   }
 
   async function poll() {
-    if (!auditId.value || wsConnected) return
+    if (!auditId.value || wsListening) return
 
     try {
       const data = await $api<{ data: { status: string } }>(`/audits/${auditId.value}/status`)
@@ -246,7 +231,7 @@ export function useScanProgress(auditId: Ref<string | null>) {
     state.estimatedSecondsRemaining = TOTAL_ESTIMATED_SECONDS
     state.agentsCompleted = 0
     state.agentsTotal = ANALYSIS_AGENTS_TOTAL
-    wsConnected = false
+    wsListening = false
     analysisStartTime = null
     lastAgentCompletedAt = null
 
@@ -255,14 +240,19 @@ export function useScanProgress(auditId: Ref<string | null>) {
     }
 
     markStepActive('validating')
-    connectWebSocket()
+    listenOnWebSocket()
     startCountdown()
   }
 
   function cleanup() {
     stopPolling()
     stopCountdown()
-    disconnectWebSocket()
+
+    const channel = getChannel()
+    if (channel) {
+      unbindFromChannel(channel)
+    }
+    wsListening = false
   }
 
   onUnmounted(cleanup)
