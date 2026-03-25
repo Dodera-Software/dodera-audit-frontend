@@ -18,9 +18,6 @@
       <p class="mt-2 text-sm text-(--ui-text-muted)">
         {{ stepDescription(state.currentStep ?? 'validating') }}
       </p>
-      <p class="mt-3 text-xs text-(--ui-text-dimmed)">
-        {{ t('Estimated time remaining') }}: {{ formatDuration(state.estimatedSecondsRemaining) }}
-      </p>
     </div>
 
     <!-- Failed state header -->
@@ -133,7 +130,6 @@ const props = defineProps<{
     currentStep: string | null
     stepStatuses: Record<string, ScanStepStatus>
     error: string | null
-    estimatedSecondsRemaining: number
     agentsCompleted: number
     agentsTotal: number
   }
@@ -144,7 +140,6 @@ defineEmits<{
 }>()
 
 const { t } = useI18n()
-const { formatDuration } = useFormatters()
 
 function stepLabel(key: string): string {
   const labels: Record<string, () => string> = {

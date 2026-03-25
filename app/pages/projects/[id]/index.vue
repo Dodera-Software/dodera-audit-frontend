@@ -41,20 +41,20 @@
         @retry="triggerAudit"
       />
 
-      <!-- Success celebration -->
-      <div v-if="showSuccess" class="mt-12 flex flex-col items-center justify-center py-8">
+      <!-- Success celebration — full page takeover -->
+      <div v-if="showSuccess" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-(--ui-bg)">
         <Vue3Lottie
-          :animation-data="successAnimation"
-          :height="160"
-          :width="160"
+          animation-link="/animations/success.json"
+          :height="280"
+          :width="280"
           :loop="false"
           :auto-play="true"
         />
-        <h2 class="mt-4 text-xl font-bold text-(--ui-text-highlighted)">{{ t('Your page audit is ready!') }}</h2>
-        <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Taking you to your results...') }}</p>
+        <h1 class="mt-6 text-3xl font-bold text-(--ui-text-highlighted)">{{ t('Your page audit is ready!') }}</h1>
+        <p class="mt-2 text-(--ui-text-muted)">{{ t('Taking you to your results...') }}</p>
       </div>
 
-      <template v-else>
+      <template v-if="scanProgress.state.status !== 'scanning' && scanProgress.state.status !== 'failed' && !showSuccess">
         <!-- No audits -->
         <div v-if="project.audits_count === 0" class="mt-8">
           <UCard class="py-16 text-center">
@@ -234,7 +234,6 @@
 
 <script setup lang="ts">
 import { Vue3Lottie } from 'vue3-lottie'
-import successAnimation from '~/assets/lottie/success.json'
 import { scoreColor } from '~/constants/audit'
 import ScanProgress from '~/components/audit/ScanProgress.vue'
 

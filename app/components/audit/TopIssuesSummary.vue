@@ -14,9 +14,10 @@
     <div
       v-for="(issue, index) in issues"
       :key="issue.id"
-      class="group rounded-xl border border-(--ui-border) bg-(--ui-bg) p-4 transition-all duration-300 hover:shadow-md"
+      class="group cursor-pointer rounded-xl border border-(--ui-border) bg-(--ui-bg) p-4 transition-all duration-300 hover:shadow-md"
       :style="{ transitionDelay: `${index * 60}ms` }"
       :class="mounted ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'"
+      @click="navigateTo(`/projects/${projectId}/board?issue=${issue.id}`)"
     >
       <div class="flex items-start gap-3">
         <!-- Impact score circle -->
@@ -46,13 +47,7 @@
         </div>
 
         <!-- Arrow -->
-        <UButton
-          variant="ghost"
-          size="xs"
-          icon="i-lucide-arrow-right"
-          :to="`/projects/${projectId}/board`"
-          class="shrink-0 opacity-0 transition group-hover:opacity-100"
-        />
+        <UIcon name="i-lucide-arrow-right" class="mt-1 h-4 w-4 shrink-0 text-(--ui-text-dimmed) transition group-hover:translate-x-0.5" />
       </div>
     </div>
 

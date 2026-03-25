@@ -59,6 +59,12 @@ const selectedIssueId = ref<string | null>(null)
 
 onMounted(async () => {
   await loadIssues()
+
+  const issueParam = route.query.issue as string | undefined
+  if (issueParam) {
+    selectedIssueId.value = issueParam
+    slideoverOpen.value = true
+  }
 })
 
 async function loadIssues() {

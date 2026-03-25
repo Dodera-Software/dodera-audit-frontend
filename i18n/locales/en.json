@@ -106,7 +106,6 @@
   "Needs improvement": "Needs improvement",
   "Poor": "Poor",
   "Scan failed": "Scan failed",
-  "Estimated time remaining": "Estimated time remaining",
   "Something went wrong during the scan.": "Something went wrong during the scan.",
   "Retry scan": "Retry scan",
   "No audits yet": "No audits yet",
@@ -130,11 +129,9 @@
   "How effectively your page drives user actions": "How effectively your page drives user actions",
   "Page load speed and Core Web Vitals": "Page load speed and Core Web Vitals",
   "JavaScript errors, accessibility, and code quality": "JavaScript errors, accessibility, and code quality",
-  "Scan": "Scan",
   "Audit not found.": "Audit not found.",
   "Back to project": "Back to project",
   "Failed to load audit.": "Failed to load audit.",
-  "Analysis": "Analysis",
   "Scores are not available for this audit.": "Scores are not available for this audit.",
   "Screenshot unavailable": "Screenshot unavailable",
   "Screenshot not found": "Screenshot not found",
@@ -349,7 +346,6 @@
   "Time for AI agents to analyze your page": "Time for AI agents to analyze your page",
   "Delete this project?": "Delete this project?",
   "This will permanently remove this project and all its audit history. This action cannot be undone.": "This will permanently remove this project and all its audit history. This action cannot be undone.",
-  "Delete project": "Delete project",
   "Failed to delete project.": "Failed to delete project.",
   "Delete": "Delete"
 }

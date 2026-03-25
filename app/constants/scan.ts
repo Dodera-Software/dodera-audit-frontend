@@ -18,17 +18,7 @@ export const ANALYSIS_AGENTS = [
   { key: 'comparison', icon: 'i-lucide-scale' },
 ] as const
 
-export const ESTIMATED_STEP_SECONDS: Record<string, number> = {
-  validating: 3,
-  scanning: 15,
-  extracting: 5,
-  analyzing: 120,
-  assembling: 5,
-}
-
 export const ANALYSIS_AGENTS_TOTAL = 7
-
-export const TOTAL_ESTIMATED_SECONDS = Object.values(ESTIMATED_STEP_SECONDS).reduce((a, b) => a + b, 0)
 
 export const POLL_INTERVAL_MS = 3000
 
