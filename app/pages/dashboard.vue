@@ -102,6 +102,32 @@
                     </h3>
                     <p class="truncate text-xs text-(--ui-text-dimmed)">{{ project.url }}</p>
                   </div>
+                  <div @click.stop>
+                    <UPopover :ui="{ content: 'w-40' }">
+                      <UButton
+                        variant="ghost"
+                        color="neutral"
+                        icon="i-lucide-ellipsis-vertical"
+                        size="xs"
+                        class="shrink-0"
+                      />
+                      <template #content>
+                        <div class="p-1">
+                          <UButton
+                            icon="i-lucide-trash-2"
+                            variant="ghost"
+                            color="error"
+                            size="sm"
+                            block
+                            class="justify-start"
+                            @click="deleteProject(project)"
+                          >
+                            {{ t('Delete') }}
+                          </UButton>
+                        </div>
+                      </template>
+                    </UPopover>
+                  </div>
                 </div>
 
                 <div class="mt-3 flex items-center gap-3 text-[11px] text-(--ui-text-dimmed)">
@@ -129,6 +155,7 @@
 definePageMeta({ middleware: 'auth' })
 
 const showCreateDialog = ref(false)
+const { confirm } = useConfirm()
 
 const { t } = useI18n()
 const { $api } = useApi()
@@ -192,6 +219,25 @@ const statCards = computed(() => {
     { label: t('Plan'), value: (s?.plan ?? 'free').charAt(0).toUpperCase() + (s?.plan ?? 'free').slice(1), icon: 'i-lucide-crown' },
   ]
 })
+
+async function deleteProject(project: ProjectItem) {
+  const confirmed = await confirm({
+    title: t('Delete this project?'),
+    description: t('This will permanently remove this project and all its audit history. This action cannot be undone.'),
+    confirmLabel: t('Delete'),
+    color: 'error',
+    icon: 'i-lucide-trash-2',
+  })
+  if (!confirmed) return
+
+  try {
+    await $api(`/projects/${project.id}`, { method: 'DELETE' })
+    projects.value = projects.value.filter(p => p.id !== project.id)
+  }
+  catch {
+    // best-effort
+  }
+}
 
 onMounted(async () => {
   try {

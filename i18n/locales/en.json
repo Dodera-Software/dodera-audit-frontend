@@ -343,5 +343,13 @@
   "Trust Auditor": "Trust Auditor",
   "Conversion Critic": "Conversion Critic",
   "Code Inspector": "Code Inspector",
-  "Search projects...": "Search projects..."
+  "Search projects...": "Search projects...",
+  "When this audit was run": "When this audit was run",
+  "Time to load and capture your page": "Time to load and capture your page",
+  "Time for AI agents to analyze your page": "Time for AI agents to analyze your page",
+  "Delete this project?": "Delete this project?",
+  "This will permanently remove this project and all its audit history. This action cannot be undone.": "This will permanently remove this project and all its audit history. This action cannot be undone.",
+  "Delete project": "Delete project",
+  "Failed to delete project.": "Failed to delete project.",
+  "Delete": "Delete"
 }
