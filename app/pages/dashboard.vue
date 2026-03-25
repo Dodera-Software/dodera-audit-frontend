@@ -44,7 +44,7 @@
 
           <!-- Empty -->
           <div v-if="projects.length === 0" class="mt-4 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
-            <UIcon name="i-lucide-globe" class="mx-auto h-10 w-10 text-(--ui-text-muted)" />
+            <Vue3Lottie animation-link="/animations/animation-bot.json" :height="120" :width="120" :loop="true" :auto-play="true" class="mx-auto" />
             <h3 class="mt-3 font-semibold text-(--ui-text-highlighted)">{{ t('No pages to audit yet') }}</h3>
             <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Add a page URL to get a detailed AI-powered audit.') }}</p>
             <UButton class="mt-4" icon="i-lucide-plus" size="sm" @click="showCreateDialog = true">
@@ -152,6 +152,8 @@
 </template>
 
 <script setup lang="ts">
+import { Vue3Lottie } from 'vue3-lottie'
+
 definePageMeta({ middleware: 'auth' })
 
 const showCreateDialog = ref(false)

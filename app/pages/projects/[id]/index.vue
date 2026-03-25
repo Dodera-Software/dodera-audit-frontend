@@ -58,7 +58,7 @@
         <!-- No audits -->
         <div v-if="project.audits_count === 0" class="mt-8">
           <UCard class="py-16 text-center">
-            <UIcon name="i-lucide-scan" class="mx-auto h-12 w-12 text-(--ui-text-muted)" />
+            <Vue3Lottie animation-link="/animations/animation-bot.json" :height="140" :width="140" :loop="true" :auto-play="true" class="mx-auto" />
             <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Page not audited yet') }}</h3>
             <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Run an audit to see how this page performs for clarity, trust, and conversion.') }}</p>
             <UButton class="mt-6" icon="i-lucide-scan" :loading="triggeringAudit" @click="triggerAudit">
