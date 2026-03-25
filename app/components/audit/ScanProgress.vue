@@ -9,9 +9,14 @@
 
     <!-- Active step spotlight -->
     <div v-if="state.status !== 'failed'" class="mb-10 text-center">
-      <div class="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-500/10">
-        <UIcon :name="activeStepIcon" class="h-10 w-10 text-blue-500 animate-pulse" />
-      </div>
+      <Vue3Lottie
+        animation-link="/animations/searching.json"
+        :height="120"
+        :width="120"
+        :loop="true"
+        :auto-play="true"
+        class="mx-auto"
+      />
       <h2 class="mt-5 text-xl font-bold text-(--ui-text-highlighted)">
         {{ t('Auditing your page...') }}
       </h2>
@@ -121,6 +126,7 @@
 </template>
 
 <script setup lang="ts">
+import { Vue3Lottie } from 'vue3-lottie'
 import { SCAN_STEPS, SCAN_STEP_KEYS, ANALYSIS_AGENTS } from '~/constants/scan'
 import type { ScanStepStatus } from '~/constants/scan'
 
@@ -180,10 +186,6 @@ function stepStatus(key: string): ScanStepStatus {
   return props.state.stepStatuses[key] ?? 'pending'
 }
 
-const activeStepIcon = computed(() => {
-  const current = props.state.currentStep ?? 'validating'
-  return SCAN_STEPS.find(s => s.key === current)?.icon ?? 'i-lucide-loader-2'
-})
 
 const overallProgress = computed(() => {
   const activeIndex = props.state.currentStep
