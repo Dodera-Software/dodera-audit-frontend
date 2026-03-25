@@ -272,5 +272,12 @@
   "Verified": "Verified",
   "No verified issues": "No verified issues",
   "Archived": "Archived",
-  "No archived issues": "No archived issues"
+  "No archived issues": "No archived issues",
+  "What was found": "What was found",
+  "Your Brain is learning": "Your Brain is learning",
+  "Run more audits to see your progress story. The Brain tracks patterns across audits and builds a narrative of your site improvement journey.": "Run more audits to see your progress story. The Brain tracks patterns across audits and builds a narrative of your site improvement journey.",
+  "Brain's assessment": "Brain's assessment",
+  "Priority recommendations": "Priority recommendations",
+  "Not enough data for a trend chart. Run more audits.": "Not enough data for a trend chart. Run more audits.",
+  "Project Brain": "Project Brain"
 }

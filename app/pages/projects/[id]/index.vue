@@ -104,6 +104,12 @@
           </UButton>
         </div>
 
+        <!-- Brain feed -->
+        <div v-if="project.audits_count > 0" class="mt-8">
+          <h2 class="mb-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Project Brain') }}</h2>
+          <BrainFeed :project-id="projectId" />
+        </div>
+
         <!-- No audits yet -->
         <div v-if="project.audits_count === 0" class="mt-8">
           <UCard class="py-12 text-center">

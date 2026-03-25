@@ -16,12 +16,15 @@
       </div>
 
       <!-- Score trend chart -->
-      <div v-if="chartData.labels.length >= 2" class="mb-8">
+      <div v-if="chartAudits.length >= 2" class="mb-8">
         <UCard>
           <p class="mb-3 text-sm font-medium text-(--ui-text-muted)">{{ t('Score trend') }}</p>
-          <div class="h-48">
-            <Line :data="chartData" :options="chartOptions" />
-          </div>
+          <ScoreTrendChart
+            :data="chartAudits"
+            :height="180"
+            clickable
+            @point-click="onChartClick"
+          />
         </UCard>
       </div>
 
@@ -45,18 +48,6 @@
 
 <script setup lang="ts">
 import type { ColDef } from 'ag-grid-community'
-import { Line } from 'vue-chartjs'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-} from 'chart.js'
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip)
 
 definePageMeta({ middleware: 'auth' })
 
@@ -198,54 +189,10 @@ const chartAudits = computed(() =>
     .reverse()
 )
 
-const chartData = computed(() => ({
-  labels: chartAudits.value.map(a => formatDateTime(a.created_at)),
-  datasets: [
-    {
-      data: chartAudits.value.map(a => a.overall_score),
-      borderColor: '#3b82f6',
-      backgroundColor: 'rgba(59, 130, 246, 0.1)',
-      borderWidth: 2,
-      pointRadius: 5,
-      pointHoverRadius: 8,
-      pointBackgroundColor: '#3b82f6',
-      pointHitRadius: 15,
-      tension: 0.3,
-      fill: true,
-    },
-  ],
-}))
-
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-    tooltip: { enabled: true },
-  },
-  scales: {
-    x: {
-      ticks: { maxTicksLimit: 10, font: { size: 11 } },
-    },
-    y: {
-      min: 0,
-      max: 100,
-      ticks: { stepSize: 20 },
-    },
-  },
-  onClick: (_event: any, elements: any[]) => {
-    if (elements.length === 0) return
-    const index = elements[0].index
-    const audit = chartAudits.value[index]
-    if (audit?.id) {
-      router.push(`/projects/${projectId}/audits/${audit.id}`)
-    }
-  },
-  onHover: (event: any, elements: any[]) => {
-    const canvas = event.native?.target as HTMLCanvasElement | undefined
-    if (canvas) {
-      canvas.style.cursor = elements.length > 0 ? 'pointer' : 'default'
-    }
-  },
+function onChartClick(index: number) {
+  const audit = chartAudits.value[index]
+  if (audit?.id) {
+    router.push(`/projects/${projectId}/audits/${audit.id}`)
+  }
 }
 </script>
