@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="text-center">
       <h2 class="font-display text-2xl font-bold text-(--ui-text-highlighted)">
-        {{ state.status === 'failed' ? t('Scan failed') : t('Scanning your website...') }}
+        {{ state.status === 'failed' ? t('Scan failed') : t('Scanning your page...') }}
       </h2>
       <p v-if="state.status === 'scanning'" class="mt-2 text-(--ui-text-muted)">
         {{ t('Estimated time remaining') }}: {{ formatDuration(state.estimatedSecondsRemaining) }}

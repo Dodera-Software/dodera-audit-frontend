@@ -3,7 +3,7 @@
   <div v-if="issues.length === 0" class="rounded-lg border border-green-500/30 bg-green-500/5 p-8 text-center">
     <UIcon name="i-lucide-party-popper" class="mx-auto h-10 w-10 text-green-500" />
     <h3 class="mt-3 font-semibold text-green-600">{{ t('No issues found') }}</h3>
-    <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Your site looks great! No critical issues were detected.') }}</p>
+    <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Your page looks great! No critical issues were detected.') }}</p>
   </div>
 
   <!-- Issues list -->

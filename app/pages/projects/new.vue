@@ -2,7 +2,7 @@
   <ClientOnly>
     <div class="mx-auto max-w-2xl">
       <h1 class="font-display text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Create new project') }}</h1>
-      <p class="mt-1 text-(--ui-text-muted)">{{ t('Add a website to start auditing.') }}</p>
+      <p class="mt-1 text-(--ui-text-muted)">{{ t('Add a page URL to start auditing.') }}</p>
 
       <UCard class="mt-6">
         <UForm :schema="schema" :state="form" class="space-y-5" @submit="handleCreate">
@@ -14,7 +14,7 @@
             icon="i-lucide-alert-circle"
           />
 
-          <UFormField :label="t('Website URL')" name="url">
+          <UFormField :label="t('Page URL')" name="url">
             <UInput
               v-model="form.url"
               type="url"
@@ -27,7 +27,7 @@
           <UFormField :label="t('Project name')" name="name">
             <UInput
               v-model="form.name"
-              :placeholder="t('My Website')"
+              :placeholder="t('My Landing Page')"
               size="lg"
               class="w-full"
             />

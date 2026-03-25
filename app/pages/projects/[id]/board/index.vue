@@ -12,7 +12,7 @@
           :loading="triggeringAudit"
           @click="handleRunAudit"
         >
-          {{ t('Re-audit site') }}
+          {{ t('Re-audit page') }}
         </UButton>
       </div>
 
@@ -111,7 +111,7 @@ async function handleRunAudit() {
   if (unfixedCount > 0) {
     const confirmed = await confirm({
       title: t('Not all issues are fixed yet'),
-      description: t('{count} issues are still open. The new audit will re-evaluate your site and compare against the current state.', { count: unfixedCount }),
+      description: t('{count} issues are still open. The new audit will re-evaluate your page and compare against the current state.', { count: unfixedCount }),
       confirmLabel: t('Re-audit anyway'),
       cancelLabel: t('Cancel'),
       color: 'warning',

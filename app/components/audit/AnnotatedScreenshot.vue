@@ -45,7 +45,7 @@
         <img
           ref="imageRef"
           :src="currentUrl"
-          :alt="t('Website screenshot')"
+          :alt="t('Page screenshot')"
           class="block w-full"
           @load="onImageLoad"
           @error="onImageError"

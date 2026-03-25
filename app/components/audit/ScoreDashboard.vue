@@ -153,8 +153,8 @@ function categoryLabel(key: ScoreCategoryKey): string {
 function categoryTooltip(key: ScoreCategoryKey): string {
   const tooltips: Record<ScoreCategoryKey, () => string> = {
     clarity: () => t('How clear and understandable your messaging is'),
-    trust: () => t('How trustworthy your site appears to visitors'),
-    conversion: () => t('How effectively your site drives user actions'),
+    trust: () => t('How trustworthy your page appears to visitors'),
+    conversion: () => t('How effectively your page drives user actions'),
     performance: () => t('Page load speed and Core Web Vitals'),
     technical: () => t('JavaScript errors, accessibility, and code quality'),
   }

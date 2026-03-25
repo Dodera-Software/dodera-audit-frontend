@@ -11,7 +11,7 @@
         <div>
           <h3 class="font-semibold text-(--ui-text-highlighted)">{{ t('Your Brain is learning') }}</h3>
           <p class="mt-1 text-sm text-(--ui-text-muted)">
-            {{ t('Run more audits to see your progress story. The Brain tracks patterns across audits and builds a narrative of your site improvement journey.') }}
+            {{ t('Run more audits to see your progress story. The Brain tracks patterns across audits and builds a narrative of your page\'s improvement journey.') }}
           </p>
         </div>
       </div>

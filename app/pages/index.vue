@@ -5,7 +5,7 @@
         {{ t('GhostAudit') }}
       </h1>
       <p class="mt-4 text-lg text-(--ui-text-muted)">
-        {{ t('AI-powered website audit platform') }}
+        {{ t('AI-powered page audit platform') }}
       </p>
       <div class="mt-8 flex gap-4 justify-center">
         <UButton to="/login" size="lg">
