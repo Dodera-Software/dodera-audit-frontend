@@ -347,5 +347,8 @@
   "Delete this project?": "Delete this project?",
   "This will permanently remove this project and all its audit history. This action cannot be undone.": "This will permanently remove this project and all its audit history. This action cannot be undone.",
   "Failed to delete project.": "Failed to delete project.",
-  "Delete": "Delete"
+  "Delete": "Delete",
+  "Keep auditing to track your improvement journey!": "Keep auditing to track your improvement journey!",
+  "Latest": "Latest",
+  "Failed": "Failed"
 }
