@@ -10,19 +10,19 @@
         <h1 class="text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Audit Report') }}</h1>
         <div class="flex items-center gap-3">
           <UTooltip :text="t('When this audit was run')">
-            <div class="flex items-center gap-1.5 rounded-lg border border-(--ui-border) px-3 py-1.5">
+            <div class="flex cursor-default items-center gap-1.5 rounded-lg border border-(--ui-border) px-3 py-1.5 select-none">
               <UIcon name="i-lucide-calendar" class="h-3.5 w-3.5 text-(--ui-text-dimmed)" />
               <span class="text-xs text-(--ui-text-muted)">{{ formatDateTime(audit.created_at) }}</span>
             </div>
           </UTooltip>
           <UTooltip v-if="audit.scan_duration_ms" :text="t('Time to load and capture your page')">
-            <div class="flex items-center gap-1.5 rounded-lg border border-(--ui-border) px-3 py-1.5">
+            <div class="flex cursor-default items-center gap-1.5 rounded-lg border border-(--ui-border) px-3 py-1.5 select-none">
               <UIcon name="i-lucide-scan" class="h-3.5 w-3.5 text-(--ui-text-dimmed)" />
               <span class="text-xs text-(--ui-text-muted)">{{ formatMs(audit.scan_duration_ms) }}</span>
             </div>
           </UTooltip>
           <UTooltip v-if="audit.analysis_duration_ms" :text="t('Time for AI agents to analyze your page')">
-            <div class="flex items-center gap-1.5 rounded-lg border border-(--ui-border) px-3 py-1.5">
+            <div class="flex cursor-default items-center gap-1.5 rounded-lg border border-(--ui-border) px-3 py-1.5 select-none">
               <UIcon name="i-lucide-brain" class="h-3.5 w-3.5 text-(--ui-text-dimmed)" />
               <span class="text-xs text-(--ui-text-muted)">{{ formatMs(audit.analysis_duration_ms) }}</span>
             </div>
