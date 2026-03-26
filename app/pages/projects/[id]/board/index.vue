@@ -127,7 +127,7 @@ async function handleRunAudit() {
   triggeringAudit.value = true
   try {
     const data = await $api<{ data: { id: string } }>(`/projects/${projectId}/audits`, { method: 'POST' })
-    navigateTo(`/projects/${projectId}`)
+    navigateTo(`/projects/${projectId}?audit=${data.data.id}`)
   }
   catch (e) {
     apiError.parse(e, t('Failed to start audit.'))

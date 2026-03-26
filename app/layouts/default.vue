@@ -18,7 +18,7 @@
         </div>
       </ClientOnly>
 
-      <main class="min-w-0 flex-1 overflow-y-auto p-5">
+      <main class="relative min-w-0 flex-1 overflow-y-auto p-5">
         <slot />
       </main>
     </div>

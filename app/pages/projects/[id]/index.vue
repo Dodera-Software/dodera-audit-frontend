@@ -27,21 +27,22 @@
         <UButton
           icon="i-lucide-scan"
           :loading="triggeringAudit"
-          :disabled="scanProgress.state.status === 'scanning'"
+          :disabled="!!activeScan"
           @click="triggerAudit"
         >
           {{ t('Audit this page') }}
         </UButton>
       </div>
 
-      <!-- Scan progress -->
-      <ScanProgress
-        v-if="(scanProgress.state.status === 'scanning' || scanProgress.state.status === 'failed') && !showSuccess"
-        :state="scanProgress.state"
-        @retry="triggerAudit"
-      />
+      <!-- Scan progress — content area takeover -->
+      <div
+        v-if="activeScan && !showSuccess"
+        class="absolute inset-0 flex items-center justify-center overflow-y-auto bg-(--ui-bg)"
+      >
+        <ScanProgress :scan="activeScan" @retry="triggerAudit" />
+      </div>
 
-      <!-- Success celebration — full page takeover -->
+      <!-- Success celebration -->
       <div v-if="showSuccess" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-(--ui-bg)">
         <Vue3Lottie
           animation-link="/animations/success.json"
@@ -54,7 +55,7 @@
         <p class="mt-2 text-(--ui-text-muted)">{{ t('Taking you to your results...') }}</p>
       </div>
 
-      <template v-if="scanProgress.state.status !== 'scanning' && scanProgress.state.status !== 'failed' && !showSuccess">
+      <template v-if="!activeScan && !showSuccess">
         <!-- No audits -->
         <div v-if="project.audits_count === 0" class="mt-8">
           <UCard class="py-16 text-center">
@@ -246,7 +247,7 @@ const apiError = useApiError()
 const { formatRelativeDate } = useFormatters()
 
 const projectId = route.params.id as string
-const auditId = ref<string | null>(null)
+const scanStore = useScanProgressStore()
 
 interface ProjectDetail {
   id: string
@@ -274,7 +275,7 @@ const loading = ref(true)
 const triggeringAudit = ref(false)
 const scoreHistory = ref<Array<{ overall_score: number, created_at: string }>>([])
 
-const scanProgress = useScanProgress(auditId)
+const activeScan = computed(() => scanStore.scanForProject(projectId))
 
 const siteTypeLabel = computed(() => {
   const labels: Record<string, () => string> = {
@@ -327,6 +328,12 @@ const momentumLabel = computed(() => MOMENTUM_CONFIG[brain.value?.momentum ?? ''
 
 onMounted(async () => {
   await loadProject()
+
+  // If navigated here with ?audit= param (from kanban re-audit), start tracking
+  const auditParam = route.query.audit as string | undefined
+  if (auditParam && !activeScan.value) {
+    scanStore.startScan(auditParam, projectId)
+  }
 })
 
 async function loadProject() {
@@ -354,8 +361,7 @@ async function triggerAudit() {
 
   try {
     const data = await $api<{ data: { id: string } }>(`/projects/${projectId}/audits`, { method: 'POST' })
-    auditId.value = data.data.id
-    scanProgress.start()
+    scanStore.startScan(data.data.id, projectId)
   }
   catch (e) {
     apiError.parse(e, t('Failed to start audit.'))
@@ -367,14 +373,16 @@ async function triggerAudit() {
 
 const showSuccess = ref(false)
 
-watch(() => scanProgress.state.status, async (status) => {
+watch(() => activeScan.value?.status, async (status) => {
   if (status !== 'complete') return
+  const completedAuditId = activeScan.value?.auditId
   showSuccess.value = true
   await loadProject()
-  // Show celebration for 2 seconds then navigate
   setTimeout(() => {
-    if (auditId.value) {
-      navigateTo(`/projects/${projectId}/audits/${auditId.value}`)
+    showSuccess.value = false
+    if (completedAuditId) {
+      // Don't clear scan store — let the audit report page handle the transition
+      navigateTo(`/projects/${projectId}/audits/${completedAuditId}`)
     }
   }, 2000)
 })

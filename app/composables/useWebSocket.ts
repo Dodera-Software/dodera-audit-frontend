@@ -4,6 +4,7 @@ import type { Channel } from 'pusher-js'
 let pusherInstance: Pusher | null = null
 let userChannel: Channel | null = null
 let connectedUserId: string | null = null
+let eventsBound = false
 
 export function useWebSocket() {
   const config = useRuntimeConfig()
@@ -32,9 +33,11 @@ export function useWebSocket() {
 
       userChannel = pusherInstance.subscribe(`user.${userId}`)
       connectedUserId = userId
+
+      bindScanEvents(userChannel)
     }
     catch {
-      // WebSocket unavailable — features using it will fall back to polling
+      // WebSocket unavailable
     }
   }
 
@@ -48,6 +51,30 @@ export function useWebSocket() {
       pusherInstance = null
     }
     connectedUserId = null
+    eventsBound = false
+  }
+
+  function bindScanEvents(channel: Channel) {
+    if (eventsBound) return
+    eventsBound = true
+
+    const scanStore = useScanProgressStore()
+
+    channel.bind('ScanStarted', (e: { audit_id: string }) => {
+      scanStore.handleScanStarted(e.audit_id)
+    })
+
+    channel.bind('ScanProgress', (e: { audit_id: string, step: string, agents_completed?: number, agents_total?: number }) => {
+      scanStore.handleScanProgress(e.audit_id, e.step, e.agents_completed, e.agents_total)
+    })
+
+    channel.bind('ScanComplete', (e: { audit_id: string }) => {
+      scanStore.handleScanComplete(e.audit_id)
+    })
+
+    channel.bind('ScanFailed', (e: { audit_id: string, reason: string }) => {
+      scanStore.handleScanFailed(e.audit_id, e.reason)
+    })
   }
 
   function getChannel(): Channel | null {
@@ -58,7 +85,6 @@ export function useWebSocket() {
     return !!userChannel && !!connectedUserId
   }
 
-  // Auto-connect when user is available, disconnect on logout
   watch(() => authStore.user, (user) => {
     if (user) {
       connect()

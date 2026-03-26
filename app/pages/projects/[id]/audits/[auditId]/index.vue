@@ -1,9 +1,29 @@
 <template>
   <ClientOnly>
-    <div v-if="loading" class="flex justify-center py-16">
+    <!-- Scan in progress or just completed (before watcher sets showSuccess) -->
+    <div v-if="activeScan && !showSuccess" class="absolute inset-0 flex items-center justify-center overflow-y-auto bg-(--ui-bg)">
+      <ScanProgress :scan="activeScan" @retry="() => {}" />
+    </div>
+
+    <!-- Success celebration -->
+    <div v-else-if="showSuccess" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-(--ui-bg)">
+      <Vue3Lottie
+        animation-link="/animations/success.json"
+        :height="280"
+        :width="280"
+        :loop="false"
+        :auto-play="true"
+      />
+      <h1 class="mt-6 text-3xl font-bold text-(--ui-text-highlighted)">{{ t('Your page audit is ready!') }}</h1>
+      <p class="mt-2 text-(--ui-text-muted)">{{ t('Taking you to your results...') }}</p>
+    </div>
+
+    <!-- Loading -->
+    <div v-else-if="loading" class="flex justify-center py-16">
       <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
     </div>
 
+    <!-- Report -->
     <div v-else-if="audit">
       <!-- Header -->
       <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -43,7 +63,7 @@
         />
       </div>
 
-      <!-- Score dashboard (only when scores exist) -->
+      <!-- Score dashboard -->
       <ScoreDashboard
         v-if="audit.overall_score != null && audit.scores"
         :overall-score="audit.overall_score"
@@ -52,7 +72,6 @@
         :score-history="scoreHistory"
       />
 
-      <!-- No scores yet -->
       <UCard v-else class="mt-4 py-8 text-center">
         <UIcon name="i-lucide-brain" class="mx-auto h-10 w-10 text-(--ui-text-muted)" />
         <p class="mt-3 text-sm text-(--ui-text-muted)">
@@ -60,14 +79,12 @@
         </p>
       </UCard>
 
-      <!-- 5-second test -->
       <FiveSecondTest
         v-if="fiveSecondImpression"
         class="mt-10"
         :impression="fiveSecondImpression"
       />
 
-      <!-- Brain narrative -->
       <AuditNarrative
         v-if="audit.brain_update"
         class="mt-6"
@@ -90,7 +107,7 @@
         <TopIssuesSummary :issues="topIssues" :project-id="projectId" />
       </div>
 
-      <!-- Persona verdict cards -->
+      <!-- Persona verdicts -->
       <div v-if="personaOutputs.length" class="mt-12">
         <div class="mb-6 flex items-center gap-3">
           <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-(--ui-bg-accented)">
@@ -112,6 +129,7 @@
       </div>
     </div>
 
+    <!-- Not found -->
     <div v-else class="py-16 text-center">
       <UIcon name="i-lucide-alert-circle" class="mx-auto h-10 w-10 text-(--ui-text-muted)" />
       <p class="mt-3 text-(--ui-text-muted)">{{ t('Audit not found.') }}</p>
@@ -123,6 +141,8 @@
 </template>
 
 <script setup lang="ts">
+import { Vue3Lottie } from 'vue3-lottie'
+import ScanProgress from '~/components/audit/ScanProgress.vue'
 import ScoreDashboard from '~/components/audit/ScoreDashboard.vue'
 import FiveSecondTest from '~/components/audit/FiveSecondTest.vue'
 import AuditNarrative from '~/components/audit/AuditNarrative.vue'
@@ -139,6 +159,7 @@ const { formatDateTime, formatMs } = useFormatters()
 
 const projectId = route.params.id as string
 const auditId = route.params.auditId as string
+const scanStore = useScanProgressStore()
 
 interface AuditWarning {
   type: string
@@ -200,12 +221,28 @@ const delta = ref<{ overall: number | null, scores: Record<string, number | null
 const scoreHistory = ref<ScoreHistoryEntry[]>([])
 const topIssues = ref<IssueItem[]>([])
 const loading = ref(true)
+const showSuccess = ref(false)
+
+// Store gives us instant access to scan state — no API call needed
+const activeScan = computed(() => scanStore.scanForAudit(auditId))
 
 onMounted(async () => {
-  await loadAudit()
+  // Active scan still running — show progress, don't fetch report
+  if (activeScan.value && activeScan.value.status === 'scanning') {
+    loading.value = false
+    return
+  }
+
+  // Scan just completed — clear store and load report
+  if (activeScan.value && activeScan.value.status === 'complete') {
+    scanStore.clearScan()
+  }
+
+  await fetchAuditData()
+  loading.value = false
 })
 
-async function loadAudit() {
+async function fetchAuditData() {
   try {
     const data = await $api<{
       data: AuditDetail
@@ -222,10 +259,19 @@ async function loadAudit() {
   catch (e) {
     apiError.parse(e, t('Failed to load audit.'))
   }
-  finally {
-    loading.value = false
-  }
 }
+
+// When scan completes, show success then load report
+watch(() => activeScan.value?.status, async (status) => {
+  if (status !== 'complete') return
+
+  showSuccess.value = true
+  await fetchAuditData()
+  setTimeout(() => {
+    scanStore.clearScan()
+    showSuccess.value = false
+  }, 2500)
+})
 
 const personaOutputs = computed<PersonaOutput[]>(() => {
   if (!audit.value?.persona_outputs) return []

@@ -17,21 +17,25 @@
     </div>
 
     <!-- Kanban columns -->
-    <div class="flex min-w-0 gap-4 overflow-auto pb-4" style="max-height: calc(100vh - 220px)">
+    <div
+      ref="boardRef"
+      class="flex min-w-0 gap-4 overflow-x-auto overflow-y-hidden pb-4"
+      style="height: calc(100vh - 220px)"
+    >
       <div
         v-for="col in COLUMNS"
         :key="col.status"
-        class="w-72 flex-shrink-0"
+        class="flex w-72 flex-shrink-0 flex-col"
       >
-        <!-- Column header -->
-        <div class="mb-3 flex items-center gap-2">
+        <!-- Column header (sticky) -->
+        <div class="sticky top-0 z-10 mb-3 flex items-center gap-2 bg-(--ui-bg) pb-1">
           <span class="h-2.5 w-2.5 rounded-full" :style="{ backgroundColor: col.color }" />
           <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ col.label() }}</h3>
           <span class="text-xs text-(--ui-text-muted)">({{ getColumnIssues(col.status).length }})</span>
         </div>
 
-        <!-- Droppable column -->
-        <div class="min-h-[200px] rounded-lg bg-(--ui-bg-elevated) p-2">
+        <!-- Droppable column (fills remaining height) -->
+        <div class="flex-1 overflow-y-auto rounded-lg bg-(--ui-bg-elevated) p-2">
           <!-- Loading skeletons -->
           <div v-if="loading" class="space-y-2">
             <div v-for="n in (col.status === 'to_fix' ? 3 : 1)" :key="n" class="rounded-lg border border-(--ui-border) bg-(--ui-bg) p-3">
@@ -56,8 +60,12 @@
             item-key="id"
             :animation="200"
             ghost-class="opacity-30"
-            class="min-h-[180px] space-y-2"
+            :scroll="true"
+            :scroll-sensitivity="100"
+            :scroll-speed="15"
+            class="min-h-full space-y-2"
             :data-status="col.status"
+            @start="startEdgeScroll"
             @end="onDragEnd"
           >
             <div
@@ -73,7 +81,7 @@
           </VueDraggable>
 
           <!-- Empty state -->
-          <div v-if="getColumnIssues(col.status).length === 0" class="py-8 text-center">
+          <div v-if="getColumnIssues(col.status).length === 0" class="flex min-h-full items-center justify-center py-8">
             <p class="text-xs text-(--ui-text-muted)">{{ col.emptyMessage() }}</p>
           </div>
         </div>
@@ -151,7 +159,47 @@ const sortOptions = [
 
 const SEVERITY_ORDER: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 }
 
+const boardRef = ref<HTMLElement | null>(null)
 let isDragging = false
+let scrollInterval: ReturnType<typeof setInterval> | null = null
+
+function startEdgeScroll() {
+  if (scrollInterval) return
+  scrollInterval = setInterval(() => {
+    const board = boardRef.value
+    if (!board) return
+
+    const rect = board.getBoundingClientRect()
+    const mouseX = lastMouseX
+
+    if (mouseX < rect.left + 80) {
+      board.scrollLeft -= 12
+    }
+    else if (mouseX > rect.right - 80) {
+      board.scrollLeft += 12
+    }
+  }, 16)
+}
+
+function stopEdgeScroll() {
+  if (!scrollInterval) return
+  clearInterval(scrollInterval)
+  scrollInterval = null
+}
+
+let lastMouseX = 0
+
+if (import.meta.client) {
+  document.addEventListener('drag', (e) => {
+    if (e.clientX > 0) lastMouseX = e.clientX
+  })
+  document.addEventListener('dragover', (e) => {
+    if (e.clientX > 0) lastMouseX = e.clientX
+  })
+  document.addEventListener('mousemove', (e) => {
+    if (isDragging) lastMouseX = e.clientX
+  })
+}
 
 const filteredIssues = computed(() => {
   let issues = [...props.issues]
@@ -187,6 +235,7 @@ const columnModels = computed(() => {
 })
 
 async function onDragEnd(event: any) {
+  stopEdgeScroll()
   isDragging = true
 
   const itemEl = event.item as HTMLElement
