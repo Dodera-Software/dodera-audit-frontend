@@ -5,7 +5,6 @@
     </div>
 
     <div v-else>
-      <!-- Header -->
       <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Audit History') }}</h1>
 
       <!-- Empty -->
@@ -16,34 +15,43 @@
       </div>
 
       <template v-else>
-        <!-- Stats row -->
-        <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div class="rounded-xl border border-(--ui-border) bg-(--ui-bg) p-4">
-            <p class="text-xs text-(--ui-text-dimmed)">{{ t('Total audits') }}</p>
-            <p class="mt-1 text-2xl font-bold text-(--ui-text-highlighted)">{{ audits.length }}</p>
+        <!-- Hero stats -->
+        <div class="mt-6 grid gap-3 sm:grid-cols-2">
+          <!-- Best score — hero card -->
+          <div class="rounded-xl border border-green-500/20 bg-green-500/5 p-5">
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-trophy" class="h-4 w-4 text-green-500" />
+              <p class="text-xs font-medium text-green-600">{{ t('Best score achieved') }}</p>
+            </div>
+            <p class="mt-2 text-4xl font-bold text-green-500">{{ bestScore ?? '--' }}</p>
+            <p class="mt-1 text-xs text-(--ui-text-dimmed)">{{ t('out of 100') }}</p>
           </div>
-          <div class="rounded-xl border border-(--ui-border) bg-(--ui-bg) p-4">
-            <p class="text-xs text-(--ui-text-dimmed)">{{ t('Best score') }}</p>
-            <p class="mt-1 text-2xl font-bold text-green-500">{{ bestScore ?? '--' }}</p>
-          </div>
-          <div class="rounded-xl border border-(--ui-border) bg-(--ui-bg) p-4">
-            <p class="text-xs text-(--ui-text-dimmed)">{{ t('Latest score') }}</p>
-            <div class="mt-1 flex items-baseline gap-1.5">
-              <p class="text-2xl font-bold" :class="latestScore != null ? scoreColorClass(latestScore) : 'text-(--ui-text-muted)'">
-                {{ latestScore ?? '--' }}
-              </p>
+
+          <!-- Improvement card -->
+          <div class="rounded-xl border border-(--ui-border) bg-(--ui-bg) p-5">
+            <div class="flex items-center gap-2">
+              <UIcon
+                :name="totalImprovement >= 0 ? 'i-lucide-trending-up' : 'i-lucide-trending-down'"
+                class="h-4 w-4"
+                :class="totalImprovement >= 0 ? 'text-green-500' : 'text-red-500'"
+              />
+              <p class="text-xs font-medium text-(--ui-text-muted)">{{ t('Journey so far') }}</p>
+            </div>
+            <div class="mt-2 flex items-baseline gap-3">
+              <span class="text-sm text-(--ui-text-dimmed)">{{ firstScore ?? '--' }}</span>
+              <UIcon name="i-lucide-arrow-right" class="h-3.5 w-3.5 text-(--ui-text-dimmed)" />
+              <span class="text-3xl font-bold" :class="latestScore != null ? scoreColorClass(latestScore) : ''">{{ latestScore ?? '--' }}</span>
               <span
-                v-if="audits[0]?.delta"
-                class="text-xs font-medium"
-                :class="audits[0].delta > 0 ? 'text-green-500' : 'text-red-500'"
+                v-if="totalImprovement !== 0"
+                class="rounded-full px-2 py-0.5 text-xs font-bold"
+                :class="totalImprovement > 0 ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'"
               >
-                {{ audits[0].delta > 0 ? '+' : '' }}{{ audits[0].delta }}
+                {{ totalImprovement > 0 ? '+' : '' }}{{ totalImprovement }} {{ t('points') }}
               </span>
             </div>
-          </div>
-          <div class="rounded-xl border border-(--ui-border) bg-(--ui-bg) p-4">
-            <p class="text-xs text-(--ui-text-dimmed)">{{ t('Success rate') }}</p>
-            <p class="mt-1 text-2xl font-bold text-(--ui-text-highlighted)">{{ successRate }}%</p>
+            <p class="mt-1 text-xs text-(--ui-text-dimmed)">
+              {{ t('{count} audits completed', { count: completedAudits.length }) }}
+            </p>
           </div>
         </div>
 
@@ -67,7 +75,6 @@
             class="group flex cursor-pointer items-center gap-4 rounded-xl border border-(--ui-border) bg-(--ui-bg) p-4 transition-all hover:shadow-md"
             @click="router.push(`/projects/${projectId}/audits/${audit.id}`)"
           >
-            <!-- Score circle -->
             <div
               class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2"
               :class="audit.overall_score != null ? scoreCircleClass(audit.overall_score) : 'border-(--ui-border) text-(--ui-text-dimmed)'"
@@ -75,7 +82,6 @@
               <span class="text-sm font-bold">{{ audit.overall_score ?? '--' }}</span>
             </div>
 
-            <!-- Info -->
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2">
                 <span class="text-sm font-medium text-(--ui-text-highlighted)">{{ formatDateTime(audit.created_at) }}</span>
@@ -90,7 +96,6 @@
               </div>
             </div>
 
-            <!-- Arrow -->
             <UIcon name="i-lucide-chevron-right" class="h-4 w-4 shrink-0 text-(--ui-text-dimmed) transition group-hover:translate-x-0.5" />
           </div>
         </div>
@@ -141,8 +146,15 @@ function scoreCircleClass(score: number): string {
 }
 
 const completedAudits = computed(() => audits.value.filter(a => a.status === 'complete' && a.overall_score != null))
-const bestScore = computed(() => completedAudits.value.length > 0 ? Math.max(...completedAudits.value.map(a => a.overall_score!)) : null)
+const scores = computed(() => completedAudits.value.map(a => a.overall_score!))
+const bestScore = computed(() => scores.value.length > 0 ? Math.max(...scores.value) : null)
+const lowestScore = computed(() => scores.value.length > 0 ? Math.min(...scores.value) : null)
 const latestScore = computed(() => completedAudits.value[0]?.overall_score ?? null)
+const firstScore = computed(() => completedAudits.value.length > 0 ? completedAudits.value[completedAudits.value.length - 1].overall_score : null)
+const totalImprovement = computed(() => {
+  if (firstScore.value == null || latestScore.value == null) return 0
+  return latestScore.value - firstScore.value
+})
 const successRate = computed(() => {
   if (audits.value.length === 0) return 0
   return Math.round((completedAudits.value.length / audits.value.length) * 100)

@@ -343,5 +343,13 @@
   "Delete": "Delete",
   "Keep auditing to track your improvement journey!": "Keep auditing to track your improvement journey!",
   "Latest": "Latest",
-  "Failed": "Failed"
+  "Failed": "Failed",
+  "First score": "First score",
+  "Lowest score": "Lowest score",
+  "Total improvement": "Total improvement",
+  "Best score achieved": "Best score achieved",
+  "out of 100": "out of 100",
+  "Journey so far": "Journey so far",
+  "points": "points",
+  "{count} audits completed": "{count} audits completed"
 }
