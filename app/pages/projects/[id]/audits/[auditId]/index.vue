@@ -63,6 +63,17 @@
         />
       </div>
 
+      <!-- No significant changes banner -->
+      <UAlert
+        v-if="audit.no_significant_changes"
+        class="mb-6"
+        color="info"
+        variant="subtle"
+        icon="i-lucide-info"
+        :title="t('No significant changes detected')"
+        :description="t('Your page structure looks identical to the previous audit. Any score differences are due to natural AI variance, not real changes to your page.')"
+      />
+
       <!-- Score dashboard -->
       <ScoreDashboard
         v-if="audit.overall_score != null && audit.scores"
@@ -197,13 +208,14 @@ interface AuditDetail {
   trigger_type: string
   overall_score: number | null
   scores: Record<string, number> | null
-  annotations: any[] | null
+  annotations: unknown[] | null
   persona_outputs: PersonaOutputEntry[] | null
   brain_update: {
     visual_analysis?: { impression_5sec?: string } | null
     progress_narrative?: string
     momentum?: string
   } | null
+  no_significant_changes: boolean
   warnings: AuditWarning[] | null
   scan_duration_ms: number | null
   analysis_duration_ms: number | null
