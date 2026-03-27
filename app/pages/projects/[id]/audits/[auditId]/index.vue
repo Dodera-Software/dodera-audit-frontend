@@ -337,6 +337,7 @@ const WARNING_TITLES: Record<string, () => string> = {
   brain_failed: () => t('Brain synthesis incomplete'),
   brain_error: () => t('Brain synthesis failed'),
   annotations_error: () => t('Annotations unavailable'),
+  context_truncated: () => t('Large page — partial analysis'),
 }
 
 function warningTitle(type: string): string {
