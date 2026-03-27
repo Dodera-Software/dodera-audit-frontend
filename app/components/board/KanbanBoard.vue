@@ -35,7 +35,7 @@
         </div>
 
         <!-- Droppable column (fills remaining height) -->
-        <div class="flex-1 overflow-y-auto rounded-lg bg-(--ui-bg-elevated) p-2">
+        <div class="flex flex-1 flex-col overflow-y-auto rounded-lg bg-(--ui-bg-elevated) p-2">
           <!-- Loading skeletons -->
           <div v-if="loading" class="space-y-2">
             <div v-for="n in (col.status === 'to_fix' ? 3 : 1)" :key="n" class="rounded-lg border border-(--ui-border) bg-(--ui-bg) p-3">
@@ -53,37 +53,38 @@
             </div>
           </div>
 
-          <VueDraggable
-            v-else
-            :model-value="columnModels[col.status] ?? []"
-            group="board"
-            item-key="id"
-            :animation="200"
-            ghost-class="opacity-30"
-            :scroll="true"
-            :scroll-sensitivity="100"
-            :scroll-speed="15"
-            class="min-h-full space-y-2"
-            :data-status="col.status"
-            @start="startEdgeScroll"
-            @end="onDragEnd"
-          >
-            <div
-              v-for="issue in columnModels[col.status]"
-              :key="issue.id"
-              :data-issue-id="issue.id"
-            >
-              <IssueCard
-                :issue="issue"
-                @click="$emit('issueClick', issue)"
-              />
-            </div>
-          </VueDraggable>
+          <template v-else>
+            <!-- Empty state pinned to top -->
+            <p v-if="getColumnIssues(col.status).length === 0" class="pt-3 text-center text-xs text-(--ui-text-muted)">
+              {{ col.emptyMessage() }}
+            </p>
 
-          <!-- Empty state -->
-          <div v-if="getColumnIssues(col.status).length === 0" class="flex min-h-full items-center justify-center py-8">
-            <p class="text-xs text-(--ui-text-muted)">{{ col.emptyMessage() }}</p>
-          </div>
+            <VueDraggable
+              :model-value="columnModels[col.status] ?? []"
+              group="board"
+              item-key="id"
+              :animation="200"
+              ghost-class="opacity-30"
+              :scroll="true"
+              :scroll-sensitivity="100"
+              :scroll-speed="15"
+              class="flex-1 space-y-2"
+              :data-status="col.status"
+              @start="startEdgeScroll"
+              @end="onDragEnd"
+            >
+              <div
+                v-for="issue in columnModels[col.status]"
+                :key="issue.id"
+                :data-issue-id="issue.id"
+              >
+                <IssueCard
+                  :issue="issue"
+                  @click="$emit('issueClick', issue)"
+                />
+              </div>
+            </VueDraggable>
+          </template>
         </div>
       </div>
     </div>
