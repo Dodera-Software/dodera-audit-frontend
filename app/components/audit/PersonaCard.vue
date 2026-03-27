@@ -15,10 +15,18 @@
         <h3 class="font-semibold text-(--ui-text-highlighted)">{{ personaName }}</h3>
         <p class="text-xs text-(--ui-text-muted)">{{ personaDescription }}</p>
       </div>
-      <UBadge :color="verdictConfig.color" variant="subtle" class="shrink-0">
-        <UIcon :name="verdictConfig.icon" class="mr-1 h-3 w-3" />
-        {{ verdictLabel }}
-      </UBadge>
+      <div class="flex shrink-0 flex-col items-end gap-1">
+        <UBadge :color="verdictConfig.color" variant="subtle">
+          <UIcon :name="verdictConfig.icon" class="mr-1 h-3 w-3" />
+          {{ verdictLabel }}
+        </UBadge>
+        <UTooltip v-if="lowConfidence" :text="t('Limited page data — findings may be less accurate')">
+          <UBadge color="neutral" variant="subtle" class="cursor-default">
+            <UIcon name="i-lucide-signal-low" class="mr-1 h-3 w-3" />
+            {{ t('Low confidence') }}
+          </UBadge>
+        </UTooltip>
+      </div>
     </div>
 
     <!-- Scores -->
@@ -80,6 +88,7 @@ const props = defineProps<{
     scores: { trust: number, clarity: number, action_intent: number }
     would_convert: string
     top_issue?: string
+    confidence?: number
   }
   isLowestIntent: boolean
 }>()
@@ -130,5 +139,9 @@ const scoreEntries = computed(() => [
 const narrativeExcerpt = computed(() => {
   const sentences = props.persona.narrative.split(/(?<=[.!?])\s+/)
   return sentences.slice(0, 3).join(' ')
+})
+
+const lowConfidence = computed(() => {
+  return props.persona.confidence !== undefined && props.persona.confidence < 80
 })
 </script>

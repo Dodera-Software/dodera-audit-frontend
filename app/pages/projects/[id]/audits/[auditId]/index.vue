@@ -47,8 +47,19 @@
               <span class="text-xs text-(--ui-text-muted)">{{ formatMs(audit.analysis_duration_ms) }}</span>
             </div>
           </UTooltip>
+          <UTooltip v-if="audit.tokens_used" :text="t('AI tokens consumed by this audit')">
+            <div class="flex cursor-default items-center gap-1.5 rounded-lg border border-(--ui-border) px-3 py-1.5 select-none">
+              <UIcon name="i-lucide-coins" class="h-3.5 w-3.5 text-(--ui-text-dimmed)" />
+              <span class="text-xs text-(--ui-text-muted)">{{ audit.tokens_used.toLocaleString() }} {{ t('tokens') }}</span>
+            </div>
+          </UTooltip>
+          <UButton variant="outline" size="sm" icon="i-lucide-refresh-cw" @click="showRescanModal = true">
+            {{ t('Re-scan') }}
+          </UButton>
         </div>
       </div>
+
+      <QuickRescanModal v-model="showRescanModal" :project-id="projectId" @started="handleRescanStarted" />
 
       <!-- Warnings -->
       <div v-if="audit.warnings?.length" class="mb-6 space-y-2">
@@ -89,6 +100,11 @@
           {{ t('Scores are not available for this audit.') }}
         </p>
       </UCard>
+
+      <!-- Velocity -->
+      <div v-if="velocity" class="mt-4">
+        <AuditVelocity :velocity="velocity" />
+      </div>
 
       <!-- Delta summary: what changed vs previous audit -->
       <div v-if="audit.delta_summary" class="mt-6">
@@ -177,6 +193,9 @@ import PerformanceBreakdown from '~/components/audit/PerformanceBreakdown.vue'
 import type { PerformanceBreakdownData } from '~/components/audit/PerformanceBreakdown.vue'
 import AuditDeltaSummary from '~/components/audit/AuditDeltaSummary.vue'
 import type { DeltaSummary } from '~/components/audit/AuditDeltaSummary.vue'
+import AuditVelocity from '~/components/audit/AuditVelocity.vue'
+import type { VelocityData } from '~/components/audit/AuditVelocity.vue'
+import QuickRescanModal from '~/components/audit/QuickRescanModal.vue'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -202,6 +221,7 @@ interface PersonaOutput {
   scores: { trust: number, clarity: number, action_intent: number }
   would_convert: string
   top_issue?: string
+  confidence?: number
 }
 
 interface PersonaOutputEntry {
@@ -238,6 +258,8 @@ interface AuditDetail {
   delta_summary: DeltaSummary | null
   no_significant_changes: boolean
   warnings: AuditWarning[] | null
+  tokens_used: number | null
+  changed_categories: string[] | null
   scan_duration_ms: number | null
   analysis_duration_ms: number | null
   created_at: string
@@ -253,8 +275,10 @@ const audit = ref<AuditDetail | null>(null)
 const delta = ref<{ overall: number | null, scores: Record<string, number | null> } | null>(null)
 const scoreHistory = ref<ScoreHistoryEntry[]>([])
 const topIssues = ref<IssueItem[]>([])
+const velocity = ref<VelocityData | null>(null)
 const loading = ref(true)
 const showSuccess = ref(false)
+const showRescanModal = ref(false)
 
 // Store gives us instant access to scan state — no API call needed
 const activeScan = computed(() => scanStore.scanForAudit(auditId))
@@ -282,16 +306,22 @@ async function fetchAuditData() {
       delta: { overall: number | null, scores: Record<string, number | null> }
       score_history: ScoreHistoryEntry[]
       top_issues: IssueItem[]
+      velocity: VelocityData | null
     }>(`/audits/${auditId}`)
 
     audit.value = data.data
     delta.value = data.delta
     scoreHistory.value = data.score_history
     topIssues.value = data.top_issues
+    velocity.value = data.velocity ?? null
   }
   catch (e) {
     apiError.parse(e, t('Failed to load audit.'))
   }
+}
+
+function handleRescanStarted(newAuditId: string) {
+  navigateTo(`/projects/${projectId}/audits/${newAuditId}`)
 }
 
 // When scan completes, show success then load report
