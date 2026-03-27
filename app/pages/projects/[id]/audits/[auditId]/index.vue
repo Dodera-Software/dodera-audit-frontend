@@ -200,6 +200,7 @@ interface IssueItem {
   effort: string
   title: string
   impact_score: number
+  roi_score: number
 }
 
 interface AuditDetail {

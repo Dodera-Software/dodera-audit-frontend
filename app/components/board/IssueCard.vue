@@ -28,9 +28,9 @@
 
     <!-- Footer -->
     <div class="mt-2 flex items-center justify-between">
-      <!-- Impact score -->
+      <!-- ROI score (primary ranking signal) -->
       <span class="text-xs font-medium text-(--ui-text-muted)">
-        {{ t('Impact') }}: {{ issue.impact_score }}
+        {{ t('ROI') }}: {{ issue.roi_score }}
       </span>
 
       <!-- Persona icons -->
@@ -60,6 +60,7 @@ export interface BoardIssue {
   current_status: string
   title: string
   impact_score: number
+  roi_score: number
   persona_source: string[] | null
   is_regression: boolean
   created_at: string

@@ -38,8 +38,12 @@
       <!-- Metadata row -->
       <div class="flex gap-6">
         <div>
+          <p class="text-xs font-medium text-(--ui-text-muted)">{{ t('ROI') }}</p>
+          <p class="mt-0.5 text-lg font-bold text-(--ui-text-highlighted)">{{ issue.roi_score }}</p>
+        </div>
+        <div>
           <p class="text-xs font-medium text-(--ui-text-muted)">{{ t('Impact') }}</p>
-          <p class="mt-0.5 text-lg font-bold text-(--ui-text-highlighted)">{{ issue.impact_score }}</p>
+          <p class="mt-0.5 text-sm font-medium text-(--ui-text-highlighted)">{{ issue.impact_score }}</p>
         </div>
         <div>
           <p class="text-xs font-medium text-(--ui-text-muted)">{{ t('Status') }}</p>
@@ -209,6 +213,7 @@ interface IssueDetail {
   title: string
   description: string
   impact_score: number
+  roi_score: number
   element_reference: string | null
   element_bounding_box: any | null
   persona_source: string[] | null

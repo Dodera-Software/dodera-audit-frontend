@@ -20,12 +20,12 @@
       @click="navigateTo(`/projects/${projectId}/board?issue=${issue.id}`)"
     >
       <div class="flex items-start gap-3">
-        <!-- Impact score circle -->
+        <!-- ROI score circle (primary ranking signal) -->
         <div
           class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
           :class="impactBg(issue.impact_score)"
         >
-          {{ Number(issue.impact_score).toFixed(1) }}
+          {{ Number(issue.roi_score).toFixed(1) }}
         </div>
 
         <!-- Content -->
@@ -76,6 +76,7 @@ defineProps<{
     effort: string
     title: string
     impact_score: number
+    roi_score: number
   }>
   projectId: string
 }>()
