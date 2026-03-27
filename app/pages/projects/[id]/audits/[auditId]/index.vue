@@ -90,6 +90,11 @@
         </p>
       </UCard>
 
+      <!-- Performance breakdown: desktop vs mobile -->
+      <div v-if="audit.performance_breakdown" class="mt-10">
+        <PerformanceBreakdown :breakdown="audit.performance_breakdown" />
+      </div>
+
       <FiveSecondTest
         v-if="fiveSecondImpression"
         class="mt-10"
@@ -159,6 +164,8 @@ import FiveSecondTest from '~/components/audit/FiveSecondTest.vue'
 import AuditNarrative from '~/components/audit/AuditNarrative.vue'
 import PersonaCard from '~/components/audit/PersonaCard.vue'
 import TopIssuesSummary from '~/components/audit/TopIssuesSummary.vue'
+import PerformanceBreakdown from '~/components/audit/PerformanceBreakdown.vue'
+import type { PerformanceBreakdownData } from '~/components/audit/PerformanceBreakdown.vue'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -216,6 +223,7 @@ interface AuditDetail {
     progress_narrative?: string
     momentum?: string
   } | null
+  performance_breakdown: PerformanceBreakdownData | null
   no_significant_changes: boolean
   warnings: AuditWarning[] | null
   scan_duration_ms: number | null
