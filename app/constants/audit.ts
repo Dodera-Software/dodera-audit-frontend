@@ -33,6 +33,7 @@ export const SCORE_CATEGORIES = [
   { key: 'conversion', icon: 'i-lucide-target' },
   { key: 'performance', icon: 'i-lucide-zap' },
   { key: 'technical', icon: 'i-lucide-code' },
+  { key: 'seo', icon: 'i-lucide-search' },
 ] as const
 
 export type ScoreCategoryKey = (typeof SCORE_CATEGORIES)[number]['key']

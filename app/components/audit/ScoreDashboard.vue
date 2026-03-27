@@ -38,7 +38,7 @@
     </div>
 
     <!-- Category breakdown grid -->
-    <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+    <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
       <div
         v-for="cat in categoryData"
         :key="cat.key"
@@ -193,6 +193,7 @@ function categoryLabel(key: ScoreCategoryKey): string {
     conversion: () => t('Conversion'),
     performance: () => t('Performance'),
     technical: () => t('Technical'),
+    seo: () => t('SEO'),
   }
   return labels[key]()
 }
@@ -203,7 +204,8 @@ function categoryDescription(key: ScoreCategoryKey): string {
     trust: () => t('How trustworthy your page appears to visitors'),
     conversion: () => t('How effectively your page drives user actions'),
     performance: () => t('Page load speed and Core Web Vitals'),
-    technical: () => t('JavaScript errors, accessibility, and code quality'),
+    technical: () => t('JavaScript errors, network failures, and code quality'),
+    seo: () => t('Meta tags, headings, Open Graph, and structured data'),
   }
   return descriptions[key]()
 }
