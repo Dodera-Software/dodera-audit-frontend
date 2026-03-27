@@ -90,6 +90,15 @@
         </p>
       </UCard>
 
+      <!-- Delta summary: what changed vs previous audit -->
+      <div v-if="audit.delta_summary" class="mt-6">
+        <AuditDeltaSummary
+          :summary="audit.delta_summary"
+          :score-delta="delta?.overall ?? null"
+          :current-score="audit.overall_score"
+        />
+      </div>
+
       <!-- Performance breakdown: desktop vs mobile -->
       <div v-if="audit.performance_breakdown" class="mt-10">
         <PerformanceBreakdown :breakdown="audit.performance_breakdown" />
@@ -166,6 +175,8 @@ import PersonaCard from '~/components/audit/PersonaCard.vue'
 import TopIssuesSummary from '~/components/audit/TopIssuesSummary.vue'
 import PerformanceBreakdown from '~/components/audit/PerformanceBreakdown.vue'
 import type { PerformanceBreakdownData } from '~/components/audit/PerformanceBreakdown.vue'
+import AuditDeltaSummary from '~/components/audit/AuditDeltaSummary.vue'
+import type { DeltaSummary } from '~/components/audit/AuditDeltaSummary.vue'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -224,6 +235,7 @@ interface AuditDetail {
     momentum?: string
   } | null
   performance_breakdown: PerformanceBreakdownData | null
+  delta_summary: DeltaSummary | null
   no_significant_changes: boolean
   warnings: AuditWarning[] | null
   scan_duration_ms: number | null
