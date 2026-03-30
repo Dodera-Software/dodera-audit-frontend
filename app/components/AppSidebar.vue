@@ -6,10 +6,7 @@
     <!-- Logo -->
     <div class="flex h-14 items-center px-5">
       <NuxtLink to="/dashboard" class="flex items-center gap-2.5 hover:opacity-80" @click="$emit('navigate')">
-        <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-(--ui-primary) text-xs font-bold text-white">
-          G
-        </div>
-        <span class="font-display text-base font-bold text-(--ui-text-highlighted)">PawByTech</span>
+        <img src="~/assets/logo/pawbytech-logo.svg" alt="PawByTech" class="h-7 w-auto" />
       </NuxtLink>
     </div>
 
