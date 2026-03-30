@@ -69,7 +69,7 @@ onMounted(async () => {
 
 async function loadIssues() {
   try {
-    const data = await $api<{ data: BoardIssue[] }>(`/projects/${projectId}/issues?per_page=200`)
+    const data = await $api<{ data: BoardIssue[] }>(`/projects/${projectId}/issues?per_page=500`)
     allIssues.value = data.data.map(issue => ({
       ...issue,
       is_regression: false,
