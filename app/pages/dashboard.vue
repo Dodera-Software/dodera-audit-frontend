@@ -9,8 +9,8 @@
           </h1>
           <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t("Here's what's happening with your audits.") }}</p>
         </div>
-        <UButton icon="i-lucide-folder-plus" to="/projects">
-          {{ t('Projects') }}
+        <UButton icon="i-lucide-plus" @click="showAddPageDialog = true">
+          {{ t('Add page') }}
         </UButton>
       </div>
 
@@ -132,6 +132,17 @@
                             {{ t('Show in project') }}
                           </UButton>
                           <UButton
+                            icon="i-lucide-folder-input"
+                            variant="ghost"
+                            color="neutral"
+                            size="sm"
+                            block
+                            class="justify-start"
+                            @click="openMovePage(page)"
+                          >
+                            {{ t('Move to project') }}
+                          </UButton>
+                          <UButton
                             icon="i-lucide-trash-2"
                             variant="ghost"
                             color="error"
@@ -166,10 +177,16 @@
       </template>
 
       <CreatePageDialog
-        v-if="defaultProjectId"
         v-model:open="showAddPageDialog"
-        :project-id="defaultProjectId"
         @created="onPageCreated"
+      />
+
+      <MovePageDialog
+        v-if="movePageTarget"
+        v-model:open="showMovePageDialog"
+        :page-id="movePageTarget.id"
+        :page-project-id="movePageTarget.project_id"
+        @moved="onPageMoved"
       />
     </div>
   </ClientOnly>
@@ -188,6 +205,8 @@ const { formatRelativeDate } = useFormatters()
 const { confirm } = useConfirm()
 
 const showAddPageDialog = ref(false)
+const showMovePageDialog = ref(false)
+const movePageTarget = ref<PageItem | null>(null)
 
 interface PageItem {
   id: string
@@ -210,7 +229,6 @@ interface UserStats {
 
 const pages = ref<PageItem[]>([])
 const stats = ref<UserStats | null>(null)
-const defaultProjectId = ref<string | null>(null)
 const loading = ref(true)
 
 const recentPages = computed(() => pages.value.slice(0, 6))
@@ -263,25 +281,32 @@ async function deletePage(page: PageItem) {
   }
 }
 
-function onPageCreated(page: { id: string }) {
-  // Navigate to the page in its default project
-  if (defaultProjectId.value) {
-    navigateTo(`/projects/${defaultProjectId.value}/pages/${page.id}`)
+function onPageCreated(page: { id: string, project_id: string }) {
+  navigateTo(`/projects/${page.project_id}/pages/${page.id}`)
+}
+
+function openMovePage(page: PageItem) {
+  movePageTarget.value = page
+  showMovePageDialog.value = true
+}
+
+function onPageMoved(projectId: string, projectName: string) {
+  if (movePageTarget.value) {
+    const idx = pages.value.findIndex(p => p.id === movePageTarget.value!.id)
+    if (idx !== -1) {
+      pages.value[idx] = { ...pages.value[idx], project_id: projectId, project_name: projectName } as PageItem
+    }
   }
 }
 
 onMounted(async () => {
   try {
-    const [pagesData, statsData, projectsData] = await Promise.all([
+    const [pagesData, statsData] = await Promise.all([
       $api<{ data: PageItem[] }>('/pages'),
       $api<UserStats>('/user/stats'),
-      $api<{ data: Array<{ id: string, name: string }> }>('/projects'),
     ])
     pages.value = pagesData.data
     stats.value = statsData
-    // Find the default project for the "Add page" dialog
-    const defaultProject = projectsData.data.find(p => p.name === 'Default') ?? projectsData.data[0]
-    defaultProjectId.value = defaultProject?.id ?? null
   }
   catch {
     // Dashboard is best-effort
