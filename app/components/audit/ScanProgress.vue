@@ -49,23 +49,44 @@
             {{ stepLabel(step.key) }}
           </span>
 
-          <!-- Agent roster -->
-          <div
-            v-if="step.key === 'analyzing' && stepStatus(step.key) === 'active'"
-            class="mt-3 grid grid-cols-2 gap-2"
-          >
-            <div
-              v-for="(agent, j) in ANALYSIS_AGENTS"
-              :key="agent.key"
-              class="flex items-center gap-2 rounded-lg border p-2 transition-all duration-500"
-              :class="agentCardClass(j)"
-            >
-              <UIcon :name="agent.icon" class="h-3.5 w-3.5 shrink-0" />
-              <span class="truncate text-xs font-medium">{{ agentName(agent.key) }}</span>
-              <UIcon v-if="j < scan.agentsCompleted" name="i-lucide-check" class="ml-auto h-3 w-3 shrink-0 text-green-500" />
-              <UIcon v-else-if="j === scan.agentsCompleted" name="i-lucide-loader-2" class="ml-auto h-3 w-3 shrink-0 animate-spin text-blue-500" />
+          <!-- Agent roster — shown when analyzing step is active -->
+          <template v-if="step.key === 'analyzing' && stepStatus(step.key) === 'active'">
+            <!-- Specialists group -->
+            <p class="mt-3 mb-1.5 text-xs font-semibold uppercase tracking-wide text-(--ui-text-dimmed)">
+              {{ t('AI Specialists') }}
+            </p>
+            <div class="grid grid-cols-2 gap-2">
+              <div
+                v-for="(agent, j) in SPECIALIST_AGENTS"
+                :key="agent.key"
+                class="flex items-center gap-2 rounded-lg border p-2 transition-all duration-500"
+                :class="agentCardClass(j)"
+              >
+                <UIcon :name="agent.icon" class="h-3.5 w-3.5 shrink-0" />
+                <span class="truncate text-xs font-medium">{{ specialistName(agent.key) }}</span>
+                <UIcon v-if="j < scan.agentsCompleted" name="i-lucide-check" class="ml-auto h-3 w-3 shrink-0 text-green-500" />
+                <UIcon v-else-if="j === scan.agentsCompleted" name="i-lucide-loader-2" class="ml-auto h-3 w-3 shrink-0 animate-spin text-blue-500" />
+              </div>
             </div>
-          </div>
+
+            <!-- Personas group -->
+            <p class="mt-3 mb-1.5 text-xs font-semibold uppercase tracking-wide text-(--ui-text-dimmed)">
+              {{ t('AI Personas') }}
+            </p>
+            <div class="grid grid-cols-2 gap-2">
+              <div
+                v-for="(agent, j) in PERSONA_AGENTS"
+                :key="agent.key"
+                class="flex items-center gap-2 rounded-lg border p-2 transition-all duration-500"
+                :class="agentCardClass(j + SPECIALIST_AGENTS.length)"
+              >
+                <UIcon :name="agent.icon" class="h-3.5 w-3.5 shrink-0" />
+                <span class="truncate text-xs font-medium">{{ personaName(agent.key) }}</span>
+                <UIcon v-if="j + SPECIALIST_AGENTS.length < scan.agentsCompleted" name="i-lucide-check" class="ml-auto h-3 w-3 shrink-0 text-green-500" />
+                <UIcon v-else-if="j + SPECIALIST_AGENTS.length === scan.agentsCompleted" name="i-lucide-loader-2" class="ml-auto h-3 w-3 shrink-0 animate-spin text-blue-500" />
+              </div>
+            </div>
+          </template>
 
           <p v-if="step.key === 'analyzing' && stepStatus(step.key) === 'done'" class="mt-0.5 text-xs text-green-500">
             {{ scan.agentsTotal }}/{{ scan.agentsTotal }} {{ t('agents complete') }}
@@ -99,7 +120,7 @@
 
 <script setup lang="ts">
 import { Vue3Lottie } from 'vue3-lottie'
-import { SCAN_STEPS, SCAN_STEP_KEYS, ANALYSIS_AGENTS } from '~/constants/scan'
+import { SCAN_STEPS, SCAN_STEP_KEYS, SPECIALIST_AGENTS, PERSONA_AGENTS } from '~/constants/scan'
 import type { ScanStepStatus } from '~/constants/scan'
 
 const props = defineProps<{
@@ -125,6 +146,7 @@ function stepLabel(key: string): string {
     scanning: () => t('Loading page in browser'),
     extracting: () => t('Extracting content'),
     analyzing: () => t('Running AI analysis'),
+    synthesizing: () => t('Synthesizing insights'),
     assembling: () => t('Assembling report'),
   }
   return labels[key]?.() ?? key
@@ -135,18 +157,28 @@ function stepDescription(key: string): string {
     validating: () => t('Checking that your page is reachable and loads correctly'),
     scanning: () => t('Opening your page in a real browser to capture what visitors see'),
     extracting: () => t('Pulling out headings, CTAs, trust signals, and page structure'),
-    analyzing: () => t('Seven AI personas are evaluating your page right now'),
+    analyzing: () => t('AI specialists and personas are evaluating your page right now'),
+    synthesizing: () => t('Combining findings into actionable insights and recommendations'),
     assembling: () => t('Combining all findings into your scored report'),
   }
   return descriptions[key]?.() ?? ''
 }
 
-function agentName(key: string): string {
+function specialistName(key: string): string {
   const names: Record<string, () => string> = {
     visual: () => t('Visual Analyst'),
     trust: () => t('Trust Auditor'),
     conversion: () => t('Conversion Critic'),
     code: () => t('Code Inspector'),
+    content: () => t('Content Reviewer'),
+    accessibility: () => t('Accessibility Auditor'),
+    seo: () => t('SEO Auditor'),
+  }
+  return names[key]?.() ?? key
+}
+
+function personaName(key: string): string {
+  const names: Record<string, () => string> = {
     skeptic: () => t('The Skeptic'),
     impulse: () => t('The Impulse Visitor'),
     comparison: () => t('The Comparison Shopper'),
