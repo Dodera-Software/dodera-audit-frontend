@@ -63,7 +63,7 @@
                 </p>
               </div>
             </div>
-            <div @click.stop>
+            <div v-if="project.name !== 'Default'" @click.stop>
               <UPopover :ui="{ content: 'w-40' }">
                 <UButton
                   variant="ghost"
