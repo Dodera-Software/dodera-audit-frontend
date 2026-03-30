@@ -37,18 +37,18 @@
         <div class="mt-8">
           <div class="flex items-center justify-between">
             <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Recent pages') }}</h2>
-            <UButton v-if="recentPages.length > 0" variant="ghost" size="sm" to="/projects" trailing-icon="i-lucide-arrow-right">
+            <UButton v-if="pages.length > 0" variant="ghost" size="sm" to="/projects" trailing-icon="i-lucide-arrow-right">
               {{ t('View all') }}
             </UButton>
           </div>
 
           <!-- Empty -->
-          <div v-if="recentPages.length === 0" class="mt-4 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
+          <div v-if="pages.length === 0" class="mt-4 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
             <Vue3Lottie animation-link="/animations/animation-bot.json" :height="120" :width="120" :loop="true" :auto-play="true" class="mx-auto" />
             <h3 class="mt-3 font-semibold text-(--ui-text-highlighted)">{{ t('No pages to audit yet') }}</h3>
-            <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Create a project and add pages to start auditing.') }}</p>
-            <UButton class="mt-4" icon="i-lucide-plus" size="sm" to="/projects">
-              {{ t('Go to projects') }}
+            <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Add a page URL to get a detailed AI-powered audit.') }}</p>
+            <UButton class="mt-4" icon="i-lucide-plus" size="sm" @click="showAddPageDialog = true">
+              {{ t('Audit your first page') }}
             </UButton>
           </div>
 
@@ -82,6 +82,15 @@
                 >
                   <span class="text-sm font-bold">{{ page.latest_score }}</span>
                 </div>
+                <UBadge
+                  v-if="page.latest_score == null && page.audits_count === 0"
+                  class="absolute left-3 top-3"
+                  color="neutral"
+                  variant="solid"
+                  size="xs"
+                >
+                  {{ t('Not audited yet') }}
+                </UBadge>
               </div>
 
               <!-- Info -->
@@ -100,20 +109,68 @@
                     </h3>
                     <p class="truncate text-xs text-(--ui-text-dimmed)">{{ page.url }}</p>
                   </div>
+                  <div @click.stop>
+                    <UPopover :ui="{ content: 'w-44' }">
+                      <UButton
+                        variant="ghost"
+                        color="neutral"
+                        icon="i-lucide-ellipsis-vertical"
+                        size="xs"
+                        class="shrink-0"
+                      />
+                      <template #content>
+                        <div class="p-1">
+                          <UButton
+                            icon="i-lucide-folder-open"
+                            variant="ghost"
+                            color="neutral"
+                            size="sm"
+                            block
+                            class="justify-start"
+                            @click="navigateTo(`/projects/${page.project_id}`)"
+                          >
+                            {{ t('Show in project') }}
+                          </UButton>
+                          <UButton
+                            icon="i-lucide-trash-2"
+                            variant="ghost"
+                            color="error"
+                            size="sm"
+                            block
+                            class="justify-start"
+                            @click="deletePage(page)"
+                          >
+                            {{ t('Delete') }}
+                          </UButton>
+                        </div>
+                      </template>
+                    </UPopover>
+                  </div>
                 </div>
 
                 <div class="mt-3 flex items-center gap-3 text-[11px] text-(--ui-text-dimmed)">
-                  <UBadge size="xs" color="neutral" variant="subtle" class="flex items-center gap-1">
+                  <UBadge v-if="page.project_name" size="xs" color="neutral" variant="subtle" class="flex items-center gap-1">
                     <UIcon name="i-lucide-folder" class="h-2.5 w-2.5" />
                     {{ page.project_name }}
                   </UBadge>
                   <UBadge v-if="page.site_type" size="xs" color="neutral" variant="subtle">{{ siteTypeLabel(page.site_type) }}</UBadge>
+                  <span v-if="page.latest_audit_date" class="flex items-center gap-1">
+                    <UIcon name="i-lucide-clock" class="h-3 w-3" />
+                    {{ formatRelativeDate(page.latest_audit_date) }}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </template>
+
+      <CreatePageDialog
+        v-if="defaultProjectId"
+        v-model:open="showAddPageDialog"
+        :project-id="defaultProjectId"
+        @created="onPageCreated"
+      />
     </div>
   </ClientOnly>
 </template>
@@ -127,21 +184,21 @@ const { t } = useI18n()
 const { $api } = useApi()
 const authStore = useAuthStore()
 const { siteTypeLabel } = useProjectOptions()
+const { formatRelativeDate } = useFormatters()
+const { confirm } = useConfirm()
 
-interface PagePreview {
+const showAddPageDialog = ref(false)
+
+interface PageItem {
   id: string
   project_id: string
+  project_name: string | null
   name: string | null
   url: string
   site_type: string
   latest_score: number | null
-}
-
-interface ProjectItem {
-  id: string
-  name: string
-  pages_count: number
-  pages: PagePreview[]
+  latest_audit_date: string | null
+  audits_count: number
 }
 
 interface UserStats {
@@ -151,20 +208,12 @@ interface UserStats {
   audits_this_month: number
 }
 
-const projects = ref<ProjectItem[]>([])
+const pages = ref<PageItem[]>([])
 const stats = ref<UserStats | null>(null)
+const defaultProjectId = ref<string | null>(null)
 const loading = ref(true)
 
-// Flatten pages from all projects, annotate with project info
-const recentPages = computed(() => {
-  return projects.value
-    .flatMap(p => (p.pages ?? []).map(page => ({
-      ...page,
-      project_name: p.name,
-      project_id: page.project_id || p.id,
-    })))
-    .slice(0, 6)
-})
+const recentPages = computed(() => pages.value.slice(0, 6))
 
 function thumbnailUrl(url: string): string {
   return `https://s0.wp.com/mshots/v1/${encodeURIComponent(url)}?w=640&h=360`
@@ -195,14 +244,44 @@ const statCards = computed(() => {
   ]
 })
 
+async function deletePage(page: PageItem) {
+  const confirmed = await confirm({
+    title: t('Delete this page?'),
+    description: t('This will permanently remove this page and all its audit history. This action cannot be undone.'),
+    confirmLabel: t('Delete'),
+    color: 'error',
+    icon: 'i-lucide-trash-2',
+  })
+  if (!confirmed) return
+
+  try {
+    await $api(`/pages/${page.id}`, { method: 'DELETE' })
+    pages.value = pages.value.filter(p => p.id !== page.id)
+  }
+  catch {
+    // best-effort
+  }
+}
+
+function onPageCreated(page: { id: string }) {
+  // Navigate to the page in its default project
+  if (defaultProjectId.value) {
+    navigateTo(`/projects/${defaultProjectId.value}/pages/${page.id}`)
+  }
+}
+
 onMounted(async () => {
   try {
-    const [projectsData, statsData] = await Promise.all([
-      $api<{ data: ProjectItem[] }>('/projects'),
+    const [pagesData, statsData, projectsData] = await Promise.all([
+      $api<{ data: PageItem[] }>('/pages'),
       $api<UserStats>('/user/stats'),
+      $api<{ data: Array<{ id: string, name: string }> }>('/projects'),
     ])
-    projects.value = projectsData.data
+    pages.value = pagesData.data
     stats.value = statsData
+    // Find the default project for the "Add page" dialog
+    const defaultProject = projectsData.data.find(p => p.name === 'Default') ?? projectsData.data[0]
+    defaultProjectId.value = defaultProject?.id ?? null
   }
   catch {
     // Dashboard is best-effort
