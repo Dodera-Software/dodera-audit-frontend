@@ -81,7 +81,7 @@
                       size="sm"
                       block
                       class="justify-start"
-                      @click="deleteProject(project)"
+                      @click="openDeleteDialog(project)"
                     >
                       {{ t('Delete') }}
                     </UButton>
@@ -128,6 +128,15 @@
       </div>
 
       <CreateProjectDialog v-model:open="showCreateDialog" />
+
+      <DeleteProjectDialog
+        v-if="deleteTarget"
+        v-model:open="showDeleteDialog"
+        :project-id="deleteTarget.id"
+        :project-name="deleteTarget.name"
+        :pages-count="deleteTarget.pages_count"
+        @deleted="onProjectDeleted"
+      />
     </div>
   </ClientOnly>
 </template>
@@ -138,7 +147,8 @@ import { Vue3Lottie } from 'vue3-lottie'
 definePageMeta({ middleware: 'auth' })
 
 const showCreateDialog = ref(false)
-const { confirm } = useConfirm()
+const showDeleteDialog = ref(false)
+const deleteTarget = ref<ProjectItem | null>(null)
 
 const { t } = useI18n()
 const { $api } = useApi()
@@ -181,22 +191,14 @@ function scoreColor(score: number): string {
   return 'text-red-500'
 }
 
-async function deleteProject(project: ProjectItem) {
-  const confirmed = await confirm({
-    title: t('Delete this project?'),
-    description: t('This will permanently remove this project and all its pages and audit history. This action cannot be undone.'),
-    confirmLabel: t('Delete'),
-    color: 'error',
-    icon: 'i-lucide-trash-2',
-  })
-  if (!confirmed) return
+function openDeleteDialog(project: ProjectItem) {
+  deleteTarget.value = project
+  showDeleteDialog.value = true
+}
 
-  try {
-    await $api(`/projects/${project.id}`, { method: 'DELETE' })
-    projects.value = projects.value.filter(p => p.id !== project.id)
-  }
-  catch (e) {
-    apiError.parse(e, t('Failed to delete project.'))
+function onProjectDeleted() {
+  if (deleteTarget.value) {
+    projects.value = projects.value.filter(p => p.id !== deleteTarget.value!.id)
   }
 }
 
