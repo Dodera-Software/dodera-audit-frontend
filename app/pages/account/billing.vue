@@ -77,7 +77,9 @@
               </span>
             </div>
             <UProgress
-              :value="status.audit_limit === 999 ? 0 : Math.min(100, Math.round((status.audits_this_month / status.audit_limit) * 100))"
+              v-if="status.audit_limit !== 999"
+              :model-value="Math.min(100, Math.round((status.audits_this_month / status.audit_limit) * 100))"
+              :max="100"
               :color="auditUsageColor"
               size="sm"
             />
@@ -93,21 +95,6 @@
               </span>
             </div>
           </div>
-        </div>
-      </UCard>
-
-      <!-- Add extra seats (paid plans) -->
-      <UCard v-if="status.plan !== 'free'" class="mb-4">
-        <div class="flex items-start justify-between gap-4">
-          <div>
-            <h3 class="mb-1 text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Team members') }}</h3>
-            <p class="text-xs text-(--ui-text-muted)">
-              {{ t('Invite teammates to collaborate on audit pages. Coming soon.') }}
-            </p>
-          </div>
-          <UBadge color="neutral" variant="subtle" size="xs" class="shrink-0">
-            {{ t('Coming soon') }}
-          </UBadge>
         </div>
       </UCard>
 
@@ -166,6 +153,7 @@ const auditUsageColor = computed(() => {
   if (pct >= 70) return 'warning'
   return 'primary'
 })
+
 
 async function openPortal() {
   portalLoading.value = true

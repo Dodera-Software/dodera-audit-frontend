@@ -78,13 +78,16 @@ import { registerSchema } from '~/schemas/auth'
 definePageMeta({ layout: 'auth', middleware: 'guest' })
 
 const { t } = useI18n()
+const route = useRoute()
 const { register } = useAuth()
 const apiError = useApiError()
+
+const invitationToken = route.query.invitation as string | undefined
 
 const schema = registerSchema(t)
 const form = reactive({
   name: '',
-  email: '',
+  email: (route.query.email as string) || '',
   password: '',
   password_confirmation: '',
   terms: false as boolean,
@@ -97,7 +100,12 @@ async function handleRegister() {
 
   try {
     await register(form)
-    navigateTo('/auth/verify-email')
+    if (invitationToken) {
+      navigateTo(`/invitation/${invitationToken}`)
+    }
+    else {
+      navigateTo('/auth/verify-email')
+    }
   }
   catch (e) {
     apiError.parse(e, t('Registration failed. Please try again.'))

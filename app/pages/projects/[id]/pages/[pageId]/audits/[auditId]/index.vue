@@ -2,7 +2,7 @@
   <ClientOnly>
     <!-- Scan in progress or just completed (before watcher sets showSuccess) -->
     <div v-if="activeScan && !showSuccess" class="absolute inset-0 flex items-center justify-center overflow-y-auto bg-(--ui-bg)">
-      <ScanProgress :scan="activeScan" @retry="navigateTo(`/projects/${projectId}`)" />
+      <ScanProgress :scan="activeScan" @retry="navigateTo(`/projects/${projectId}/pages/${pageId}`)" />
     </div>
 
     <!-- Success celebration -->
@@ -59,7 +59,7 @@
         </div>
       </div>
 
-      <QuickRescanModal v-model="showRescanModal" :project-id="projectId" @started="handleRescanStarted" />
+      <QuickRescanModal v-model="showRescanModal" :page-id="pageId" @started="handleRescanStarted" />
 
       <!-- Warnings -->
       <div v-if="audit.warnings?.length" class="mb-6 space-y-2">
@@ -130,7 +130,7 @@
         v-if="audit.brain_update"
         class="mt-6"
         :locked="isFree"
-        :title="t('Project Brain narrative')"
+        :title="t('Page Brain narrative')"
         :description="t('AI-generated progress story tracking your page\'s improvement over time.')"
         @upgrade="showUpgradeModal = true"
       >
@@ -152,7 +152,7 @@
             <p class="text-xs text-(--ui-text-dimmed)">{{ t('Highest impact issues to fix first') }}</p>
           </div>
         </div>
-        <TopIssuesSummary :issues="topIssues" :project-id="projectId" />
+        <TopIssuesSummary :issues="topIssues" :project-id="projectId" :page-id="pageId" />
       </div>
 
       <!-- Persona verdicts -->
@@ -188,7 +188,7 @@
 
       <UpgradeModal
         v-model:open="showUpgradeModal"
-        :reason="t('Upgrade to unlock persona verdicts, AI fix suggestions, and Project Brain insights.')"
+        :reason="t('Upgrade to unlock persona verdicts, AI fix suggestions, and Page Brain insights.')"
       />
     </div>
 
@@ -196,8 +196,8 @@
     <div v-else class="py-16 text-center">
       <UIcon name="i-lucide-alert-circle" class="mx-auto h-10 w-10 text-(--ui-text-muted)" />
       <p class="mt-3 text-(--ui-text-muted)">{{ t('Audit not found.') }}</p>
-      <UButton class="mt-4" variant="ghost" :to="`/projects/${projectId}`">
-        {{ t('Back to project') }}
+      <UButton class="mt-4" variant="ghost" :to="`/projects/${projectId}/pages/${pageId}`">
+        {{ t('Back to page') }}
       </UButton>
     </div>
   </ClientOnly>
@@ -231,6 +231,7 @@ const { formatDateTime, formatMs } = useFormatters()
 const { isFree } = usePlan()
 
 const projectId = route.params.id as string
+const pageId = route.params.pageId as string
 const auditId = route.params.auditId as string
 const scanStore = useScanProgressStore()
 const showUpgradeModal = ref(false)
@@ -306,17 +307,14 @@ const loading = ref(true)
 const showSuccess = ref(false)
 const showRescanModal = ref(false)
 
-// Store gives us instant access to scan state — no API call needed
 const activeScan = computed(() => scanStore.scanForAudit(auditId))
 
 onMounted(async () => {
-  // Active scan still running — show progress, don't fetch report
   if (activeScan.value && activeScan.value.status === 'scanning') {
     loading.value = false
     return
   }
 
-  // Scan just completed — clear store and load report
   if (activeScan.value && activeScan.value.status === 'complete') {
     scanStore.clearScan()
   }
@@ -347,10 +345,9 @@ async function fetchAuditData() {
 }
 
 function handleRescanStarted(newAuditId: string) {
-  navigateTo(`/projects/${projectId}/audits/${newAuditId}`)
+  navigateTo(`/projects/${projectId}/pages/${pageId}/audits/${newAuditId}`)
 }
 
-// When scan completes, show success then load report
 watch(() => activeScan.value?.status, async (status) => {
   if (status !== 'complete') return
 

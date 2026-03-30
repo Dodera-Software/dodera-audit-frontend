@@ -17,7 +17,7 @@
       class="group cursor-pointer rounded-xl border border-(--ui-border) bg-(--ui-bg) p-4 transition-all duration-300 hover:shadow-md"
       :style="{ transitionDelay: `${index * 60}ms` }"
       :class="mounted ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'"
-      @click="navigateTo(`/projects/${projectId}/board?issue=${issue.id}`)"
+      @click="navigateTo(`/projects/${projectId}/pages/${pageId}/board?issue=${issue.id}`)"
     >
       <div class="flex items-start gap-3">
         <!-- ROI score circle (primary ranking signal) -->
@@ -56,7 +56,7 @@
       <UButton
         variant="soft"
         icon="i-lucide-kanban"
-        :to="`/projects/${projectId}/board`"
+        :to="`/projects/${projectId}/pages/${pageId}/board`"
       >
         {{ t('View full board') }}
       </UButton>
@@ -79,6 +79,7 @@ defineProps<{
     roi_score: number
   }>
   projectId: string
+  pageId: string
 }>()
 
 const { t } = useI18n()

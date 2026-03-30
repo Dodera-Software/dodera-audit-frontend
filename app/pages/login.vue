@@ -61,10 +61,17 @@ const { t } = useI18n()
 const route = useRoute()
 const { login } = useAuth()
 const apiError = useApiError()
+const toast = useToast()
 
 const schema = loginSchema(t)
 const form = reactive({ email: '', password: '' })
 const loading = ref(false)
+
+onMounted(() => {
+  if (route.query.verified === '1') {
+    toast.add({ title: t('Email verified!'), description: t('Your email has been verified. You can now sign in.'), color: 'success' })
+  }
+})
 
 async function handleLogin() {
   loading.value = true

@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{ projectId: string }>()
+const props = defineProps<{ pageId: string }>()
 const emit = defineEmits<{ started: [auditId: string] }>()
 
 const { t } = useI18n()
@@ -78,7 +78,7 @@ async function submit() {
   if (selected.value.size === 0) return
   submitting.value = true
   try {
-    const data = await $api<{ data: { id: string } }>(`/projects/${props.projectId}/audits/partial`, {
+    const data = await $api<{ data: { id: string } }>(`/pages/${props.pageId}/audits/partial`, {
       method: 'POST',
       body: { changed_categories: Array.from(selected.value) },
     })

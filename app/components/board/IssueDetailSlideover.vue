@@ -121,6 +121,7 @@
               <p class="text-xs text-(--ui-text-muted)">
                 {{ entry.created_at ? formatDateTime(entry.created_at) : '' }}
                 <span v-if="entry.trigger === 'audit'" class="ml-1 text-blue-500">{{ t('via audit') }}</span>
+                <span v-else-if="entry.actor_name" class="ml-1">{{ t('by {name}', { name: entry.actor_name }) }}</span>
                 <span v-else class="ml-1">{{ t('manual') }}</span>
               </p>
             </div>
@@ -223,7 +224,7 @@ interface IssueDetail {
   last_status_changed_at: string | null
   created_at: string
   occurrences: Array<{ audit_id: string, status_at_time: string, created_at: string | null }> | null
-  status_history: Array<{ from_status: string | null, to_status: string, trigger: string, audit_id: string | null, created_at: string | null }> | null
+  status_history: Array<{ from_status: string | null, to_status: string, trigger: string, audit_id: string | null, actor_name: string | null, created_at: string | null }> | null
 }
 
 const issue = ref<IssueDetail | null>(null)

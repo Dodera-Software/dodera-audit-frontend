@@ -89,6 +89,14 @@ export function usePlan() {
     window.location.href = data.portal_url
   }
 
+  async function purchaseSeats(quantity: number): Promise<void> {
+    const data = await $api<{ checkout_url: string }>('/billing/seats', {
+      method: 'POST',
+      body: { quantity },
+    })
+    window.location.href = data.checkout_url
+  }
+
   return {
     // Plan identity
     plan,
@@ -120,5 +128,6 @@ export function usePlan() {
     invalidateBillingStatus,
     redirectToCheckout,
     redirectToPortal,
+    purchaseSeats,
   }
 }

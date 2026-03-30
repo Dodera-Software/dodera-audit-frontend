@@ -17,7 +17,6 @@
       <template v-else>
         <!-- Hero stats -->
         <div class="mt-6 grid gap-3 sm:grid-cols-2">
-          <!-- Best score — hero card -->
           <UCard class="border-green-500/20 bg-green-500/5">
             <div class="flex items-center gap-2">
               <UIcon name="i-lucide-trophy" class="h-4 w-4 text-green-500" />
@@ -27,7 +26,6 @@
             <p class="mt-1 text-xs text-(--ui-text-dimmed)">{{ t('out of 100') }}</p>
           </UCard>
 
-          <!-- Improvement card -->
           <UCard>
             <div class="flex items-center gap-2">
               <UIcon
@@ -73,7 +71,7 @@
             v-for="audit in audits"
             :key="audit.id"
             class="group cursor-pointer transition-all hover:shadow-md"
-            @click="router.push(`/projects/${projectId}/audits/${audit.id}`)"
+            @click="router.push(`/projects/${projectId}/pages/${pageId}/audits/${audit.id}`)"
           >
             <div class="flex items-center gap-4">
               <div
@@ -119,6 +117,7 @@ const apiError = useApiError()
 const { formatDateTime } = useFormatters()
 
 const projectId = route.params.id as string
+const pageId = route.params.pageId as string
 
 interface AuditRow {
   id: string
@@ -173,7 +172,7 @@ async function loadAudits() {
         created_at: string
         completed_at: string | null
       }>
-    }>(`/projects/${projectId}/audits?per_page=100`)
+    }>(`/pages/${pageId}/audits?per_page=100`)
 
     audits.value = data.data.map((audit, index) => {
       const prev = data.data[index + 1]
@@ -195,13 +194,14 @@ async function loadAudits() {
 const chartAudits = computed(() =>
   audits.value
     .filter(a => a.status === 'complete' && a.overall_score != null)
+    .map(a => ({ ...a, overall_score: a.overall_score as number }))
     .reverse(),
 )
 
 function onChartClick(index: number) {
   const audit = chartAudits.value[index]
   if (audit?.id) {
-    router.push(`/projects/${projectId}/audits/${audit.id}`)
+    router.push(`/projects/${projectId}/pages/${pageId}/audits/${audit.id}`)
   }
 }
 </script>

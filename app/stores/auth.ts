@@ -8,6 +8,10 @@ export interface User {
   extra_seats: number
   email_verified_at: string | null
   created_at: string
+  team_role: 'owner' | 'member' | null
+  team_name: string | null
+  team_owner_name: string | null
+  active_workspace_user_id: string | null
 }
 
 export const useAuthStore = defineStore('auth', {

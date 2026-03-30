@@ -47,6 +47,7 @@ const apiError = useApiError()
 
 const toast = useToast()
 const projectId = route.params.id as string
+const pageId = route.params.pageId as string
 
 const { confirm } = useConfirm()
 
@@ -69,7 +70,7 @@ onMounted(async () => {
 
 async function loadIssues() {
   try {
-    const data = await $api<{ data: BoardIssue[] }>(`/projects/${projectId}/issues?per_page=500`)
+    const data = await $api<{ data: BoardIssue[] }>(`/pages/${pageId}/issues?per_page=500`)
     allIssues.value = data.data.map(issue => ({
       ...issue,
       is_regression: false,
@@ -88,7 +89,7 @@ async function updateIssueStatus(issueId: string, targetStatus: string) {
   if (index === -1) return
 
   const previousStatus = allIssues.value[index].current_status
-  allIssues.value[index] = { ...allIssues.value[index], current_status: targetStatus }
+  allIssues.value[index] = { ...allIssues.value[index], current_status: targetStatus } as BoardIssue
 
   try {
     await $api(`/issues/${issueId}`, {
@@ -97,7 +98,7 @@ async function updateIssueStatus(issueId: string, targetStatus: string) {
     })
   }
   catch (e) {
-    allIssues.value[index] = { ...allIssues.value[index], current_status: previousStatus }
+    allIssues.value[index] = { ...allIssues.value[index], current_status: previousStatus } as BoardIssue
     apiError.parse(e, t('Failed to update issue status.'))
     toast.add({ title: apiError.displayMessage.value, color: 'error', icon: 'i-lucide-alert-circle' })
   }
@@ -126,8 +127,8 @@ async function handleRunAudit() {
 
   triggeringAudit.value = true
   try {
-    const data = await $api<{ data: { id: string } }>(`/projects/${projectId}/audits`, { method: 'POST' })
-    navigateTo(`/projects/${projectId}?audit=${data.data.id}`)
+    const data = await $api<{ data: { id: string } }>(`/pages/${pageId}/audits`, { method: 'POST' })
+    navigateTo(`/projects/${projectId}/pages/${pageId}?audit=${data.data.id}`)
   }
   catch (e) {
     apiError.parse(e, t('Failed to start audit.'))
@@ -141,7 +142,7 @@ async function handleRunAudit() {
 function onStatusChangedFromPanel(issueId: string, newStatus: string) {
   const index = allIssues.value.findIndex(i => i.id === issueId)
   if (index === -1) return
-  allIssues.value[index] = { ...allIssues.value[index], current_status: newStatus }
+  allIssues.value[index] = { ...allIssues.value[index], current_status: newStatus } as BoardIssue
 }
 
 function openDetail(issue: BoardIssue) {

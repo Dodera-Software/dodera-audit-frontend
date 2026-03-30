@@ -13,7 +13,7 @@
         <div v-else class="flex h-12 items-center border-b border-(--ui-border) bg-(--ui-bg) px-4 lg:hidden">
           <UButton variant="ghost" size="xs" icon="i-lucide-menu" square @click="mobileOpen = true" />
           <NuxtLink to="/dashboard" class="ml-2">
-            <img src="~/assets/logo/pawbytech-logo.svg" alt="PawByTech" class="h-6 w-auto" />
+            <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-6 w-auto" />
           </NuxtLink>
         </div>
       </ClientOnly>
