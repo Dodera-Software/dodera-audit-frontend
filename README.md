@@ -1,6 +1,6 @@
-# GhostAudit Frontend
+# PawByTech Frontend
 
-Web application for GhostAudit — an AI-powered website audit platform. Dashboard for managing projects, viewing audit reports, tracking issues on a Kanban board, and monitoring site improvement over time.
+Web application for PawByTech — an AI-powered website audit platform. Dashboard for managing projects, viewing audit reports, tracking issues on a Kanban board, and monitoring site improvement over time.
 
 ## Stack
 

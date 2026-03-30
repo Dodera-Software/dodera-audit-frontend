@@ -24,14 +24,19 @@
             </div>
           </div>
         </div>
-        <UButton
-          icon="i-lucide-scan"
-          :loading="triggeringAudit"
-          :disabled="!!activeScan"
-          @click="triggerAudit"
-        >
-          {{ t('Audit this page') }}
-        </UButton>
+        <div class="flex items-center gap-2">
+          <span v-if="isFree" class="text-xs text-(--ui-text-dimmed)">
+            {{ auditsThisMonth }}/{{ auditLimit }} {{ t('audits') }}
+          </span>
+          <UButton
+            :icon="!canAudit ? 'i-lucide-lock' : 'i-lucide-scan'"
+            :loading="triggeringAudit"
+            :disabled="!!activeScan"
+            @click="!canAudit ? showUpgradeModal = true : triggerAudit()"
+          >
+            {{ !canAudit ? t('Limit reached') : t('Audit this page') }}
+          </UButton>
+        </div>
       </div>
 
       <!-- Scan progress — content area takeover -->
@@ -62,8 +67,13 @@
             <Vue3Lottie animation-link="/animations/animation-bot.json" :height="140" :width="140" :loop="true" :auto-play="true" class="mx-auto" />
             <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Page not audited yet') }}</h3>
             <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Run an audit to see how this page performs for clarity, trust, and conversion.') }}</p>
-            <UButton class="mt-6" icon="i-lucide-scan" :loading="triggeringAudit" @click="triggerAudit">
-              {{ t('Audit this page') }}
+            <UButton
+              class="mt-6"
+              :icon="!canAudit ? 'i-lucide-lock' : 'i-lucide-scan'"
+              :loading="triggeringAudit"
+              @click="!canAudit ? showUpgradeModal = true : triggerAudit()"
+            >
+              {{ !canAudit ? t('Limit reached — upgrade') : t('Audit this page') }}
             </UButton>
           </UCard>
         </div>
@@ -230,6 +240,11 @@
         </div>
       </template>
     </div>
+
+    <UpgradeModal
+      v-model:open="showUpgradeModal"
+      :reason="t('You\'ve used your monthly audit. Upgrade for more.')"
+    />
   </ClientOnly>
 </template>
 
@@ -237,6 +252,7 @@
 import { Vue3Lottie } from 'vue3-lottie'
 import { scoreColor } from '~/constants/audit'
 import ScanProgress from '~/components/audit/ScanProgress.vue'
+import UpgradeModal from '~/components/billing/UpgradeModal.vue'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -248,6 +264,8 @@ const { formatRelativeDate } = useFormatters()
 
 const projectId = route.params.id as string
 const scanStore = useScanProgressStore()
+const { isFree, canAudit, auditsThisMonth, auditLimit, fetchBillingStatus } = usePlan()
+const showUpgradeModal = ref(false)
 
 interface ProjectDetail {
   id: string
@@ -327,7 +345,7 @@ const momentumColor = computed(() => MOMENTUM_CONFIG[brain.value?.momentum ?? ''
 const momentumLabel = computed(() => MOMENTUM_CONFIG[brain.value?.momentum ?? '']?.label() ?? brain.value?.momentum)
 
 onMounted(async () => {
-  await loadProject()
+  await Promise.all([loadProject(), fetchBillingStatus()])
 
   // If navigated here with ?audit= param (from kanban re-audit), start tracking
   const auditParam = route.query.audit as string | undefined

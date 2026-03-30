@@ -68,7 +68,7 @@
               :scroll="true"
               :scroll-sensitivity="100"
               :scroll-speed="15"
-              class="flex-1 space-y-2"
+              class="space-y-2"
               :data-status="col.status"
               @start="startEdgeScroll"
               @end="onDragEnd"
@@ -84,17 +84,51 @@
                 />
               </div>
             </VueDraggable>
+
+            <!-- Locked issues (free plan) -->
+            <div v-if="getColumnLockedIssues(col.status).length" class="mt-2 space-y-2">
+              <div
+                v-for="issue in getColumnLockedIssues(col.status)"
+                :key="issue.id"
+                class="relative cursor-pointer rounded-lg"
+                @click="showUpgradeModal = true"
+              >
+                <div class="pointer-events-none blur-sm">
+                  <IssueCard :issue="issue" />
+                </div>
+                <div class="absolute inset-0 flex items-center justify-center gap-1.5 rounded-lg bg-(--ui-bg)/60 backdrop-blur-[2px]">
+                  <UIcon name="i-lucide-lock" class="h-3.5 w-3.5 text-(--ui-primary)" />
+                  <span class="text-xs font-semibold text-(--ui-primary)">{{ t('Upgrade to unlock') }}</span>
+                </div>
+              </div>
+
+              <!-- Upgrade CTA at bottom of first column with locked items -->
+              <button
+                v-if="col.status === 'to_fix' || (col.status !== 'to_fix' && getColumnLockedIssues(col.status).length > 0)"
+                class="mt-1 w-full rounded-lg border border-dashed border-(--ui-primary)/30 py-2 text-center text-xs font-medium text-(--ui-primary) transition-colors hover:border-(--ui-primary)/60 hover:bg-(--ui-primary)/5"
+                @click="showUpgradeModal = true"
+              >
+                <UIcon name="i-lucide-zap" class="mr-1 inline h-3 w-3" />
+                {{ getColumnLockedIssues(col.status).length }} {{ t('more locked') }} · {{ t('Upgrade') }}
+              </button>
+            </div>
           </template>
         </div>
       </div>
     </div>
   </div>
+
+  <UpgradeModal
+    v-model:open="showUpgradeModal"
+    :reason="t('Upgrade to see all your issues and unlock AI fix suggestions.')"
+  />
 </template>
 
 <script setup lang="ts">
 import { VueDraggable } from 'vue-draggable-plus'
 import IssueCard from '~/components/board/IssueCard.vue'
 import type { BoardIssue } from '~/components/board/IssueCard.vue'
+import UpgradeModal from '~/components/billing/UpgradeModal.vue'
 
 const props = defineProps<{
   issues: BoardIssue[]
@@ -105,6 +139,21 @@ const props = defineProps<{
 const emit = defineEmits<{
   issueClick: [issue: BoardIssue]
 }>()
+
+const { isFree, FREE_ISSUE_LIMIT } = usePlan()
+const showUpgradeModal = ref(false)
+
+// Top N issue IDs by ROI score — always unlocked for free users
+const unlockedIssueIds = computed<Set<string> | null>(() => {
+  if (!isFree.value) return null
+  const sorted = [...props.issues].sort((a, b) => b.roi_score - a.roi_score)
+  return new Set(sorted.slice(0, FREE_ISSUE_LIMIT).map(i => i.id))
+})
+
+function isLocked(issue: BoardIssue): boolean {
+  if (!unlockedIssueIds.value) return false
+  return !unlockedIssueIds.value.has(issue.id)
+}
 
 const { t } = useI18n()
 
@@ -230,10 +279,15 @@ function getColumnIssues(status: string): BoardIssue[] {
 const columnModels = computed(() => {
   const models: Record<string, BoardIssue[]> = {}
   for (const col of COLUMNS) {
-    models[col.status] = getColumnIssues(col.status)
+    // Only unlocked issues go into the draggable model
+    models[col.status] = getColumnIssues(col.status).filter(i => !isLocked(i))
   }
   return models
 })
+
+function getColumnLockedIssues(status: string): BoardIssue[] {
+  return getColumnIssues(status).filter(i => isLocked(i))
+}
 
 async function onDragEnd(event: any) {
   stopEdgeScroll()

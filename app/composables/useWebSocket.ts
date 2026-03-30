@@ -16,7 +16,7 @@ export function useWebSocket() {
 
     disconnect()
 
-    const key = config.public.reverbKey || 'ghostaudit-key'
+    const key = config.public.reverbKey || 'pawbytech-key'
     const host = config.public.reverbHost || 'localhost'
     const port = Number(config.public.reverbPort) || 8080
 

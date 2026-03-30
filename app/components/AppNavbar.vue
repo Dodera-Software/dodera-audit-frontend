@@ -4,7 +4,7 @@
     <div class="flex items-center gap-2 lg:hidden">
       <UButton variant="ghost" size="xs" icon="i-lucide-menu" square @click="$emit('toggle-mobile')" />
       <NuxtLink to="/dashboard" class="font-display text-sm font-bold text-(--ui-text-highlighted)">
-        GhostAudit
+        PawByTech
       </NuxtLink>
     </div>
 

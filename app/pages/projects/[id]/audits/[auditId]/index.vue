@@ -2,7 +2,7 @@
   <ClientOnly>
     <!-- Scan in progress or just completed (before watcher sets showSuccess) -->
     <div v-if="activeScan && !showSuccess" class="absolute inset-0 flex items-center justify-center overflow-y-auto bg-(--ui-bg)">
-      <ScanProgress :scan="activeScan" @retry="() => {}" />
+      <ScanProgress :scan="activeScan" @retry="navigateTo(`/projects/${projectId}`)" />
     </div>
 
     <!-- Success celebration -->
@@ -126,13 +126,20 @@
         :impression="fiveSecondImpression"
       />
 
-      <AuditNarrative
+      <PlanGate
         v-if="audit.brain_update"
         class="mt-6"
-        :narrative="audit.brain_update?.progress_narrative ?? null"
-        :momentum="audit.brain_update?.momentum ?? null"
-        :is-first-audit="scoreHistory.length <= 1"
-      />
+        :locked="isFree"
+        :title="t('Project Brain narrative')"
+        :description="t('AI-generated progress story tracking your page\'s improvement over time.')"
+        @upgrade="showUpgradeModal = true"
+      >
+        <AuditNarrative
+          :narrative="audit.brain_update?.progress_narrative ?? null"
+          :momentum="audit.brain_update?.momentum ?? null"
+          :is-first-audit="scoreHistory.length <= 1"
+        />
+      </PlanGate>
 
       <!-- Top issues -->
       <div class="mt-12">
@@ -154,20 +161,35 @@
           <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-(--ui-bg-accented)">
             <UIcon name="i-lucide-users" class="h-5 w-5 text-(--ui-text-muted)" />
           </div>
-          <div>
+          <div class="flex-1">
             <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Persona verdicts') }}</h2>
             <p class="text-xs text-(--ui-text-dimmed)">{{ t('How different visitor types experience your page') }}</p>
           </div>
+          <UBadge v-if="isFree" color="warning" variant="subtle" size="xs" icon="i-lucide-lock">
+            {{ t('Pro feature') }}
+          </UBadge>
         </div>
-        <div class="grid gap-6 lg:grid-cols-3">
-          <PersonaCard
-            v-for="persona in personaOutputs"
-            :key="persona.persona"
-            :persona="persona"
-            :is-lowest-intent="persona.persona === lowestIntentPersona"
-          />
-        </div>
+        <PlanGate
+          :locked="isFree"
+          :title="t('Persona insights')"
+          :description="t('See how the Skeptic, Impulse Visitor, and Comparison Shopper experience your page.')"
+          @upgrade="showUpgradeModal = true"
+        >
+          <div class="grid gap-6 lg:grid-cols-3">
+            <PersonaCard
+              v-for="persona in personaOutputs"
+              :key="persona.persona"
+              :persona="persona"
+              :is-lowest-intent="persona.persona === lowestIntentPersona"
+            />
+          </div>
+        </PlanGate>
       </div>
+
+      <UpgradeModal
+        v-model:open="showUpgradeModal"
+        :reason="t('Upgrade to unlock persona verdicts, AI fix suggestions, and Project Brain insights.')"
+      />
     </div>
 
     <!-- Not found -->
@@ -196,6 +218,8 @@ import type { DeltaSummary } from '~/components/audit/AuditDeltaSummary.vue'
 import AuditVelocity from '~/components/audit/AuditVelocity.vue'
 import type { VelocityData } from '~/components/audit/AuditVelocity.vue'
 import QuickRescanModal from '~/components/audit/QuickRescanModal.vue'
+import PlanGate from '~/components/billing/PlanGate.vue'
+import UpgradeModal from '~/components/billing/UpgradeModal.vue'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -204,10 +228,12 @@ const route = useRoute()
 const { $api } = useApi()
 const apiError = useApiError()
 const { formatDateTime, formatMs } = useFormatters()
+const { isFree } = usePlan()
 
 const projectId = route.params.id as string
 const auditId = route.params.auditId as string
 const scanStore = useScanProgressStore()
+const showUpgradeModal = ref(false)
 
 interface AuditWarning {
   type: string

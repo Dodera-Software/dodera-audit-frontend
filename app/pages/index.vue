@@ -4,7 +4,7 @@
     <header class="sticky top-0 z-50 border-b border-(--ui-border) bg-(--ui-bg)/80 backdrop-blur-lg">
       <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <NuxtLink to="/" class="font-display text-xl font-bold text-(--ui-text-highlighted)">
-          GhostAudit
+          PawByTech
         </NuxtLink>
         <nav class="hidden items-center gap-6 md:flex">
           <a href="#how-it-works" class="text-sm text-(--ui-text-muted) transition hover:text-(--ui-text-highlighted)">
@@ -58,7 +58,7 @@
               <div class="h-3 w-3 rounded-full bg-red-400" />
               <div class="h-3 w-3 rounded-full bg-yellow-400" />
               <div class="h-3 w-3 rounded-full bg-green-400" />
-              <span class="ml-2 font-mono text-xs text-(--ui-text-dimmed)">ghostaudit.com/report</span>
+              <span class="ml-2 font-mono text-xs text-(--ui-text-dimmed)">pawbytech.com/report</span>
             </div>
 
             <!-- Mock score -->
@@ -141,7 +141,7 @@
             {{ t('Everything you need to optimize') }}
           </h2>
           <p class="mx-auto mt-4 max-w-2xl text-(--ui-text-muted)">
-            {{ t('GhostAudit goes beyond basic audits. AI agents simulate real visitors and find what analytics miss.') }}
+            {{ t('PawByTech goes beyond basic audits. AI agents simulate real visitors and find what analytics miss.') }}
           </p>
         </div>
 
@@ -186,7 +186,7 @@
     <footer class="border-t border-(--ui-border)">
       <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-8">
         <div class="flex items-center gap-2">
-          <span class="font-display text-sm font-semibold text-(--ui-text-highlighted)">GhostAudit</span>
+          <span class="font-display text-sm font-semibold text-(--ui-text-highlighted)">PawByTech</span>
           <span class="text-sm text-(--ui-text-dimmed)">{{ t('by') }}</span>
           <a
             href="https://doderasoft.com"
@@ -267,7 +267,7 @@ const features = computed(() => [
   {
     icon: 'i-lucide-repeat',
     title: t('Re-audit & verify'),
-    description: t('Fixed an issue? Run another audit. GhostAudit automatically verifies fixes and detects regressions.'),
+    description: t('Fixed an issue? Run another audit. PawByTech automatically verifies fixes and detects regressions.'),
   },
 ])
 </script>

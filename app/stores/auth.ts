@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 
-interface User {
+export interface User {
   id: string
   name: string
   email: string
-  plan: string
+  plan: 'free' | 'pro' | 'max'
+  extra_seats: number
   email_verified_at: string | null
   created_at: string
 }

@@ -13,7 +13,7 @@
         <div v-else class="flex h-12 items-center border-b border-(--ui-border) bg-(--ui-bg) px-4 lg:hidden">
           <UButton variant="ghost" size="xs" icon="i-lucide-menu" square @click="mobileOpen = true" />
           <NuxtLink to="/dashboard" class="ml-2 font-display text-sm font-bold text-(--ui-text-highlighted)">
-            GhostAudit
+            PawByTech
           </NuxtLink>
         </div>
       </ClientOnly>

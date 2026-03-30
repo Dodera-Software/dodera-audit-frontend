@@ -9,7 +9,7 @@
         <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-(--ui-primary) text-xs font-bold text-white">
           G
         </div>
-        <span class="font-display text-base font-bold text-(--ui-text-highlighted)">GhostAudit</span>
+        <span class="font-display text-base font-bold text-(--ui-text-highlighted)">PawByTech</span>
       </NuxtLink>
     </div>
 
@@ -54,6 +54,21 @@
         {{ item.label }}
       </UButton>
     </nav>
+
+    <!-- Upgrade CTA for free users -->
+    <div v-if="isFree" class="px-3 pb-2">
+      <NuxtLink
+        to="/pricing"
+        class="flex items-center gap-2.5 rounded-xl border border-(--ui-primary)/25 bg-(--ui-primary)/8 px-3 py-2.5 transition-colors hover:bg-(--ui-primary)/15"
+        @click="$emit('navigate')"
+      >
+        <UIcon name="i-lucide-zap" class="h-4 w-4 shrink-0 text-(--ui-primary)" />
+        <div class="min-w-0 flex-1">
+          <p class="truncate text-xs font-semibold text-(--ui-primary)">{{ t('Upgrade plan') }}</p>
+          <p class="truncate text-[10px] text-(--ui-text-dimmed)">{{ t('Unlock full access') }}</p>
+        </div>
+      </NuxtLink>
+    </div>
 
     <!-- User section -->
     <div class="border-t border-(--ui-border-accented) p-3">
@@ -146,6 +161,7 @@ const { t } = useI18n()
 const route = useRoute()
 const colorMode = useColorMode()
 const authStore = useAuthStore()
+const { isFree } = usePlan()
 const { $api } = useApi()
 
 const user = computed(() => authStore.user)
@@ -200,6 +216,7 @@ const activeNavItems = computed(() => projectId.value ? projectNavItems.value : 
 
 const menuItems = computed(() => [
   { to: '/account', icon: 'i-lucide-user', label: t('Profile') },
+  { to: '/account/billing', icon: 'i-lucide-credit-card', label: t('Billing & Plan') },
   { to: '/account/settings', icon: 'i-lucide-settings', label: t('Settings') },
 ])
 

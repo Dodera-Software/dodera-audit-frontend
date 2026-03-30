@@ -3,7 +3,7 @@
     <div class="w-full max-w-md px-4">
       <div class="mb-8 text-center">
         <h1 class="font-display text-3xl font-bold text-(--ui-text-highlighted)">
-          GhostAudit
+          PawByTech
         </h1>
       </div>
       <UCard>

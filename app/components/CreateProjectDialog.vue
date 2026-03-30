@@ -21,7 +21,7 @@
               placeholder="https://example.com"
               class="w-full"
             />
-            <p class="mt-1 text-xs text-(--ui-text-dimmed)">{{ t('GhostAudit analyzes one page at a time — not your entire website.') }}</p>
+            <p class="mt-1 text-xs text-(--ui-text-dimmed)">{{ t('PawByTech analyzes one page at a time — not your entire website.') }}</p>
           </UFormField>
 
           <UFormField :label="t('Project name')" name="name">

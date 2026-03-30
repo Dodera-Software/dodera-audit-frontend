@@ -1,4 +1,4 @@
-# CLAUDE.md — GhostAudit Frontend
+# CLAUDE.md — PawByTech Frontend
 
 Conventions and rules for all development on this project.
 Read this before writing any code. These rules are non-negotiable.
@@ -59,7 +59,7 @@ assets/
 components/
   ui/                   — design system primitives (Button, Badge, Card,
   |                       Input, Modal, Skeleton, etc.)
-  |                       These components know nothing about GhostAudit
+  |                       These components know nothing about PawByTech
   |                       domain logic. They are generic.
   audit/                — audit-specific components (PersonaCard, 
   |                       ScoreDashboard, AnnotatedScreenshot, etc.)
@@ -274,7 +274,7 @@ The page just decides what top-level component to show.
 ## UI components (components/ui/)
 
 These components are design-system primitives. They know nothing about 
-GhostAudit domain concepts. They are reusable across any project.
+PawByTech domain concepts. They are reusable across any project.
 
 Rules for UI components:
 - All visual variation is controlled by props
@@ -297,7 +297,7 @@ Examples of UI components:
 
 ## Domain components (components/audit/, components/board/)
 
-These know about GhostAudit types. They receive typed props matching 
+These know about PawByTech types. They receive typed props matching 
 your interfaces in types/index.ts.
 ```typescript
 // components/audit/PersonaCard.vue

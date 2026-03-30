@@ -16,7 +16,7 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-medium text-(--ui-text-highlighted)">{{ t('Theme') }}</p>
-              <p class="text-xs text-(--ui-text-muted)">{{ t('Choose how GhostAudit looks to you.') }}</p>
+              <p class="text-xs text-(--ui-text-muted)">{{ t('Choose how PawByTech looks to you.') }}</p>
             </div>
             <div class="flex gap-1">
               <UButton
