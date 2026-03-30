@@ -56,8 +56,8 @@
     <!-- Full narrative modal -->
     <UModal v-model:open="showModal">
       <template #content>
-        <div class="p-6">
-          <div class="mb-4 flex items-center gap-3">
+        <div class="flex max-h-[85vh] flex-col">
+          <div class="flex shrink-0 items-center gap-3 border-b border-(--ui-border) px-6 py-4">
             <div
               class="flex h-8 w-8 items-center justify-center rounded-full bg-(--ui-bg-elevated)"
               :class="meta.color"
@@ -66,8 +66,10 @@
             </div>
             <h3 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ personaName }}</h3>
           </div>
-          <p class="whitespace-pre-line text-sm leading-relaxed text-(--ui-text)">{{ persona.narrative }}</p>
-          <div class="mt-6 flex justify-end">
+          <div class="overflow-y-auto px-6 py-5">
+            <p class="whitespace-pre-line text-sm leading-relaxed text-(--ui-text)">{{ persona.narrative }}</p>
+          </div>
+          <div class="flex shrink-0 justify-end border-t border-(--ui-border) px-6 py-4">
             <UButton variant="ghost" @click="showModal = false">{{ t('Close') }}</UButton>
           </div>
         </div>
