@@ -35,6 +35,7 @@ export default defineNuxtConfig({
       reverbKey: '',
       reverbHost: '',
       reverbPort: 0,
+      reverbScheme: 'ws',
     },
   },
 

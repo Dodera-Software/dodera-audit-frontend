@@ -19,15 +19,17 @@ export function useWebSocket() {
     const key = config.public.reverbKey || 'pawbytech-key'
     const host = config.public.reverbHost || 'localhost'
     const port = Number(config.public.reverbPort) || 8080
+    const scheme = config.public.reverbScheme || 'ws'
+    const tls = scheme === 'wss'
 
     try {
       pusherInstance = new Pusher(key as string, {
         cluster: 'mt1',
         wsHost: host as string,
-        wsPort: port,
-        wssPort: port,
-        forceTLS: false,
-        enabledTransports: ['ws'],
+        wsPort: tls ? undefined : port,
+        wssPort: tls ? port : undefined,
+        forceTLS: tls,
+        enabledTransports: [tls ? 'wss' : 'ws'],
         disableStats: true,
       })
 
