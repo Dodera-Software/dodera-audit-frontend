@@ -25,6 +25,8 @@ export function useWebSocket() {
 
     console.log('[WS] Connecting to', { key, host, port, scheme, tls })
 
+    Pusher.logToConsole = true
+
     try {
       pusherInstance = new Pusher(key as string, {
         cluster: 'mt1',
