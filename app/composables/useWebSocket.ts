@@ -31,10 +31,10 @@ export function useWebSocket() {
       pusherInstance = new Pusher(key as string, {
         cluster: 'mt1',
         wsHost: host as string,
-        wsPort: tls ? undefined : port,
-        wssPort: tls ? port : undefined,
+        wsPort: port,
+        wssPort: port,
         forceTLS: tls,
-        enabledTransports: [tls ? 'wss' : 'ws'],
+        enabledTransports: ['ws', 'wss'],
         disableStats: true,
       })
 
