@@ -4,6 +4,14 @@
       <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
     </div>
 
+    <!-- Error state -->
+    <div v-else-if="!project && apiError.hasErrors.value" class="flex flex-col items-center justify-center py-16 text-center">
+      <UIcon name="i-lucide-alert-circle" class="h-10 w-10 text-(--ui-text-dimmed)" />
+      <h2 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Could not load project') }}</h2>
+      <p class="mt-1 text-sm text-(--ui-text-muted)">{{ apiError.displayMessage.value }}</p>
+      <UButton class="mt-4" variant="outline" size="sm" to="/projects">{{ t('Back to projects') }}</UButton>
+    </div>
+
     <div v-else-if="project">
       <!-- Header -->
       <div class="flex items-start justify-between gap-4">

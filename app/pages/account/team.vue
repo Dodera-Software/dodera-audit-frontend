@@ -456,10 +456,15 @@ async function handleBuySeats() {
   buyingSeats.value = true
   try {
     await purchaseSeats(seatsToBuy.value)
+    toast.add({ title: t('Seats updated successfully.'), color: 'success' })
+    await fetchBillingStatus()
+    await loadTeamState()
   }
   catch (e: unknown) {
     const err = e as { data?: { message?: string } }
-    toast.add({ title: err?.data?.message ?? t('Failed to start seat purchase.'), color: 'error' })
+    toast.add({ title: err?.data?.message ?? t('Failed to purchase seats.'), color: 'error' })
+  }
+  finally {
     buyingSeats.value = false
   }
 }

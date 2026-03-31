@@ -11,6 +11,9 @@ export interface BillingStatus {
   subscription_ends_at: string | null
   on_grace_period: boolean
   has_stripe_account: boolean
+  has_own_api_key: boolean
+  anthropic_model: string | null
+  unlimited_audits: boolean
 }
 
 export interface PlanInfo {
@@ -53,8 +56,9 @@ export function usePlan() {
   // Limits derived from billing status (falls back to plan defaults if not loaded)
   const auditsThisMonth = computed(() => billingStatus.value?.audits_this_month ?? 0)
   const auditLimit = computed(() => billingStatus.value?.audit_limit ?? (isFree.value ? 1 : isPro.value ? 5 : 50))
-  const canAudit = computed(() => auditsThisMonth.value < auditLimit.value)
-  const auditUsagePercent = computed(() => Math.min(100, Math.round((auditsThisMonth.value / auditLimit.value) * 100)))
+  const unlimitedAudits = computed(() => billingStatus.value?.unlimited_audits ?? false)
+  const canAudit = computed(() => unlimitedAudits.value || auditsThisMonth.value < auditLimit.value)
+  const auditUsagePercent = computed(() => unlimitedAudits.value ? 0 : Math.min(100, Math.round((auditsThisMonth.value / auditLimit.value) * 100)))
 
   async function fetchBillingStatus(): Promise<void> {
     if (billingFetched.value || billingLoading.value || !user.value) return
@@ -90,11 +94,11 @@ export function usePlan() {
   }
 
   async function purchaseSeats(quantity: number): Promise<void> {
-    const data = await $api<{ checkout_url: string }>('/billing/seats', {
+    await $api<{ message: string }>('/billing/seats', {
       method: 'POST',
       body: { quantity },
     })
-    window.location.href = data.checkout_url
+    invalidateBillingStatus()
   }
 
   return {
@@ -113,6 +117,7 @@ export function usePlan() {
     // Usage
     auditsThisMonth,
     auditLimit,
+    unlimitedAudits,
     canAudit,
     auditUsagePercent,
 

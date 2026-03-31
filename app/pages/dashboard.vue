@@ -252,13 +252,18 @@ function scoreCircleClass(score: number): string {
   return 'border-red-500 text-red-500'
 }
 
+const planLabel = computed(() => {
+  const p = authStore.user?.plan ?? stats.value?.plan ?? 'free'
+  return p.charAt(0).toUpperCase() + p.slice(1)
+})
+
 const statCards = computed(() => {
   const s = stats.value
   return [
     { label: t('Projects'), value: s?.projects_count ?? 0, icon: 'i-lucide-folder' },
     { label: t('Pages'), value: s?.pages_count ?? 0, icon: 'i-lucide-file-text' },
     { label: t('Audits this month'), value: s?.audits_this_month ?? 0, icon: 'i-lucide-scan' },
-    { label: t('Plan'), value: (s?.plan ?? 'free').charAt(0).toUpperCase() + (s?.plan ?? 'free').slice(1), icon: 'i-lucide-crown' },
+    { label: t('Plan'), value: planLabel.value, icon: 'i-lucide-crown' },
   ]
 })
 

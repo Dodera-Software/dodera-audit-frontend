@@ -71,13 +71,18 @@
           <!-- Audits -->
           <div>
             <div class="mb-1.5 flex items-center justify-between text-sm">
-              <span class="text-(--ui-text-muted)">{{ t('Audits') }}</span>
+              <span class="flex items-center gap-1.5 text-(--ui-text-muted)">
+                {{ t('Audits') }}
+                <UBadge v-if="status.has_own_api_key" color="success" variant="subtle" size="xs">
+                  {{ t('Own API key') }}
+                </UBadge>
+              </span>
               <span class="font-semibold text-(--ui-text-highlighted)">
-                {{ status.audits_this_month }} / {{ status.audit_limit === 999 ? '∞' : status.audit_limit }}
+                {{ status.audits_this_month }} / {{ status.unlimited_audits ? '∞' : status.audit_limit }}
               </span>
             </div>
             <UProgress
-              v-if="status.audit_limit !== 999"
+              v-if="!status.unlimited_audits"
               :model-value="Math.min(100, Math.round((status.audits_this_month / status.audit_limit) * 100))"
               :max="100"
               :color="auditUsageColor"

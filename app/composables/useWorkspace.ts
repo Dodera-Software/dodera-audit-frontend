@@ -7,7 +7,6 @@ export interface Workspace {
   type: 'personal' | 'team'
   role: 'owner' | 'member'
   owner_name?: string
-  team_name?: string
   is_active: boolean
 }
 
@@ -101,7 +100,7 @@ export function useWorkspace() {
     try {
       await $api('/team', { method: 'DELETE' })
       workspaces.value = workspaces.value.map(w =>
-        w.type === 'personal' ? { ...w, team_name: undefined } : w,
+        w.type === 'personal' ? { ...w, name: w.name } : w,
       )
       const userData = await $api<{ data: typeof authStore.user }>('/auth/me')
       if (userData.data) authStore.setUser(userData.data)
