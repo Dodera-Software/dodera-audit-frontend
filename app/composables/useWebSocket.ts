@@ -12,7 +12,6 @@ export function useWebSocket() {
 
   function connect() {
     const userId = authStore.user?.id
-    console.log('[WS] connect() called, userId:', userId, 'connectedUserId:', connectedUserId)
     if (!userId || connectedUserId === userId) return
 
     disconnect()
@@ -22,10 +21,6 @@ export function useWebSocket() {
     const port = Number(config.public.reverbPort) || 8080
     const scheme = config.public.reverbScheme || 'ws'
     const tls = scheme === 'wss'
-
-    console.log('[WS] Connecting to', { key, host, port, scheme, tls })
-
-    Pusher.logToConsole = true
 
     try {
       pusherInstance = new Pusher(key as string, {
@@ -38,21 +33,13 @@ export function useWebSocket() {
         disableStats: true,
       })
 
-      pusherInstance.connection.bind('state_change', (states: { current: string, previous: string }) => {
-        console.log('[WS] State change:', states.previous, '->', states.current)
-      })
-      pusherInstance.connection.bind('error', (err: unknown) => {
-        console.error('[WS] Connection error:', err)
-      })
-
       userChannel = pusherInstance.subscribe(`user.${userId}`)
       connectedUserId = userId
-      console.log('[WS] Subscribed to user.' + userId)
 
       bindScanEvents(userChannel)
     }
-    catch (e) {
-      console.error('[WS] Failed to connect:', e)
+    catch {
+      // WebSocket unavailable
     }
   }
 
