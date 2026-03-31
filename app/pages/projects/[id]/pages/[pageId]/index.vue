@@ -146,30 +146,38 @@
             </div>
 
             <!-- Brain -->
-            <UCard v-if="brain">
-              <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-brain" class="h-4 w-4 text-purple-500" />
-                <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Page Brain') }}</h3>
-                <UBadge v-if="brain.momentum" :color="momentumColor" variant="subtle" size="xs">
-                  {{ momentumLabel }}
-                </UBadge>
-              </div>
+            <PlanGate
+              v-if="brain"
+              :locked="isFree"
+              :title="t('Page Brain narrative')"
+              :description="t('AI-generated progress story tracking your page\'s improvement over time.')"
+              @upgrade="showUpgradeModal = true"
+            >
+              <UCard>
+                <div class="flex items-center gap-2">
+                  <UIcon name="i-lucide-brain" class="h-4 w-4 text-purple-500" />
+                  <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Page Brain') }}</h3>
+                  <UBadge v-if="brain.momentum" :color="momentumColor" variant="subtle" size="xs">
+                    {{ momentumLabel }}
+                  </UBadge>
+                </div>
 
-              <p v-if="brain.progress_narrative" class="mt-3 whitespace-pre-line text-sm leading-relaxed text-(--ui-text-muted)">
-                {{ brain.progress_narrative }}
-              </p>
+                <p v-if="brain.progress_narrative" class="mt-3 whitespace-pre-line text-sm leading-relaxed text-(--ui-text-muted)">
+                  {{ brain.progress_narrative }}
+                </p>
 
-              <div v-if="brain.regression_alerts?.length" class="mt-3 flex flex-wrap gap-2">
-                <UBadge v-for="(alert, i) in brain.regression_alerts" :key="i" color="error" variant="subtle" size="xs">
-                  <UIcon name="i-lucide-trending-down" class="mr-1 h-3 w-3" />
-                  {{ alert.issue_title }}
-                </UBadge>
-              </div>
+                <div v-if="brain.regression_alerts?.length" class="mt-3 flex flex-wrap gap-2">
+                  <UBadge v-for="(alert, i) in brain.regression_alerts" :key="i" color="error" variant="subtle" size="xs">
+                    <UIcon name="i-lucide-trending-down" class="mr-1 h-3 w-3" />
+                    {{ alert.issue_title }}
+                  </UBadge>
+                </div>
 
-              <p v-if="!brain.progress_narrative" class="mt-3 text-sm text-(--ui-text-dimmed)">
-                {{ t('Run more audits to see your progress story. The Brain tracks patterns across audits and builds a narrative of your page\'s improvement journey.') }}
-              </p>
-            </UCard>
+                <p v-if="!brain.progress_narrative" class="mt-3 text-sm text-(--ui-text-dimmed)">
+                  {{ t('Run more audits to see your progress story. The Brain tracks patterns across audits and builds a narrative of your page\'s improvement journey.') }}
+                </p>
+              </UCard>
+            </PlanGate>
           </div>
 
           <!-- Right (1/3) -->
@@ -250,6 +258,7 @@
 import { Vue3Lottie } from 'vue3-lottie'
 import { scoreColor } from '~/constants/audit'
 import ScanProgress from '~/components/audit/ScanProgress.vue'
+import PlanGate from '~/components/billing/PlanGate.vue'
 import UpgradeModal from '~/components/billing/UpgradeModal.vue'
 
 definePageMeta({ middleware: 'auth' })
@@ -263,7 +272,7 @@ const { formatRelativeDate } = useFormatters()
 const projectId = route.params.id as string
 const pageId = route.params.pageId as string
 const scanStore = useScanProgressStore()
-const { isFree, canAudit, auditsThisMonth, auditLimit, fetchBillingStatus } = usePlan()
+const { isFree, canAudit, auditsThisMonth, auditLimit, fetchBillingStatus, invalidateBillingStatus } = usePlan()
 const showUpgradeModal = ref(false)
 
 interface PageDetail {
@@ -372,6 +381,8 @@ async function triggerAudit() {
   try {
     const data = await $api<{ data: { id: string } }>(`/pages/${pageId}/audits`, { method: 'POST' })
     scanStore.startScan(data.data.id, pageId)
+    invalidateBillingStatus()
+    fetchBillingStatus()
   }
   catch (e) {
     apiError.parse(e, t('Failed to start audit.'))
@@ -387,7 +398,8 @@ watch(() => activeScan.value?.status, async (status) => {
   if (status !== 'complete') return
   const completedAuditId = activeScan.value?.auditId
   showSuccess.value = true
-  await loadPage()
+  invalidateBillingStatus()
+  await Promise.all([loadPage(), fetchBillingStatus()])
   setTimeout(() => {
     showSuccess.value = false
     if (completedAuditId) {

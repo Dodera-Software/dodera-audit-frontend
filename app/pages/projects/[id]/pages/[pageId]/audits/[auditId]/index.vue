@@ -106,8 +106,8 @@
         <AuditVelocity :velocity="velocity" />
       </div>
 
-      <!-- Delta summary: what changed vs previous audit -->
-      <div v-if="audit.delta_summary" class="mt-6">
+      <!-- Delta summary: what changed vs previous audit (hide on first audit) -->
+      <div v-if="audit.delta_summary && scoreHistory.length > 1" class="mt-6">
         <AuditDeltaSummary
           :summary="audit.delta_summary"
           :score-delta="delta?.overall ?? null"
