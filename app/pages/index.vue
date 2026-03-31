@@ -3,8 +3,9 @@
     <!-- Navbar -->
     <header class="sticky top-0 z-50 border-b border-(--ui-border) bg-(--ui-bg)/80 backdrop-blur-lg">
       <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <NuxtLink to="/" class="font-display text-xl font-bold text-(--ui-text-highlighted)">
-          PawByTech
+        <NuxtLink to="/" class="flex items-center gap-2.5">
+          <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-9 w-auto" />
+          <span class="text-xl font-bold text-(--ui-text-highlighted)">PawByTech</span>
         </NuxtLink>
         <nav class="hidden items-center gap-6 md:flex">
           <a href="#how-it-works" class="text-sm text-(--ui-text-muted) transition hover:text-(--ui-text-highlighted)">
@@ -30,7 +31,7 @@
       <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <!-- Left: Copy -->
         <div>
-          <h1 class="font-display text-4xl font-bold leading-tight text-(--ui-text-highlighted) sm:text-5xl lg:text-6xl">
+          <h1 class="text-4xl font-bold leading-tight text-(--ui-text-highlighted) sm:text-5xl lg:text-6xl">
             {{ t('Know what visitors') }}
             <span class="text-(--ui-primary)">{{ t('really think.') }}</span>
           </h1>
@@ -64,7 +65,7 @@
             <!-- Mock score -->
             <div class="text-center">
               <div class="inline-flex h-28 w-28 items-center justify-center rounded-full border-4 border-(--ui-primary) bg-(--ui-primary)/10">
-                <span class="font-display text-4xl font-bold text-(--ui-primary)">78</span>
+                <span class="text-4xl font-bold text-(--ui-primary)">78</span>
               </div>
               <p class="mt-2 text-sm font-medium text-(--ui-text-highlighted)">Overall Score</p>
               <p class="text-xs text-green-500">+12 vs previous</p>
@@ -74,7 +75,7 @@
             <div class="mt-6 grid grid-cols-5 gap-2">
               <div v-for="(item, i) in mockScores" :key="i" class="rounded-lg bg-(--ui-bg) p-2 text-center">
                 <p class="text-xs text-(--ui-text-dimmed)">{{ item.label }}</p>
-                <p class="font-display text-lg font-bold" :class="item.color">{{ item.score }}</p>
+                <p class="text-lg font-bold" :class="item.color">{{ item.score }}</p>
               </div>
             </div>
 
@@ -109,7 +110,7 @@
     <section id="how-it-works" class="border-t border-(--ui-border) bg-(--ui-bg-elevated)">
       <div class="mx-auto max-w-6xl px-6 py-24">
         <div class="text-center">
-          <h2 class="font-display text-3xl font-bold text-(--ui-text-highlighted) sm:text-4xl">
+          <h2 class="text-3xl font-bold text-(--ui-text-highlighted) sm:text-4xl">
             {{ t('How it works') }}
           </h2>
           <p class="mx-auto mt-4 max-w-2xl text-(--ui-text-muted)">
@@ -122,7 +123,7 @@
             <div class="flex h-10 w-10 items-center justify-center rounded-full bg-(--ui-primary) text-sm font-bold text-white">
               {{ i + 1 }}
             </div>
-            <h3 class="mt-4 font-display text-lg font-semibold text-(--ui-text-highlighted)">
+            <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">
               {{ step.title }}
             </h3>
             <p class="mt-2 text-sm leading-relaxed text-(--ui-text-muted)">
@@ -137,7 +138,7 @@
     <section id="features" class="border-t border-(--ui-border)">
       <div class="mx-auto max-w-6xl px-6 py-24">
         <div class="text-center">
-          <h2 class="font-display text-3xl font-bold text-(--ui-text-highlighted) sm:text-4xl">
+          <h2 class="text-3xl font-bold text-(--ui-text-highlighted) sm:text-4xl">
             {{ t('Everything you need to optimize') }}
           </h2>
           <p class="mx-auto mt-4 max-w-2xl text-(--ui-text-muted)">
@@ -154,7 +155,7 @@
             <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-(--ui-primary)/10">
               <UIcon :name="feature.icon" class="h-5 w-5 text-(--ui-primary)" />
             </div>
-            <h3 class="mt-4 font-display text-base font-semibold text-(--ui-text-highlighted)">
+            <h3 class="mt-4 text-base font-semibold text-(--ui-text-highlighted)">
               {{ feature.title }}
             </h3>
             <p class="mt-2 text-sm leading-relaxed text-(--ui-text-muted)">
@@ -168,7 +169,7 @@
     <!-- CTA -->
     <section class="border-t border-(--ui-border) bg-(--ui-bg-elevated)">
       <div class="mx-auto max-w-6xl px-6 py-24 text-center">
-        <h2 class="font-display text-3xl font-bold text-(--ui-text-highlighted) sm:text-4xl">
+        <h2 class="text-3xl font-bold text-(--ui-text-highlighted) sm:text-4xl">
           {{ t('Ready to see what visitors really think?') }}
         </h2>
         <p class="mx-auto mt-4 max-w-xl text-(--ui-text-muted)">
@@ -186,7 +187,8 @@
     <footer class="border-t border-(--ui-border)">
       <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-8">
         <div class="flex items-center gap-2">
-          <span class="font-display text-sm font-semibold text-(--ui-text-highlighted)">PawByTech</span>
+          <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-7 w-auto" />
+          <span class="text-sm font-semibold text-(--ui-text-highlighted)">PawByTech</span>
           <span class="text-sm text-(--ui-text-dimmed)">{{ t('by') }}</span>
           <a
             href="https://doderasoft.com"
