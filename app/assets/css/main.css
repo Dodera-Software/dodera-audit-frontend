@@ -1,10 +1,6 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
-@utility font-display {
-  font-family: 'Syne', sans-serif;
-}
-
 @utility font-mono {
   font-family: 'DM Mono', monospace;
 }
