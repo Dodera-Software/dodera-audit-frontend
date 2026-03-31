@@ -18,6 +18,18 @@
         </div>
       </ClientOnly>
 
+      <ClientOnly>
+        <div v-if="authStore.user && !authStore.isEmailVerified" class="flex items-center justify-between gap-3 border-b border-amber-200 bg-amber-50 px-4 py-2.5 dark:border-amber-900/50 dark:bg-amber-950/30">
+          <div class="flex min-w-0 items-center gap-2">
+            <UIcon name="i-lucide-mail-warning" class="h-4 w-4 shrink-0 text-amber-500" />
+            <p class="truncate text-sm text-amber-800 dark:text-amber-300">{{ t('Please verify your email address to unlock all features.') }}</p>
+          </div>
+          <UButton size="xs" color="warning" variant="soft" :loading="resendPending" @click="onResend">
+            {{ t('Resend email') }}
+          </UButton>
+        </div>
+      </ClientOnly>
+
       <main class="relative min-w-0 flex-1 overflow-y-auto p-5">
         <slot />
       </main>
@@ -46,10 +58,14 @@ const props = withDefaults(defineProps<{
   showNavbar: false,
 })
 
-const { logout } = useAuth()
+const { t } = useI18n()
+const { logout, resendVerification } = useAuth()
+const authStore = useAuthStore()
+const toast = useToast()
 
 const mobileOpen = ref(false)
 const loggingOut = ref(false)
+const resendPending = ref(false)
 
 async function handleLogout() {
   if (loggingOut.value) return
@@ -60,6 +76,21 @@ async function handleLogout() {
   }
   finally {
     loggingOut.value = false
+  }
+}
+
+async function onResend() {
+  if (resendPending.value) return
+  resendPending.value = true
+  try {
+    await resendVerification()
+    toast.add({ title: t('Verification email sent. Check your inbox.'), color: 'success' })
+  }
+  catch {
+    toast.add({ title: t('Failed to send verification email. Please try again.'), color: 'error' })
+  }
+  finally {
+    resendPending.value = false
   }
 }
 </script>
