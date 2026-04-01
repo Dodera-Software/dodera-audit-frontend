@@ -1,7 +1,7 @@
 <template>
   <ClientOnly>
     <!-- Scan in progress or just completed (before watcher sets showSuccess) -->
-    <div v-if="activeScan && !showSuccess" class="absolute inset-0 flex items-center justify-center overflow-y-auto bg-(--ui-bg)">
+    <div v-if="activeScan && !showSuccess" class="fixed inset-0 z-40 flex items-center justify-center overflow-y-auto bg-(--ui-bg)">
       <ScanProgress :scan="activeScan" @retry="navigateTo(`/projects/${projectId}/pages/${pageId}`)" />
     </div>
 
@@ -387,10 +387,14 @@ const WARNING_TITLES: Record<string, () => string> = {
   screenshot_error: () => t('Screenshot error'),
   agent_failed: () => t('Agent returned an error'),
   agent_error: () => t('Agent failed'),
+  scoring_degraded: () => t('Scores may be less accurate'),
+  low_grounding: () => t('Agent output retried for accuracy'),
+  low_grounding_final: () => t('Agent output may contain generic observations'),
   brain_failed: () => t('Brain synthesis incomplete'),
   brain_error: () => t('Brain synthesis failed'),
   annotations_error: () => t('Annotations unavailable'),
   context_truncated: () => t('Large page — partial analysis'),
+  failure: () => t('Audit failed'),
 }
 
 function warningTitle(type: string): string {

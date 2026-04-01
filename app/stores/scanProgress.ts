@@ -10,6 +10,7 @@ interface ActiveScan {
   stepStatuses: Record<string, ScanStepStatus>
   agentsCompleted: number
   agentsTotal: number
+  completedAgentNames: string[]
   error: string | null
 }
 
@@ -55,6 +56,7 @@ export const useScanProgressStore = defineStore('scanProgress', {
         stepStatuses: buildStepStatuses('validating'),
         agentsCompleted: 0,
         agentsTotal: ANALYSIS_AGENTS_TOTAL,
+        completedAgentNames: [],
         error: null,
       }
     },
@@ -65,13 +67,16 @@ export const useScanProgressStore = defineStore('scanProgress', {
       this.activeScan.stepStatuses = buildStepStatuses('validating')
     },
 
-    handleScanProgress(auditId: string, step: string, agentsCompleted?: number, agentsTotal?: number) {
+    handleScanProgress(auditId: string, step: string, agentsCompleted?: number, agentsTotal?: number, agentName?: string) {
       if (this.activeScan?.auditId !== auditId) return
       this.activeScan.currentStep = step
       this.activeScan.stepStatuses = buildStepStatuses(step)
       if (step === 'analyzing' && agentsCompleted != null && agentsTotal != null) {
         this.activeScan.agentsCompleted = agentsCompleted
         this.activeScan.agentsTotal = agentsTotal
+        if (agentName && !this.activeScan.completedAgentNames.includes(agentName)) {
+          this.activeScan.completedAgentNames.push(agentName)
+        }
       }
     },
 

@@ -66,8 +66,8 @@ export function useWebSocket() {
       scanStore.handleScanStarted(e.audit_id)
     })
 
-    channel.bind('ScanProgress', (e: { audit_id: string, step: string, agents_completed?: number, agents_total?: number }) => {
-      scanStore.handleScanProgress(e.audit_id, e.step, e.agents_completed, e.agents_total)
+    channel.bind('ScanProgress', (e: { audit_id: string, step: string, agents_completed?: number, agents_total?: number, agent_name?: string }) => {
+      scanStore.handleScanProgress(e.audit_id, e.step, e.agents_completed, e.agents_total, e.agent_name)
     })
 
     channel.bind('ScanComplete', (e: { audit_id: string }) => {

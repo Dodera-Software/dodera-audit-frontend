@@ -381,8 +381,9 @@ async function triggerAudit() {
   try {
     const data = await $api<{ data: { id: string } }>(`/pages/${pageId}/audits`, { method: 'POST' })
     scanStore.startScan(data.data.id, pageId)
+    // Immediately refresh billing status so the counter updates
     invalidateBillingStatus()
-    fetchBillingStatus()
+    await fetchBillingStatus()
   }
   catch (e) {
     apiError.parse(e, t('Failed to start audit.'))

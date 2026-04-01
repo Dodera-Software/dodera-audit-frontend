@@ -12,7 +12,7 @@ export interface BillingStatus {
   on_grace_period: boolean
   has_stripe_account: boolean
   has_own_api_key: boolean
-  anthropic_model: string | null
+  openai_model: string | null
   unlimited_audits: boolean
 }
 
@@ -35,6 +35,8 @@ export const FREE_ISSUE_LIMIT = 3
 const billingStatus = ref<BillingStatus | null>(null)
 const billingLoading = ref(false)
 const billingFetched = ref(false)
+// Snapshot of the last known auditsThisMonth so canAudit stays accurate during refresh
+const lastKnownAuditsThisMonth = ref<number | null>(null)
 
 export function usePlan() {
   const authStore = useAuthStore()
@@ -54,10 +56,14 @@ export function usePlan() {
   const canSeeBrainNarrative = computed(() => isPaid.value)
 
   // Limits derived from billing status (falls back to plan defaults if not loaded)
-  const auditsThisMonth = computed(() => billingStatus.value?.audits_this_month ?? 0)
+  const auditsThisMonth = computed(() => billingStatus.value?.audits_this_month ?? lastKnownAuditsThisMonth.value ?? 0)
   const auditLimit = computed(() => billingStatus.value?.audit_limit ?? (isFree.value ? 1 : isPro.value ? 5 : 50))
   const unlimitedAudits = computed(() => billingStatus.value?.unlimited_audits ?? false)
-  const canAudit = computed(() => unlimitedAudits.value || auditsThisMonth.value < auditLimit.value)
+  // Block audits while billing status is loading/unknown to prevent premature clicks
+  const canAudit = computed(() => {
+    if (billingLoading.value || (!billingFetched.value && lastKnownAuditsThisMonth.value === null)) return false
+    return unlimitedAudits.value || auditsThisMonth.value < auditLimit.value
+  })
   const auditUsagePercent = computed(() => unlimitedAudits.value ? 0 : Math.min(100, Math.round((auditsThisMonth.value / auditLimit.value) * 100)))
 
   async function fetchBillingStatus(): Promise<void> {
@@ -65,6 +71,7 @@ export function usePlan() {
     billingLoading.value = true
     try {
       billingStatus.value = await $api<BillingStatus>('/billing/status')
+      lastKnownAuditsThisMonth.value = billingStatus.value.audits_this_month
       billingFetched.value = true
     }
     catch {
@@ -76,6 +83,10 @@ export function usePlan() {
   }
 
   function invalidateBillingStatus(): void {
+    // Preserve last known count so canAudit doesn't briefly flip to true during refresh
+    if (billingStatus.value) {
+      lastKnownAuditsThisMonth.value = billingStatus.value.audits_this_month
+    }
     billingFetched.value = false
     billingStatus.value = null
   }
