@@ -24,7 +24,7 @@
       <h1 class="text-5xl font-black leading-[1.0] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-[88px]">
         {{ t('Your page is') }} <br class="hidden sm:block" />
         <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
-          {{ t('losing visitors.') }}
+          {{ t('not optimized.') }}
         </span><br />
         {{ t('We show you why.') }}
       </h1>
