@@ -286,14 +286,14 @@ const agentProgressPct = computed(() => {
 })
 
 // Synthesizing phase — rotating insights and agent highlights
-const synthInsights = [
+const synthInsights = computed(() => [
   t('Cross-referencing trust signals with conversion data'),
   t('Comparing persona reactions against technical findings'),
   t('Identifying patterns across all audit categories'),
   t('Calculating weighted scores from specialist and persona data'),
   t('Detecting recurring issues and improvement trends'),
   t('Building your personalized action plan'),
-]
+])
 const synthInsightIndex = ref(0)
 const synthHighlightIdx = ref(0)
 let synthInsightTimer: ReturnType<typeof setInterval> | null = null
@@ -304,7 +304,7 @@ watch(phase, (val) => {
     synthInsightIndex.value = 0
     synthHighlightIdx.value = 0
     synthInsightTimer = setInterval(() => {
-      synthInsightIndex.value = (synthInsightIndex.value + 1) % synthInsights.length
+      synthInsightIndex.value = (synthInsightIndex.value + 1) % synthInsights.value.length
     }, 3000)
     synthHighlightTimer = setInterval(() => {
       synthHighlightIdx.value = (synthHighlightIdx.value + 1) % ALL_AGENTS.value.length
