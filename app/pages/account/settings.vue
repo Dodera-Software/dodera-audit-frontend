@@ -71,7 +71,7 @@
         <!-- Locked state for non-Max users -->
         <div v-if="!isMax" class="space-y-2">
           <p class="text-sm text-(--ui-text-muted)">
-            {{ t('Connect your own Anthropic API key for unlimited audits. Available on the Max plan.') }}
+            {{ t('Connect your own OpenAI API key for unlimited audits. Available on the Max plan.') }}
           </p>
           <UButton size="sm" variant="outline" to="/pricing">{{ t('Upgrade to Max') }}</UButton>
         </div>
@@ -87,7 +87,7 @@
             <div>
               <p class="text-sm font-medium text-(--ui-text-highlighted)">{{ t('API key connected') }}</p>
               <p class="text-xs text-(--ui-text-muted)">
-                sk-ant-...{{ maskedKeySuffix }}
+                sk-...{{ maskedKeySuffix }}
               </p>
             </div>
             <UBadge color="success" variant="subtle" size="xs">{{ t('Active') }}</UBadge>
@@ -110,7 +110,7 @@
           <!-- Edit form (shown when updating) -->
           <div v-if="showEditForm" class="mt-4 space-y-3 border-t border-(--ui-border) pt-4">
             <UFormField :label="t('New API key')">
-              <UInput v-model="keyForm.api_key" type="password" placeholder="sk-ant-..." class="w-full" />
+              <UInput v-model="keyForm.api_key" type="password" placeholder="sk-..." class="w-full" />
             </UFormField>
             <UFormField :label="t('Model')">
               <USelect v-model="keyForm.model" :items="modelOptions" class="w-full" />
@@ -125,11 +125,11 @@
         <!-- No key set — show form -->
         <div v-else class="space-y-4">
           <p class="text-sm text-(--ui-text-muted)">
-            {{ t('Connect your own Anthropic API key to unlock unlimited audits and choose your preferred model.') }}
+            {{ t('Connect your own OpenAI API key to unlock unlimited audits and choose your preferred model.') }}
           </p>
 
           <UFormField :label="t('API key')">
-            <UInput v-model="keyForm.api_key" type="password" placeholder="sk-ant-..." class="w-full" />
+            <UInput v-model="keyForm.api_key" type="password" placeholder="sk-..." class="w-full" />
           </UFormField>
 
           <UFormField :label="t('Model')">
@@ -164,7 +164,7 @@ const router = useRouter()
 const colorMode = useColorMode()
 const toast = useToast()
 const { isMax } = usePlan()
-const { keyStatus, loading: keyLoading, saving: keySaving, fetchStatus, saveKey, removeKey } = useAnthropicKey()
+const { keyStatus, loading: keyLoading, saving: keySaving, fetchStatus, saveKey, removeKey } = useOpenAiKey()
 
 const themeModes = computed(() => [
   { value: 'light', icon: 'i-lucide-sun', label: t('Light') },

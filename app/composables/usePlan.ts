@@ -12,7 +12,7 @@ export interface BillingStatus {
   on_grace_period: boolean
   has_stripe_account: boolean
   has_own_api_key: boolean
-  anthropic_model: string | null
+  openai_model: string | null
   unlimited_audits: boolean
 }
 

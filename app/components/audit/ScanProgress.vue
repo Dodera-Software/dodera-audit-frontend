@@ -50,7 +50,7 @@
             <!-- Step pills -->
             <div class="mt-14 flex flex-wrap items-center justify-center gap-3">
               <div
-                v-for="step in preparingSteps"
+                v-for="step in PREPARING_STEPS"
                 :key="step"
                 class="flex items-center gap-2.5 rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-500"
                 :class="stepPillClass(step)"
@@ -64,69 +64,68 @@
           </div>
         </Transition>
 
-        <!-- PHASE: Analyzing (Agent Spotlight) -->
+        <!-- PHASE: Analyzing (Parallel Agent Grid) -->
         <Transition name="phase" mode="out-in">
-          <div v-if="phase === 'analyzing'" key="analyzing" class="flex w-full max-w-2xl flex-col items-center">
+          <div v-if="phase === 'analyzing'" key="analyzing" class="flex w-full max-w-3xl flex-col items-center">
 
-            <!-- Completed agent chips -->
-            <div class="mb-8 flex min-h-9 flex-wrap justify-center gap-2">
-              <TransitionGroup name="chip">
-                <span
-                  v-for="agent in completedAgents"
-                  :key="agent.key"
-                  class="flex items-center gap-1.5 rounded-full border border-green-500/30 bg-green-500/10 px-3 py-1.5 text-xs font-semibold text-green-500"
-                >
-                  <UIcon name="i-lucide-check" class="h-3 w-3" />
-                  {{ agent.shortName }}
-                </span>
-              </TransitionGroup>
-            </div>
+            <p class="text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
+              {{ t('Audit in progress') }}
+            </p>
+            <h1 class="mt-3 text-5xl font-bold tracking-tight text-(--ui-text-highlighted)">
+              {{ t('AI agents analyzing') }}
+            </h1>
+            <p class="mt-4 text-lg text-(--ui-text-muted)">
+              {{ t('All agents are running in parallel') }}
+            </p>
 
-            <!-- Spotlight card -->
-            <Transition name="agent" mode="out-in">
+            <!-- Agent grid — cards light up as each completes -->
+            <div class="mt-10 grid w-full grid-cols-5 gap-3">
               <div
-                v-if="currentAgent"
-                :key="scan.agentsCompleted"
-                class="w-full rounded-3xl border p-10 text-center"
-                :class="currentAgent.cardClass"
+                v-for="agent in ALL_AGENTS"
+                :key="agent.key"
+                class="flex flex-col items-center gap-3 rounded-2xl border p-4 transition-all duration-500"
+                :class="isAgentDone(agent.backendName)
+                  ? `${agent.cardClass} scale-[1.02]`
+                  : 'border-(--ui-border)/50 bg-(--ui-bg-elevated)/30'"
               >
-                <!-- Type badge -->
-                <span
-                  class="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em]"
-                  :class="currentAgent.badgeClass"
-                >
-                  <UIcon name="i-lucide-sparkles" class="h-3 w-3" />
-                  {{ currentAgent.type === 'persona' ? t('AI Persona') : t('AI Specialist') }}
-                </span>
-
-                <!-- Icon -->
+                <!-- Icon with status -->
                 <div
-                  class="mx-auto mt-8 flex h-28 w-28 items-center justify-center rounded-3xl ring-1 ring-inset"
-                  :class="currentAgent.iconBgClass"
+                  class="flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-500"
+                  :class="isAgentDone(agent.backendName)
+                    ? `${agent.iconBgClass}`
+                    : 'bg-(--ui-bg-accented)'"
                 >
-                  <UIcon :name="currentAgent.icon" class="h-14 w-14" :class="currentAgent.iconClass" />
+                  <UIcon
+                    v-if="isAgentDone(agent.backendName)"
+                    name="i-lucide-check"
+                    class="h-6 w-6 text-green-500"
+                  />
+                  <UIcon
+                    v-else
+                    :name="agent.icon"
+                    class="h-6 w-6 animate-pulse text-(--ui-text-dimmed)"
+                  />
                 </div>
 
                 <!-- Name -->
-                <h2 class="mt-7 text-[2.75rem] font-bold leading-tight tracking-tight text-(--ui-text-highlighted)">
-                  {{ currentAgent.name }}
-                </h2>
+                <span
+                  class="text-center text-xs font-semibold transition-colors duration-500"
+                  :class="isAgentDone(agent.backendName) ? 'text-(--ui-text-highlighted)' : 'text-(--ui-text-dimmed)'"
+                >
+                  {{ agent.shortName }}
+                </span>
 
-                <!-- Tagline -->
-                <p class="mx-auto mt-4 max-w-sm text-lg text-(--ui-text-muted)">
-                  {{ currentAgent.tagline }}
-                </p>
-
-                <!-- Pulsing indicator -->
-                <div class="mt-8 flex items-center justify-center gap-2 text-sm" :class="currentAgent.iconClass">
-                  <span class="relative flex h-2.5 w-2.5">
-                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" :class="currentAgent.pingClass" />
-                    <span class="relative inline-flex h-2.5 w-2.5 rounded-full" :class="currentAgent.dotClass" />
-                  </span>
-                  {{ t('Analyzing now...') }}
-                </div>
+                <!-- Status badge -->
+                <span
+                  class="rounded-full px-2 py-0.5 text-[10px] font-medium transition-all duration-300"
+                  :class="isAgentDone(agent.backendName)
+                    ? 'bg-green-500/10 text-green-500'
+                    : 'bg-(--ui-bg-accented) text-(--ui-text-dimmed)'"
+                >
+                  {{ isAgentDone(agent.backendName) ? t('Done') : t('Running') }}
+                </span>
               </div>
-            </Transition>
+            </div>
 
             <!-- Progress bar -->
             <div class="mt-8 w-full">
@@ -143,32 +142,46 @@
 
         <!-- PHASE: Synthesizing -->
         <Transition name="phase" mode="out-in">
-          <div v-if="phase === 'synthesizing'" key="synthesizing" class="flex flex-col items-center text-center">
-            <Vue3Lottie
-              animation-link="/animations/animation-bot.json"
-              :height="200"
-              :width="200"
-              :loop="true"
-              :auto-play="true"
-            />
-            <p class="mt-2 text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
-              {{ t('Almost there') }}
+          <div v-if="phase === 'synthesizing'" key="synthesizing" class="flex w-full max-w-2xl flex-col items-center text-center">
+
+            <!-- Brain icon with orbiting dots -->
+            <div class="relative flex h-36 w-36 items-center justify-center">
+              <div class="absolute inset-0 animate-spin-slow rounded-full border border-dashed border-indigo-500/30" />
+              <div class="absolute inset-2 animate-spin-slow-reverse rounded-full border border-dashed border-purple-500/20" />
+              <div class="flex h-24 w-24 items-center justify-center rounded-3xl bg-indigo-500/10 ring-1 ring-indigo-500/20">
+                <UIcon name="i-lucide-brain" class="h-12 w-12 text-indigo-400" />
+              </div>
+            </div>
+
+            <p class="mt-6 text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
+              {{ t('Final analysis') }}
             </p>
             <h1 class="mt-3 text-5xl font-bold tracking-tight text-(--ui-text-highlighted)">
               {{ t('Synthesizing insights') }}
             </h1>
-            <p class="mt-4 text-lg text-(--ui-text-muted)">
-              {{ t('Combining findings from') }} {{ scan.agentsTotal }} {{ t('AI agents') }}
-            </p>
-            <div class="mt-10 flex flex-wrap justify-center gap-2">
-              <span
-                v-for="agent in ALL_AGENTS"
+
+            <!-- Rotating insight messages -->
+            <Transition name="step-text" mode="out-in">
+              <p :key="synthInsightIndex" class="mt-4 text-lg text-(--ui-text-muted)">
+                {{ synthInsights[synthInsightIndex] }}
+              </p>
+            </Transition>
+
+            <!-- Agent connection visualization -->
+            <div class="mt-10 grid grid-cols-5 gap-3">
+              <div
+                v-for="(agent, i) in ALL_AGENTS"
                 :key="agent.key"
-                class="flex items-center gap-1.5 rounded-full border border-green-500/30 bg-green-500/10 px-3 py-1.5 text-xs font-semibold text-green-500"
+                class="flex flex-col items-center gap-2 rounded-xl border px-3 py-3 transition-all duration-700"
+                :class="synthHighlightIdx === i
+                  ? `${agent.cardClass} scale-105`
+                  : 'border-(--ui-border)/50 bg-(--ui-bg-elevated)/50 opacity-60'"
               >
-                <UIcon name="i-lucide-check" class="h-3 w-3" />
-                {{ agent.shortName }}
-              </span>
+                <UIcon :name="agent.icon" class="h-5 w-5 transition-colors duration-500" :class="synthHighlightIdx === i ? agent.iconClass : 'text-(--ui-text-dimmed)'" />
+                <span class="text-[10px] font-semibold" :class="synthHighlightIdx === i ? 'text-(--ui-text-highlighted)' : 'text-(--ui-text-dimmed)'">
+                  {{ agent.shortName }}
+                </span>
+              </div>
             </div>
           </div>
         </Transition>
@@ -214,158 +227,7 @@ import { Vue3Lottie } from 'vue3-lottie'
 import { SCAN_STEPS } from '~/constants/scan'
 import type { ScanStepStatus } from '~/constants/scan'
 
-const ALL_AGENTS = [
-  {
-    key: 'visual',
-    shortName: 'Visual',
-    name: 'Visual Analyst',
-    icon: 'i-lucide-eye',
-    tagline: 'Evaluating visual hierarchy, imagery quality, and first impressions',
-    type: 'specialist',
-    cardClass: 'border-purple-500/30 bg-purple-500/5 shadow-[0_0_100px_rgba(168,85,247,0.12)]',
-    badgeClass: 'border-purple-500/30 bg-purple-500/10 text-purple-400',
-    iconBgClass: 'bg-purple-500/15 ring-purple-500/20',
-    iconClass: 'text-purple-400',
-    pingClass: 'bg-purple-400',
-    dotClass: 'bg-purple-400',
-    glow: 'rgba(168,85,247,0.22)',
-  },
-  {
-    key: 'trust',
-    shortName: 'Trust',
-    name: 'Trust Auditor',
-    icon: 'i-lucide-shield-check',
-    tagline: 'Scanning for trust signals, social proof, and credibility markers',
-    type: 'specialist',
-    cardClass: 'border-blue-500/30 bg-blue-500/5 shadow-[0_0_100px_rgba(59,130,246,0.12)]',
-    badgeClass: 'border-blue-500/30 bg-blue-500/10 text-blue-400',
-    iconBgClass: 'bg-blue-500/15 ring-blue-500/20',
-    iconClass: 'text-blue-400',
-    pingClass: 'bg-blue-400',
-    dotClass: 'bg-blue-400',
-    glow: 'rgba(59,130,246,0.22)',
-  },
-  {
-    key: 'conversion',
-    shortName: 'Conversion',
-    name: 'Conversion Critic',
-    icon: 'i-lucide-mouse-pointer-click',
-    tagline: 'Identifying friction points and barriers blocking user conversions',
-    type: 'specialist',
-    cardClass: 'border-orange-500/30 bg-orange-500/5 shadow-[0_0_100px_rgba(249,115,22,0.12)]',
-    badgeClass: 'border-orange-500/30 bg-orange-500/10 text-orange-400',
-    iconBgClass: 'bg-orange-500/15 ring-orange-500/20',
-    iconClass: 'text-orange-400',
-    pingClass: 'bg-orange-400',
-    dotClass: 'bg-orange-400',
-    glow: 'rgba(249,115,22,0.22)',
-  },
-  {
-    key: 'code',
-    shortName: 'Code',
-    name: 'Code Inspector',
-    icon: 'i-lucide-code-2',
-    tagline: 'Detecting JavaScript errors, network failures, and technical issues',
-    type: 'specialist',
-    cardClass: 'border-emerald-500/30 bg-emerald-500/5 shadow-[0_0_100px_rgba(16,185,129,0.12)]',
-    badgeClass: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
-    iconBgClass: 'bg-emerald-500/15 ring-emerald-500/20',
-    iconClass: 'text-emerald-400',
-    pingClass: 'bg-emerald-400',
-    dotClass: 'bg-emerald-400',
-    glow: 'rgba(16,185,129,0.22)',
-  },
-  {
-    key: 'content',
-    shortName: 'Content',
-    name: 'Content Reviewer',
-    icon: 'i-lucide-file-text',
-    tagline: 'Analyzing messaging clarity, headline strength, and copy effectiveness',
-    type: 'specialist',
-    cardClass: 'border-yellow-500/30 bg-yellow-500/5 shadow-[0_0_100px_rgba(234,179,8,0.12)]',
-    badgeClass: 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
-    iconBgClass: 'bg-yellow-500/15 ring-yellow-500/20',
-    iconClass: 'text-yellow-400',
-    pingClass: 'bg-yellow-400',
-    dotClass: 'bg-yellow-400',
-    glow: 'rgba(234,179,8,0.22)',
-  },
-  {
-    key: 'accessibility',
-    shortName: 'A11y',
-    name: 'Accessibility Auditor',
-    icon: 'i-lucide-accessibility',
-    tagline: 'Checking contrast ratios, touch targets, and inclusive design standards',
-    type: 'specialist',
-    cardClass: 'border-pink-500/30 bg-pink-500/5 shadow-[0_0_100px_rgba(236,72,153,0.12)]',
-    badgeClass: 'border-pink-500/30 bg-pink-500/10 text-pink-400',
-    iconBgClass: 'bg-pink-500/15 ring-pink-500/20',
-    iconClass: 'text-pink-400',
-    pingClass: 'bg-pink-400',
-    dotClass: 'bg-pink-400',
-    glow: 'rgba(236,72,153,0.22)',
-  },
-  {
-    key: 'seo',
-    shortName: 'SEO',
-    name: 'SEO Auditor',
-    icon: 'i-lucide-search',
-    tagline: 'Reviewing meta tags, Open Graph, structured data, and heading hierarchy',
-    type: 'specialist',
-    cardClass: 'border-cyan-500/30 bg-cyan-500/5 shadow-[0_0_100px_rgba(6,182,212,0.12)]',
-    badgeClass: 'border-cyan-500/30 bg-cyan-500/10 text-cyan-400',
-    iconBgClass: 'bg-cyan-500/15 ring-cyan-500/20',
-    iconClass: 'text-cyan-400',
-    pingClass: 'bg-cyan-400',
-    dotClass: 'bg-cyan-400',
-    glow: 'rgba(6,182,212,0.22)',
-  },
-  {
-    key: 'skeptic',
-    shortName: 'Skeptic',
-    name: 'The Skeptic',
-    icon: 'i-lucide-search-x',
-    tagline: 'Challenging every claim with an unforgiving, critical eye',
-    type: 'persona',
-    cardClass: 'border-red-500/30 bg-red-500/5 shadow-[0_0_100px_rgba(239,68,68,0.12)]',
-    badgeClass: 'border-red-500/30 bg-red-500/10 text-red-400',
-    iconBgClass: 'bg-red-500/15 ring-red-500/20',
-    iconClass: 'text-red-400',
-    pingClass: 'bg-red-400',
-    dotClass: 'bg-red-400',
-    glow: 'rgba(239,68,68,0.22)',
-  },
-  {
-    key: 'impulse',
-    shortName: 'Impulse',
-    name: 'Impulse Visitor',
-    icon: 'i-lucide-zap',
-    tagline: 'Deciding in 3 seconds whether to convert or bounce',
-    type: 'persona',
-    cardClass: 'border-amber-500/30 bg-amber-500/5 shadow-[0_0_100px_rgba(245,158,11,0.12)]',
-    badgeClass: 'border-amber-500/30 bg-amber-500/10 text-amber-400',
-    iconBgClass: 'bg-amber-500/15 ring-amber-500/20',
-    iconClass: 'text-amber-400',
-    pingClass: 'bg-amber-400',
-    dotClass: 'bg-amber-400',
-    glow: 'rgba(245,158,11,0.22)',
-  },
-  {
-    key: 'comparison',
-    shortName: 'Shopper',
-    name: 'Comparison Shopper',
-    icon: 'i-lucide-scale',
-    tagline: 'Evaluating how your page stacks up against the competition',
-    type: 'persona',
-    cardClass: 'border-teal-500/30 bg-teal-500/5 shadow-[0_0_100px_rgba(20,184,166,0.12)]',
-    badgeClass: 'border-teal-500/30 bg-teal-500/10 text-teal-400',
-    iconBgClass: 'bg-teal-500/15 ring-teal-500/20',
-    iconClass: 'text-teal-400',
-    pingClass: 'bg-teal-400',
-    dotClass: 'bg-teal-400',
-    glow: 'rgba(20,184,166,0.22)',
-  },
-]
+const { allAgents: ALL_AGENTS } = useScanAgents()
 
 const props = defineProps<{
   scan: {
@@ -375,6 +237,7 @@ const props = defineProps<{
     error: string | null
     agentsCompleted: number
     agentsTotal: number
+    completedAgentNames: string[]
   }
 }>()
 
@@ -382,16 +245,18 @@ defineEmits<{ retry: [] }>()
 
 const { t } = useI18n()
 
-const preparingSteps = ['validating', 'scanning', 'extracting']
+const PREPARING_STEPS = ['validating', 'scanning', 'extracting'] as const
 
-const phase = computed(() => {
-  const step = props.scan.currentStep
-  if (preparingSteps.includes(step)) return 'preparing'
-  if (step === 'analyzing') return 'analyzing'
-  if (step === 'synthesizing') return 'synthesizing'
-  if (step === 'assembling') return 'assembling'
-  return 'preparing'
-})
+const STEP_TO_PHASE: Record<string, string> = {
+  validating: 'preparing',
+  scanning: 'preparing',
+  extracting: 'preparing',
+  analyzing: 'analyzing',
+  synthesizing: 'synthesizing',
+  assembling: 'assembling',
+}
+
+const phase = computed(() => STEP_TO_PHASE[props.scan.currentStep] ?? 'preparing')
 
 const preparingHeadline = computed(() => {
   const map: Record<string, () => string> = {
@@ -411,19 +276,62 @@ const preparingSubtitle = computed(() => {
   return map[props.scan.currentStep]?.() ?? ''
 })
 
-const currentAgent = computed(() => ALL_AGENTS[props.scan.agentsCompleted] ?? null)
-
-const completedAgents = computed(() => ALL_AGENTS.slice(0, props.scan.agentsCompleted))
+function isAgentDone(backendName: string): boolean {
+  return props.scan.completedAgentNames.includes(backendName)
+}
 
 const agentProgressPct = computed(() => {
   if (props.scan.agentsTotal === 0) return 0
   return Math.round((props.scan.agentsCompleted / props.scan.agentsTotal) * 100)
 })
 
+// Synthesizing phase — rotating insights and agent highlights
+const synthInsights = [
+  t('Cross-referencing trust signals with conversion data'),
+  t('Comparing persona reactions against technical findings'),
+  t('Identifying patterns across all audit categories'),
+  t('Calculating weighted scores from specialist and persona data'),
+  t('Detecting recurring issues and improvement trends'),
+  t('Building your personalized action plan'),
+]
+const synthInsightIndex = ref(0)
+const synthHighlightIdx = ref(0)
+let synthInsightTimer: ReturnType<typeof setInterval> | null = null
+let synthHighlightTimer: ReturnType<typeof setInterval> | null = null
+
+watch(phase, (val) => {
+  if (val === 'synthesizing') {
+    synthInsightIndex.value = 0
+    synthHighlightIdx.value = 0
+    synthInsightTimer = setInterval(() => {
+      synthInsightIndex.value = (synthInsightIndex.value + 1) % synthInsights.length
+    }, 3000)
+    synthHighlightTimer = setInterval(() => {
+      synthHighlightIdx.value = (synthHighlightIdx.value + 1) % ALL_AGENTS.value.length
+    }, 800)
+  }
+  else {
+    if (synthInsightTimer) { clearInterval(synthInsightTimer); synthInsightTimer = null }
+    if (synthHighlightTimer) { clearInterval(synthHighlightTimer); synthHighlightTimer = null }
+  }
+})
+
+onUnmounted(() => {
+  if (synthInsightTimer) clearInterval(synthInsightTimer)
+  if (synthHighlightTimer) clearInterval(synthHighlightTimer)
+})
+
 const glowColor = computed(() => {
-  if (phase.value === 'analyzing' && currentAgent.value) return currentAgent.value.glow
-  if (phase.value === 'synthesizing' || phase.value === 'assembling') return 'rgba(99,102,241,0.2)'
-  return 'rgba(99,102,241,0.15)'
+  if (phase.value === 'analyzing') {
+    // Glow shifts to last completed agent's color
+    const names = props.scan.completedAgentNames
+    if (names.length > 0) {
+      const lastDone = ALL_AGENTS.value.find(a => a.backendName === names[names.length - 1])
+      if (lastDone) return lastDone.glow
+    }
+    return 'rgba(99,102,241,0.2)'
+  }
+  return PHASE_GLOW[phase.value] ?? PHASE_GLOW.default
 })
 
 function stepStatus(key: string): ScanStepStatus {
@@ -439,19 +347,32 @@ function stepPillLabel(key: string): string {
   return map[key]?.() ?? key
 }
 
+const STEP_PILL_CLASSES: Record<ScanStepStatus, string> = {
+  done: 'border-green-500/30 bg-green-500/10 text-green-500',
+  active: 'border-blue-500/50 bg-blue-500/10 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.15)]',
+  failed: 'border-(--ui-border) text-(--ui-text-dimmed)',
+  pending: 'border-(--ui-border) text-(--ui-text-dimmed)',
+}
+
+const STEP_DOT_CLASSES: Record<ScanStepStatus, string> = {
+  done: 'h-1.5 w-5 bg-green-500',
+  active: 'h-1.5 w-5 bg-blue-500',
+  failed: 'h-1.5 w-1.5 bg-red-500',
+  pending: 'h-1.5 w-1.5 bg-(--ui-border)',
+}
+
+const PHASE_GLOW: Record<string, string> = {
+  synthesizing: 'rgba(129,90,213,0.25)',
+  assembling: 'rgba(99,102,241,0.2)',
+  default: 'rgba(99,102,241,0.15)',
+}
+
 function stepPillClass(key: string): string {
-  const status = stepStatus(key)
-  if (status === 'done') return 'border-green-500/30 bg-green-500/10 text-green-500'
-  if (status === 'active') return 'border-blue-500/50 bg-blue-500/10 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.15)]'
-  return 'border-(--ui-border) text-(--ui-text-dimmed)'
+  return STEP_PILL_CLASSES[stepStatus(key)]
 }
 
 function stepDotClass(key: string): string {
-  const status = stepStatus(key)
-  if (status === 'done') return 'h-1.5 w-5 bg-green-500'
-  if (status === 'active') return 'h-1.5 w-5 bg-blue-500'
-  if (status === 'failed') return 'h-1.5 w-1.5 bg-red-500'
-  return 'h-1.5 w-1.5 bg-(--ui-border)'
+  return STEP_DOT_CLASSES[stepStatus(key)]
 }
 
 
@@ -512,5 +433,19 @@ function stepDotClass(key: string): string {
 }
 .chip-move {
   transition: all 0.3s ease;
+}
+
+/* Synthesizing orbit animations */
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+@keyframes spin-slow-reverse {
+  to { transform: rotate(-360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+.animate-spin-slow-reverse {
+  animation: spin-slow-reverse 12s linear infinite;
 }
 </style>

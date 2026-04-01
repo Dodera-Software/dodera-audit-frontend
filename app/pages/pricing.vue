@@ -229,8 +229,8 @@ const faqs = computed(() => [
     a: t('Each extra member gets their own login to collaborate on projects and view audit reports. Team management is coming soon.'),
   },
   {
-    q: t('What is the custom Anthropic API key?'),
-    a: t('Max plan users will be able to connect their own Claude API key to run unlimited audits at their own cost. Coming soon.'),
+    q: t('What is the custom OpenAI API key?'),
+    a: t('Max plan users can connect their own OpenAI API key to run unlimited audits at their own cost. Add your key in account settings.'),
   },
 ])
 </script>
