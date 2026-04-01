@@ -1,10 +1,7 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
-@utility font-mono {
-  font-family: 'DM Mono', monospace;
-}
-
+/* ─── Base ──────────────────────────────────────────────────────────── */
 @layer base {
   body {
     font-family: 'Inter', sans-serif;
