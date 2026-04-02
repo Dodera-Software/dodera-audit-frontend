@@ -18,13 +18,13 @@
 
       <!-- Badges -->
       <div class="flex flex-wrap gap-2">
-        <UBadge :color="(CATEGORY_BADGE_COLORS[issue.category] as any)" variant="subtle">
+        <UBadge :color="CATEGORY_BADGE_COLORS[issue.category]" variant="subtle">
           {{ issue.category }}
         </UBadge>
-        <UBadge :color="(SEVERITY_BADGE_COLORS[issue.severity] as any)" variant="soft">
+        <UBadge :color="SEVERITY_BADGE_COLORS[issue.severity]" variant="soft">
           {{ issue.severity }}
         </UBadge>
-        <UBadge :color="(EFFORT_BADGE_COLORS[issue.effort] as any)" variant="outline">
+        <UBadge :color="EFFORT_BADGE_COLORS[issue.effort]" variant="outline">
           {{ issue.effort }}
         </UBadge>
       </div>
@@ -216,7 +216,7 @@ interface IssueDetail {
   impact_score: number
   roi_score: number
   element_reference: string | null
-  element_bounding_box: any | null
+  element_bounding_box: { x: number, y: number, width: number, height: number } | null
   persona_source: string[] | null
   persona_quote: string | null
   fix_steps: string[] | null

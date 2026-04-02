@@ -257,6 +257,7 @@
 <script setup lang="ts">
 import { Vue3Lottie } from 'vue3-lottie'
 import { scoreColor } from '~/constants/audit'
+import type { BadgeColor } from '~/types'
 import ScanProgress from '~/components/audit/ScanProgress.vue'
 import PlanGate from '~/components/billing/PlanGate.vue'
 import UpgradeModal from '~/components/billing/UpgradeModal.vue'
@@ -337,13 +338,13 @@ function scoreBarColor(score: number): string {
   return 'bg-red-500'
 }
 
-const MOMENTUM_CONFIG: Record<string, { color: any, label: () => string }> = {
+const MOMENTUM_CONFIG: Record<string, { color: BadgeColor, label: () => string }> = {
   improving: { color: 'success', label: () => t('Improving') },
   plateau: { color: 'warning', label: () => t('Plateau') },
   regressing: { color: 'error', label: () => t('Regressing') },
 }
 
-const momentumColor = computed(() => MOMENTUM_CONFIG[brain.value?.momentum ?? '']?.color ?? 'neutral')
+const momentumColor = computed(() => MOMENTUM_CONFIG[brain.value?.momentum ?? '']?.color ?? 'neutral' as BadgeColor)
 const momentumLabel = computed(() => MOMENTUM_CONFIG[brain.value?.momentum ?? '']?.label() ?? brain.value?.momentum)
 
 onMounted(async () => {

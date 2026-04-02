@@ -78,7 +78,7 @@ const chartOptions = computed(() => ({
     },
     events: props.clickable
       ? {
-          dataPointSelection: (_event: any, _chart: any, config: any) => {
+          dataPointSelection: (_event: unknown, _chart: unknown, config: { dataPointIndex: number }) => {
             emit('pointClick', config.dataPointIndex)
           },
         }

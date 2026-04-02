@@ -79,12 +79,14 @@ const props = defineProps<{
   projectId: string
 }>()
 
+import type { BadgeColor } from '~/types'
+
 const { t } = useI18n()
 const { $api } = useApi()
 
 interface BrainData {
   score_history: Array<{ overall_score: number, created_at: string }> | null
-  pattern_registry: any[] | null
+  pattern_registry: Record<string, unknown>[] | null
   momentum: string | null
   progress_narrative: string | null
   momentum_explanation: string | null
@@ -115,13 +117,13 @@ onMounted(async () => {
   }
 })
 
-const MOMENTUM_CONFIG: Record<string, { color: any, icon: string, label: () => string }> = {
+const MOMENTUM_CONFIG: Record<string, { color: BadgeColor, icon: string, label: () => string }> = {
   improving: { color: 'success', icon: 'i-lucide-trending-up', label: () => t('Improving') },
   plateau: { color: 'warning', icon: 'i-lucide-minus', label: () => t('Plateau') },
   regressing: { color: 'error', icon: 'i-lucide-trending-down', label: () => t('Regressing') },
 }
 
-const momentumColor = computed(() => MOMENTUM_CONFIG[brain.value.momentum ?? '']?.color ?? 'neutral')
+const momentumColor = computed(() => MOMENTUM_CONFIG[brain.value.momentum ?? '']?.color ?? 'neutral' as BadgeColor)
 const momentumIcon = computed(() => MOMENTUM_CONFIG[brain.value.momentum ?? '']?.icon ?? 'i-lucide-minus')
 const momentumLabel = computed(() => MOMENTUM_CONFIG[brain.value.momentum ?? '']?.label() ?? brain.value.momentum)
 </script>

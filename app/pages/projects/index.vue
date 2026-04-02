@@ -143,6 +143,7 @@
 
 <script setup lang="ts">
 import { Vue3Lottie } from 'vue3-lottie'
+import { scoreColor } from '~/constants/audit'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -153,7 +154,7 @@ const deleteTarget = ref<ProjectItem | null>(null)
 const { t } = useI18n()
 const { $api } = useApi()
 const apiError = useApiError()
-const { formatRelativeDate } = useFormatters()
+const { formatRelativeDate, hostname } = useFormatters()
 
 interface PagePreview {
   id: string
@@ -179,17 +180,6 @@ const filteredProjects = computed(() => {
   if (!query) return projects.value
   return projects.value.filter(p => p.name.toLowerCase().includes(query))
 })
-
-function hostname(url: string): string {
-  try { return new URL(url).hostname }
-  catch { return url }
-}
-
-function scoreColor(score: number): string {
-  if (score >= 80) return 'text-green-500'
-  if (score >= 50) return 'text-yellow-500'
-  return 'text-red-500'
-}
 
 function openDeleteDialog(project: ProjectItem) {
   deleteTarget.value = project

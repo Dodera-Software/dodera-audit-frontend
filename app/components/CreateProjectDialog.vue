@@ -2,7 +2,7 @@
   <UModal v-model:open="open">
     <template #content>
       <div class="p-6">
-        <h2 class="text-lg font-bold text-(--ui-text-highlighted)">{{ t('Create a project') }}</h2>
+        <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Create a project') }}</h2>
         <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Projects are folders that group pages you want to audit.') }}</p>
 
         <UForm :schema="schema" :state="form" class="mt-5 space-y-4" @submit="handleCreate">

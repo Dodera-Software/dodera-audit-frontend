@@ -20,7 +20,7 @@ const icon = computed(() => {
 
 function toggleTheme() {
   const modes = ['light', 'dark', 'system'] as const
-  const current = modes.indexOf(colorMode.preference as any)
-  colorMode.preference = modes[(current + 1) % modes.length]
+  const current = modes.indexOf(colorMode.preference as 'light' | 'dark' | 'system')
+  colorMode.preference = modes[(current + 1) % modes.length]!
 }
 </script>

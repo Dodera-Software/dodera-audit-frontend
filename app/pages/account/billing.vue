@@ -1,6 +1,10 @@
 <template>
-  <div class="mx-auto max-w-2xl">
-    <h1 class="mb-6 text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Billing & Plan') }}</h1>
+  <ClientOnly>
+    <div class="mx-auto max-w-2xl">
+      <div class="mb-6 flex items-center gap-4">
+        <UButton variant="ghost" icon="i-lucide-arrow-left" size="xs" @click="router.back()" />
+        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Billing & Plan') }}</h1>
+      </div>
 
     <!-- Success banner after checkout redirect -->
     <UAlert
@@ -119,7 +123,8 @@
         </div>
       </UCard>
     </template>
-  </div>
+    </div>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
@@ -130,6 +135,7 @@ definePageMeta({ middleware: 'auth' })
 const { t } = useI18n()
 const { $api } = useApi()
 const route = useRoute()
+const router = useRouter()
 const { formatDate } = useFormatters()
 const { redirectToPortal } = usePlan()
 const toast = useToast()
