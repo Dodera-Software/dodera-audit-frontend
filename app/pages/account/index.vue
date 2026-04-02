@@ -28,5 +28,10 @@
 definePageMeta({ middleware: 'auth' })
 
 const { t } = useI18n()
-const router = useRouter()
+const { setNavbar } = usePageNavbar()
+
+onMounted(() => {
+  setNavbar({ title: t('Profile'), showBack: true })
+})
+
 </script>

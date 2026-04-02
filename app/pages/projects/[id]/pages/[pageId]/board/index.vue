@@ -1,18 +1,18 @@
 <template>
   <ClientOnly>
+    <Teleport to="#navbar-actions">
+      <UButton
+        v-if="allIssues.length > 0"
+        size="md"
+        icon="i-lucide-refresh-cw"
+        :loading="triggeringAudit"
+        @click="handleRunAudit"
+      >
+        {{ t('Re-audit page') }}
+      </UButton>
+    </Teleport>
+
     <div class="min-w-0 overflow-hidden">
-      <!-- Header -->
-      <div class="mb-6 flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Optimization Board') }}</h1>
-        <UButton
-          v-if="allIssues.length > 0"
-          icon="i-lucide-refresh-cw"
-          :loading="triggeringAudit"
-          @click="handleRunAudit"
-        >
-          {{ t('Re-audit page') }}
-        </UButton>
-      </div>
 
       <!-- Kanban board -->
       <KanbanBoard
@@ -44,10 +44,28 @@ const { t } = useI18n()
 const route = useRoute()
 const { $api } = useApi()
 const apiError = useApiError()
+const { setNavbar } = usePageNavbar()
 
-const toast = useToast()
 const projectId = route.params.id as string
 const pageId = route.params.pageId as string
+
+const toast = useToast()
+
+onMounted(async () => {
+  setNavbar({
+    title: t('Optimization Board'),
+    showBack: true,
+    backTo: `/projects/${projectId}/pages/${pageId}`,
+  })
+
+  await loadIssues()
+
+  const issueParam = route.query.issue as string | undefined
+  if (issueParam) {
+    selectedIssueId.value = issueParam
+    slideoverOpen.value = true
+  }
+})
 
 const { confirm } = useConfirm()
 
@@ -57,16 +75,6 @@ const loading = ref(true)
 const triggeringAudit = ref(false)
 const slideoverOpen = ref(false)
 const selectedIssueId = ref<string | null>(null)
-
-onMounted(async () => {
-  await loadIssues()
-
-  const issueParam = route.query.issue as string | undefined
-  if (issueParam) {
-    selectedIssueId.value = issueParam
-    slideoverOpen.value = true
-  }
-})
 
 async function loadIssues() {
   try {

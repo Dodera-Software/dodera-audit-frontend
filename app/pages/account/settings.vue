@@ -1,10 +1,6 @@
 <template>
   <ClientOnly>
     <div class="max-w-2xl space-y-6">
-      <div class="flex items-center gap-4">
-        <UButton variant="ghost" icon="i-lucide-arrow-left" size="xs" @click="router.back()" />
-        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Settings') }}</h1>
-      </div>
 
       <!-- Appearance -->
       <UCard>
@@ -158,11 +154,15 @@
 definePageMeta({ middleware: 'auth' })
 
 const { t } = useI18n()
-const router = useRouter()
 const colorMode = useColorMode()
 const toast = useToast()
+const { setNavbar } = usePageNavbar()
 const { isMax } = usePlan()
 const { keyStatus, loading: keyLoading, saving: keySaving, fetchStatus, saveKey, removeKey } = useOpenAiKey()
+
+onMounted(() => {
+  setNavbar({ title: t('Settings'), showBack: true })
+})
 
 const themeModes = computed(() => [
   { value: 'light', icon: 'i-lucide-sun', label: t('Light') },
