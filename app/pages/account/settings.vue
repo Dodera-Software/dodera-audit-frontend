@@ -24,8 +24,14 @@
 </template>
 
 <script setup lang="ts">
+const { setNavbar } = usePageNavbar()
+
 definePageMeta({ middleware: 'auth' })
 
 const { t } = useI18n()
 const router = useRouter()
+
+onMounted(() => {
+  setNavbar({ title: t('Settings'), showBack: true })
+})
 </script>

@@ -1,17 +1,13 @@
 <template>
   <ClientOnly>
+    <Teleport to="#navbar-actions">
+      <UButton v-if="project" size="md" icon="i-lucide-plus" @click="showAddPageDialog = true">
+        {{ t('Add page') }}
+      </UButton>
+    </Teleport>
+
     <!-- Skeleton loading -->
     <div v-if="loading">
-      <div class="flex items-start justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <USkeleton class="h-10 w-10 shrink-0 rounded-lg" />
-          <div class="space-y-1.5">
-            <USkeleton class="h-5 w-40" />
-            <USkeleton class="h-3.5 w-20" />
-          </div>
-        </div>
-        <USkeleton class="h-9 w-24 rounded-lg" />
-      </div>
       <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <UiSkeletonPageCard v-for="i in 6" :key="i" />
       </div>
@@ -26,25 +22,7 @@
     </div>
 
     <div v-else-if="project">
-      <!-- Header -->
-      <div class="flex items-start justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-(--ui-primary)/10">
-            <UIcon name="i-lucide-folder-open" class="h-5 w-5 text-(--ui-primary)" />
-          </div>
-          <div>
-            <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ project.name }}</h1>
-            <p class="text-sm text-(--ui-text-muted)">
-              {{ project.pages_count }} {{ project.pages_count === 1 ? t('page') : t('pages') }}
-            </p>
-          </div>
-        </div>
-        <UButton icon="i-lucide-plus" @click="showAddPageDialog = true">
-          {{ t('Add page') }}
-        </UButton>
-      </div>
-
-      <!-- Empty state -->
+      <!-- Pages list -->
       <div v-if="project.pages.length === 0" class="mt-8 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
         <Vue3Lottie animation-link="/animations/animation-bot.json" :height="140" :width="140" :loop="true" :auto-play="true" class="mx-auto" />
         <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No pages yet') }}</h3>
@@ -174,6 +152,7 @@ const route = useRoute()
 const { $api } = useApi()
 const apiError = useApiError()
 const { siteTypeLabel } = useProjectOptions()
+const { setNavbar } = usePageNavbar()
 const { formatRelativeDate, hostname } = useFormatters()
 const { confirm } = useConfirm()
 
@@ -200,6 +179,17 @@ interface ProjectDetail {
 
 const project = ref<ProjectDetail | null>(null)
 const loading = ref(true)
+
+watchEffect(() => {
+  setNavbar({
+    title: project.value?.name ?? t('Project'),
+    subtitle: project.value
+      ? `${project.value.pages_count} ${project.value.pages_count === 1 ? t('page') : t('pages')}`
+      : undefined,
+    showBack: true,
+    backTo: '/projects',
+  })
+})
 
 function thumbnailUrl(url: string): string {
   return `https://s0.wp.com/mshots/v1/${encodeURIComponent(url)}?w=640&h=360`

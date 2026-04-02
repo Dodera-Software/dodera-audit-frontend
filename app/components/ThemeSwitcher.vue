@@ -1,7 +1,9 @@
 <template>
   <UButton
     variant="ghost"
-    size="sm"
+    color="neutral"
+    :size="size"
+    square
     :icon="icon"
     :aria-label="t('Toggle theme')"
     @click="toggleTheme"
@@ -9,6 +11,12 @@
 </template>
 
 <script setup lang="ts">
+withDefaults(defineProps<{
+  size?: 'xs' | 'sm' | 'md' | 'lg'
+}>(), {
+  size: 'sm',
+})
+
 const { t } = useI18n()
 const colorMode = useColorMode()
 

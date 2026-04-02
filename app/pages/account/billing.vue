@@ -1,10 +1,6 @@
 <template>
   <ClientOnly>
     <div class="mx-auto max-w-2xl">
-      <div class="mb-6 flex items-center gap-4">
-        <UButton variant="ghost" icon="i-lucide-arrow-left" size="xs" @click="router.back()" />
-        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Billing & Plan') }}</h1>
-      </div>
 
     <!-- Success banner after checkout redirect -->
     <UAlert
@@ -133,10 +129,14 @@ definePageMeta({ middleware: 'auth' })
 const { t } = useI18n()
 const { $api } = useApi()
 const route = useRoute()
-const router = useRouter()
 const { formatDate } = useFormatters()
 const { redirectToPortal } = usePlan()
+const { setNavbar } = usePageNavbar()
 const toast = useToast()
+
+onMounted(() => {
+  setNavbar({ title: t('Billing & Plan'), showBack: true })
+})
 
 const status = ref<BillingStatus | null>(null)
 const loading = ref(true)
