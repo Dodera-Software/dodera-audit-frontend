@@ -3,44 +3,25 @@
     <PageDetailSkeleton v-if="loading" />
 
     <div v-else-if="page">
-      <!-- Header -->
-      <div class="flex items-start justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <img
-            :src="`https://www.google.com/s2/favicons?domain=${page.url.replace(/^https?:\/\//, '').split('/')[0]}&sz=32`"
-            :alt="page.name || page.url"
-            class="h-9 w-9 rounded-lg border border-(--ui-border)"
-          >
-          <div>
-            <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ page.name || page.url }}</h1>
-            <div class="flex items-center gap-2">
-              <a :href="page.url" target="_blank" class="text-sm text-(--ui-text-muted) hover:text-(--ui-primary)">
-                {{ page.url }}
-                <UIcon name="i-lucide-external-link" class="mb-0.5 ml-0.5 inline h-3 w-3" />
-              </a>
-              <UBadge variant="subtle" color="neutral" size="xs">{{ siteTypeLabel }}</UBadge>
-            </div>
-          </div>
-        </div>
-        <div class="flex items-center gap-2">
-          <span v-if="isFree" class="text-xs text-(--ui-text-dimmed)">
-            {{ auditsThisMonth }}/{{ auditLimit }} {{ t('audits') }}
-          </span>
-          <UButton
-            :icon="!canAudit ? 'i-lucide-lock' : 'i-lucide-scan'"
-            :loading="triggeringAudit"
-            :disabled="!!activeScan"
-            @click="!canAudit ? showUpgradeModal = true : triggerAudit()"
-          >
-            {{ !canAudit ? t('Limit reached') : t('Audit this page') }}
-          </UButton>
-        </div>
-      </div>
+      <Teleport to="#navbar-actions">
+        <span v-if="isFree" class="text-xs text-(--ui-text-dimmed)">
+          {{ auditsThisMonth }}/{{ auditLimit }} {{ t('audits') }}
+        </span>
+        <UButton
+          size="md"
+          :icon="!canAudit ? 'i-lucide-lock' : 'i-lucide-scan'"
+          :loading="triggeringAudit"
+          :disabled="!!activeScan"
+          @click="!canAudit ? showUpgradeModal = true : triggerAudit()"
+        >
+          {{ !canAudit ? t('Limit reached') : t('Audit this page') }}
+        </UButton>
+      </Teleport>
 
-      <!-- Scan progress — content area takeover -->
+      <!-- Scan progress — full viewport takeover -->
       <div
         v-if="activeScan && !showSuccess"
-        class="absolute inset-0 flex items-center justify-center overflow-y-auto bg-(--ui-bg)"
+        class="fixed inset-0 z-40 flex items-center justify-center overflow-y-auto bg-(--ui-bg)"
       >
         <ScanProgress :scan="activeScan" @retry="triggerAudit" />
       </div>
@@ -267,6 +248,7 @@ const route = useRoute()
 const { $api } = useApi()
 const apiError = useApiError()
 const { formatRelativeDate } = useFormatters()
+const { setNavbar } = usePageNavbar()
 
 const projectId = route.params.id as string
 const pageId = route.params.pageId as string
@@ -301,6 +283,7 @@ const triggeringAudit = ref(false)
 const scoreHistory = ref<Array<{ overall_score: number, created_at: string }>>([])
 
 const activeScan = computed(() => scanStore.scanForProject(pageId))
+const showSuccess = ref(false)
 
 const siteTypeLabel = computed(() => {
   const labels: Record<string, () => string> = {
@@ -392,7 +375,15 @@ async function triggerAudit() {
   }
 }
 
-const showSuccess = ref(false)
+watchEffect(() => {
+  setNavbar({
+    title: page.value?.name || page.value?.url || t('Page'),
+    subtitle: page.value?.url ?? undefined,
+    showBack: true,
+    backTo: `/projects/${projectId}`,
+    hidden: !!(activeScan.value) || showSuccess.value,
+  })
+})
 
 watch(() => activeScan.value?.status, async (status) => {
   if (status !== 'complete') return

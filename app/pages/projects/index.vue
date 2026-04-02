@@ -1,12 +1,11 @@
 <template>
   <ClientOnly>
     <div>
-      <div class="flex items-center justify-between">
-        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Projects') }}</h1>
-        <UButton icon="i-lucide-plus" @click="showCreateDialog = true">
+      <Teleport to="#navbar-actions">
+        <UButton size="md" icon="i-lucide-plus" @click="showCreateDialog = true">
           {{ t('New project') }}
         </UButton>
-      </div>
+      </Teleport>
 
       <!-- Search -->
       <div v-if="!loading && projects.length > 0" class="mt-4">
@@ -154,7 +153,12 @@ const deleteTarget = ref<ProjectItem | null>(null)
 const { t } = useI18n()
 const { $api } = useApi()
 const apiError = useApiError()
+const { setNavbar } = usePageNavbar()
 const { formatRelativeDate, hostname } = useFormatters()
+
+onMounted(() => {
+  setNavbar({ title: t('Projects') })
+})
 
 interface PagePreview {
   id: string

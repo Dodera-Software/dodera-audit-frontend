@@ -1,10 +1,6 @@
 <template>
   <ClientOnly>
     <div class="mx-auto max-w-2xl">
-      <div class="mb-6 flex items-center gap-4">
-        <UButton variant="ghost" icon="i-lucide-arrow-left" size="xs" @click="router.back()" />
-        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Team') }}</h1>
-      </div>
 
     <TeamPageSkeleton v-if="loading" />
 
@@ -272,7 +268,7 @@ const { isFree, billingStatus, fetchBillingStatus, purchaseSeats } = usePlan()
 const { formatDate } = useFormatters()
 const authStore = useAuthStore()
 const { $api } = useApi()
-const router = useRouter()
+const { setNavbar } = usePageNavbar()
 const {
   fetchOwnedTeam,
   fetchMembership,
@@ -320,6 +316,7 @@ const seatLimitReached = computed(() =>
 )
 
 onMounted(async () => {
+  setNavbar({ title: t('Team'), showBack: true })
   await Promise.all([loadTeamState(), fetchBillingStatus()])
 })
 
