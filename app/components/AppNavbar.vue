@@ -20,7 +20,7 @@
         <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-8 w-auto" />
       </NuxtLink>
 
-      <!-- Desktop: back button + page title + icon tray -->
+      <!-- Desktop: back button + page title -->
       <div class="hidden items-center gap-1 lg:flex">
         <UButton
           v-if="navbarState.showBack"
@@ -41,48 +41,14 @@
             {{ navbarState.subtitle }}
           </p>
         </div>
-
-        <!-- Separator (only when there's a title) -->
-        <div v-if="navbarState.title" class="mx-1.5 h-5 w-px bg-(--ui-border)" />
-
-        <!-- Theme toggle -->
-        <ThemeSwitcher size="sm" />
-
-        <!-- Notifications -->
-        <UTooltip :text="t('Notifications — coming soon')">
-          <UButton
-            variant="ghost"
-            color="neutral"
-            size="sm"
-            icon="i-lucide-bell"
-            square
-            aria-label="Notifications"
-            disabled
-          />
-        </UTooltip>
-
-        <!-- Settings -->
-        <UButton
-          variant="ghost"
-          color="neutral"
-          size="sm"
-          icon="i-lucide-settings"
-          square
-          :aria-label="t('Settings')"
-          to="/account/settings"
-        />
-
-        <!-- Profile avatar -->
-        <NuxtLink to="/account" :aria-label="t('Your account')">
-          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-(--ui-primary)/15 text-sm font-semibold text-(--ui-primary) transition-opacity hover:opacity-80">
-            {{ userInitial }}
-          </div>
-        </NuxtLink>
       </div>
     </div>
 
-    <!-- Right: upgrade + page-specific action buttons (desktop only) -->
+    <!-- Right: action buttons + utilities + avatar (desktop only) -->
     <div class="hidden shrink-0 items-center gap-2 lg:flex">
+      <!-- Page-specific action buttons injected by each page -->
+      <div id="navbar-actions" class="flex items-center gap-2" />
+
       <!-- Upgrade (free plan only) -->
       <ClientOnly>
         <UButton
@@ -91,14 +57,47 @@
           variant="soft"
           icon="i-lucide-zap"
           to="/pricing"
-          class="hidden sm:flex"
         >
           {{ t('Upgrade') }}
         </UButton>
       </ClientOnly>
 
-      <!-- Page-specific action buttons injected by each page -->
-      <div id="navbar-actions" class="flex items-center gap-2" />
+      <!-- Separator -->
+      <div class="h-5 w-px bg-(--ui-border)" />
+
+      <!-- Theme toggle -->
+      <ThemeSwitcher size="sm" />
+
+      <!-- Notifications -->
+      <UTooltip :text="t('Notifications — coming soon')">
+        <UButton
+          variant="ghost"
+          color="neutral"
+          size="sm"
+          icon="i-lucide-bell"
+          square
+          aria-label="Notifications"
+          disabled
+        />
+      </UTooltip>
+
+      <!-- Settings -->
+      <UButton
+        variant="ghost"
+        color="neutral"
+        size="sm"
+        icon="i-lucide-settings"
+        square
+        :aria-label="t('Settings')"
+        to="/account/settings"
+      />
+
+      <!-- Profile avatar -->
+      <NuxtLink to="/account" :aria-label="t('Your account')">
+        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-(--ui-primary)/15 text-sm font-semibold text-(--ui-primary) transition-opacity hover:opacity-80">
+          {{ userInitial }}
+        </div>
+      </NuxtLink>
     </div>
   </header>
 
