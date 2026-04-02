@@ -18,10 +18,7 @@
       <p class="mt-2 text-(--ui-text-muted)">{{ t('Taking you to your results...') }}</p>
     </div>
 
-    <!-- Loading -->
-    <div v-else-if="loading" class="flex justify-center py-16">
-      <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
-    </div>
+    <AuditReportSkeleton v-else-if="loading" />
 
     <!-- Report -->
     <div v-else-if="audit">

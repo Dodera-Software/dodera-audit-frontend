@@ -14,10 +14,18 @@
         </UButton>
       </div>
 
-      <!-- Loading -->
-      <div v-if="loading" class="mt-6 flex justify-center py-16">
-        <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
-      </div>
+      <!-- Skeleton loading -->
+      <template v-if="loading">
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <UiSkeletonStatCard v-for="i in 4" :key="i" />
+        </div>
+        <div class="mt-8">
+          <USkeleton class="h-4 w-28" />
+          <div class="mt-3 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <UiSkeletonPageCard v-for="i in 6" :key="i" />
+          </div>
+        </div>
+      </template>
 
       <template v-else>
         <!-- Stats row -->
