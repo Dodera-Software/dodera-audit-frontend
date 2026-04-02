@@ -734,5 +734,15 @@
   "Not verified": "Not verified",
   "Member since": "Member since",
   "Member since {date}": "Member since {date}",
-  "Team role": "Team role"
+  "Team role": "Team role",
+  "PawByTech updates": "PawByTech updates",
+  "Receive tips, product news and feature announcements from PawByTech.": "Receive tips, product news and feature announcements from PawByTech.",
+  "Plan expiring soon": "Plan expiring soon",
+  "Reminder 2 days before your subscription renews or expires.": "Reminder 2 days before your subscription renews or expires.",
+  "Unlock more audits, team seats, and advanced AI features.": "Unlock more audits, team seats, and advanced AI features.",
+  "More audits per month": "More audits per month",
+  "Bring your own OpenAI API key": "Bring your own OpenAI API key",
+  "Invite team members": "Invite team members",
+  "Priority AI model access": "Priority AI model access",
+  "Advanced performance reports": "Advanced performance reports"
 }
