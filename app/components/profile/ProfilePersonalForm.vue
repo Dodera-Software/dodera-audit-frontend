@@ -45,18 +45,6 @@
         </UFormField>
       </div>
 
-      <UFormField
-        :label="t('Occupation')"
-        name="occupation"
-        :hint="t('Optional — shown on your profile')"
-      >
-        <UInput
-          v-model="form.occupation"
-          size="lg"
-          class="w-full"
-          :placeholder="t('e.g. UX Designer, Frontend Developer')"
-        />
-      </UFormField>
 
       <div class="flex justify-end">
         <UButton type="submit" :loading="loading" icon="i-lucide-save">

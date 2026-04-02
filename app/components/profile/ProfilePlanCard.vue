@@ -80,13 +80,12 @@ const { $api } = useApi()
 const stats = ref<UserStats | null>(null)
 const loading = ref(true)
 
-const planBadgeColor = computed((): BadgeColor => {
-  switch (authStore.user?.plan) {
-    case 'pro': return 'primary'
-    case 'max': return 'success'
-    default: return 'neutral'
-  }
-})
+const planBadgeColorMap: Record<string, BadgeColor> = {
+  pro: 'primary',
+  max: 'success',
+}
+
+const planBadgeColor = computed((): BadgeColor => planBadgeColorMap[authStore.user?.plan ?? ''] ?? 'neutral')
 
 onMounted(async () => {
   try {

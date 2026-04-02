@@ -15,7 +15,6 @@ interface AuthResponse {
     id: string
     name: string
     email: string
-    occupation?: string
     plan: string
     email_verified_at: string | null
     created_at: string

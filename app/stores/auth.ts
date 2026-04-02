@@ -4,7 +4,6 @@ export interface User {
   id: string
   name: string
   email: string
-  occupation?: string
   plan: 'free' | 'pro' | 'max'
   extra_seats: number
   email_verified_at: string | null

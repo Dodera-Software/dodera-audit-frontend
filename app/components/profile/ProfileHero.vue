@@ -8,13 +8,10 @@
         <span class="text-2xl font-bold text-(--ui-primary)">{{ userInitials }}</span>
       </div>
 
-      <!-- Name / email / occupation -->
+      <!-- Name / email -->
       <div class="flex-1 text-center sm:text-left">
         <h2 class="text-xl font-bold text-(--ui-text-highlighted)">{{ authStore.user?.name }}</h2>
         <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ authStore.user?.email }}</p>
-        <p v-if="authStore.user?.occupation" class="mt-0.5 text-sm italic text-(--ui-text-dimmed)">
-          {{ authStore.user.occupation }}
-        </p>
       </div>
 
       <!-- Plan badge + member since -->
@@ -39,20 +36,14 @@ import type { BadgeColor } from '~/types'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
-const { formatDate } = useFormatters()
+const { formatDate, getInitials } = useFormatters()
 
-const userInitials = computed(() => {
-  const name = authStore.user?.name ?? ''
-  const parts = name.trim().split(/\s+/)
-  if (parts.length >= 2) return ((parts[0]?.[0] ?? '') + (parts[parts.length - 1]?.[0] ?? '')).toUpperCase()
-  return name.slice(0, 2).toUpperCase()
-})
+const userInitials = computed(() => getInitials(authStore.user?.name ?? ''))
 
-const planBadgeColor = computed((): BadgeColor => {
-  switch (authStore.user?.plan) {
-    case 'pro': return 'primary'
-    case 'max': return 'success'
-    default: return 'neutral'
-  }
-})
+const planBadgeColorMap: Record<string, BadgeColor> = {
+  pro: 'primary',
+  max: 'success',
+}
+
+const planBadgeColor = computed((): BadgeColor => planBadgeColorMap[authStore.user?.plan ?? ''] ?? 'neutral')
 </script>

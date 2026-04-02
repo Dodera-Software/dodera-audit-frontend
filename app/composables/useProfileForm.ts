@@ -12,12 +12,10 @@ export function useProfileForm() {
 
     const schema = z.object({
         name: z.string().min(1, t('Name is required')).max(255),
-        occupation: z.string().max(100).optional(),
     })
 
     const form = reactive({
         name: '',
-        occupation: '',
     })
 
     // Keep form in sync with the store — handles initial load, navigation back,
@@ -27,7 +25,6 @@ export function useProfileForm() {
         (user) => {
             if (!user) return
             form.name = user.name
-            form.occupation = user.occupation ?? ''
         },
         { immediate: true },
     )
@@ -38,22 +35,19 @@ export function useProfileForm() {
         success.value = false
 
         // Snapshot before the async chain — fetchMe() may overwrite the store
-        // without occupation (if the backend doesn't return it), which triggers
-        // the watch and resets form values before we can re-apply them.
+        // which triggers the watch and resets form values before we can re-apply them.
         const savedName = form.name
-        const savedOccupation = form.occupation
 
         try {
             await $api('/user', { method: 'PATCH', body: form })
             await fetchMe()
 
-            // Always restore the saved values into the store so the hero card
+            // Always restore the saved name into the store so the hero card
             // reflects what the user just saved, regardless of what /me returns.
             if (authStore.user) {
                 authStore.setUser({
                     ...authStore.user,
                     name: savedName,
-                    occupation: savedOccupation || undefined,
                 })
             }
 
