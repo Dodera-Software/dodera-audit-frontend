@@ -289,12 +289,17 @@ function getColumnLockedIssues(status: string): BoardIssue[] {
   return getColumnIssues(status).filter(i => isLocked(i))
 }
 
-async function onDragEnd(event: any) {
+interface DragEndEvent {
+  item: HTMLElement
+  to: HTMLElement
+}
+
+async function onDragEnd(event: DragEndEvent) {
   stopEdgeScroll()
   isDragging = true
 
-  const itemEl = event.item as HTMLElement
-  const toEl = event.to as HTMLElement
+  const itemEl = event.item
+  const toEl = event.to
 
   const issueId = itemEl?.dataset?.issueId ?? itemEl?.querySelector('[data-issue-id]')?.getAttribute('data-issue-id')
   const targetStatus = toEl?.dataset?.status ?? toEl?.closest('[data-status]')?.getAttribute('data-status')

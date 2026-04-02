@@ -34,13 +34,13 @@
             {{ issue.title }}
           </p>
           <div class="mt-2 flex flex-wrap items-center gap-2">
-            <UBadge :color="(CATEGORY_BADGE_COLORS[issue.category] as any)" variant="subtle" size="xs">
+            <UBadge :color="CATEGORY_BADGE_COLORS[issue.category]" variant="subtle" size="xs">
               {{ categoryLabel(issue.category) }}
             </UBadge>
-            <UBadge :color="(SEVERITY_BADGE_COLORS[issue.severity] as any)" variant="soft" size="xs">
+            <UBadge :color="SEVERITY_BADGE_COLORS[issue.severity]" variant="soft" size="xs">
               {{ severityLabel(issue.severity) }}
             </UBadge>
-            <UBadge :color="(EFFORT_BADGE_COLORS[issue.effort] as any)" variant="outline" size="xs">
+            <UBadge :color="EFFORT_BADGE_COLORS[issue.effort]" variant="outline" size="xs">
               {{ effortLabel(issue.effort) }}
             </UBadge>
           </div>

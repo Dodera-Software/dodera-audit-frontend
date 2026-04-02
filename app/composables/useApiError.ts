@@ -11,12 +11,13 @@ export function useApiError() {
     error.value = null
   }
 
-  function parse(e: any, fallbackMessage?: string): ApiError {
-    const status = e?.response?.status || e?.status || 500
-    const data = e?.data || e?.response?._data || {}
+  function parse(e: unknown, fallbackMessage?: string): ApiError {
+    const err = e as { response?: { status?: number, _data?: { message?: string, errors?: Record<string, string[]> } }, status?: number, data?: { message?: string, errors?: Record<string, string[]> }, message?: string }
+    const status = err?.response?.status || err?.status || 500
+    const data = err?.data || err?.response?._data || {}
 
     const parsed: ApiError = {
-      message: data.message || e?.message || fallbackMessage || 'Something went wrong.',
+      message: data.message || err?.message || fallbackMessage || 'Something went wrong.',
       errors: data.errors || {},
       status,
     }

@@ -1,6 +1,10 @@
 <template>
-  <div class="mx-auto max-w-2xl">
-    <h1 class="mb-6 text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Team') }}</h1>
+  <ClientOnly>
+    <div class="mx-auto max-w-2xl">
+      <div class="mb-6 flex items-center gap-4">
+        <UButton variant="ghost" icon="i-lucide-arrow-left" size="xs" @click="router.back()" />
+        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Team') }}</h1>
+      </div>
 
     <TeamPageSkeleton v-if="loading" />
 
@@ -253,7 +257,8 @@
         </UCard>
       </template>
     </template>
-  </div>
+    </div>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
@@ -267,6 +272,7 @@ const { isFree, billingStatus, fetchBillingStatus, purchaseSeats } = usePlan()
 const { formatDate } = useFormatters()
 const authStore = useAuthStore()
 const { $api } = useApi()
+const router = useRouter()
 const {
   fetchOwnedTeam,
   fetchMembership,

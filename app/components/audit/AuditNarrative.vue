@@ -32,6 +32,8 @@
 </template>
 
 <script setup lang="ts">
+import type { BadgeColor } from '~/types'
+
 const props = defineProps<{
   narrative: string | null
   momentum: string | null
@@ -40,13 +42,13 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-const MOMENTUM_CONFIG: Record<string, { color: any, icon: string, label: () => string }> = {
+const MOMENTUM_CONFIG: Record<string, { color: BadgeColor, icon: string, label: () => string }> = {
   improving: { color: 'success', icon: 'i-lucide-trending-up', label: () => t('Improving') },
   plateau: { color: 'warning', icon: 'i-lucide-minus', label: () => t('Plateau') },
   regressing: { color: 'error', icon: 'i-lucide-trending-down', label: () => t('Regressing') },
 }
 
-const momentumColor = computed(() => MOMENTUM_CONFIG[props.momentum ?? '']?.color ?? 'neutral')
+const momentumColor = computed(() => MOMENTUM_CONFIG[props.momentum ?? '']?.color ?? 'neutral' as BadgeColor)
 const momentumIcon = computed(() => MOMENTUM_CONFIG[props.momentum ?? '']?.icon ?? 'i-lucide-minus')
 const momentumLabel = computed(() => MOMENTUM_CONFIG[props.momentum ?? '']?.label() ?? props.momentum)
 </script>

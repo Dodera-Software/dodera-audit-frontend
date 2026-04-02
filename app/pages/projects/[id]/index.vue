@@ -165,6 +165,8 @@
 <script setup lang="ts">
 import { Vue3Lottie } from 'vue3-lottie'
 
+import { scoreCircleClass } from '~/constants/audit'
+
 definePageMeta({ middleware: 'auth' })
 
 const { t } = useI18n()
@@ -172,7 +174,7 @@ const route = useRoute()
 const { $api } = useApi()
 const apiError = useApiError()
 const { siteTypeLabel } = useProjectOptions()
-const { formatRelativeDate } = useFormatters()
+const { formatRelativeDate, hostname } = useFormatters()
 const { confirm } = useConfirm()
 
 const projectId = route.params.id as string
@@ -205,17 +207,6 @@ function thumbnailUrl(url: string): string {
 
 function faviconUrl(url: string): string {
   return `https://www.google.com/s2/favicons?domain=${hostname(url)}&sz=32`
-}
-
-function hostname(url: string): string {
-  try { return new URL(url).hostname }
-  catch { return url }
-}
-
-function scoreCircleClass(score: number): string {
-  if (score >= 80) return 'border-green-500 text-green-500'
-  if (score >= 50) return 'border-yellow-500 text-yellow-500'
-  return 'border-red-500 text-red-500'
 }
 
 async function deletePage(page: PageItem) {

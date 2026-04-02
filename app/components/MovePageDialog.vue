@@ -2,7 +2,7 @@
   <UModal v-model:open="open">
     <template #content>
       <div class="p-6">
-        <h2 class="text-lg font-bold text-(--ui-text-highlighted)">{{ t('Move to project') }}</h2>
+        <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Move to project') }}</h2>
         <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Choose which project this page belongs to.') }}</p>
 
         <div class="mt-5 space-y-4">

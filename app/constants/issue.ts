@@ -1,4 +1,6 @@
-export const CATEGORY_BADGE_COLORS: Record<string, string> = {
+import type { BadgeColor } from '~/types'
+
+export const CATEGORY_BADGE_COLORS: Record<string, BadgeColor> = {
   clarity: 'info',
   trust: 'warning',
   conversion: 'primary',
@@ -8,7 +10,7 @@ export const CATEGORY_BADGE_COLORS: Record<string, string> = {
   mobile: 'neutral',
 }
 
-export const EFFORT_BADGE_COLORS: Record<string, string> = {
+export const EFFORT_BADGE_COLORS: Record<string, BadgeColor> = {
   quick: 'success',
   medium: 'warning',
   big: 'error',

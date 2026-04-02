@@ -199,7 +199,7 @@ onMounted(async () => {
       keyForm.model = keyStatus.value.model
     }
     else if (keyStatus.value?.available_models?.length) {
-      keyForm.model = keyStatus.value.available_models[0].value
+      keyForm.model = keyStatus.value.available_models[0]?.value ?? ''
     }
   }
 })
@@ -213,9 +213,10 @@ async function handleSaveKey() {
     showEditForm.value = false
     usePlan().invalidateBillingStatus()
   }
-  catch (error: any) {
-    const message = error?.response?._data?.errors?.api_key?.[0]
-      || error?.response?._data?.message
+  catch (e: unknown) {
+    const err = e as { response?: { _data?: { errors?: Record<string, string[]>, message?: string } } }
+    const message = err?.response?._data?.errors?.api_key?.[0]
+      || err?.response?._data?.message
       || t('Failed to save API key.')
     toast.add({ title: message, color: 'error' })
   }
