@@ -135,8 +135,9 @@ const userInitial = computed(() => (authStore.user?.name ?? '').charAt(0).toUppe
 function handleBack(): void {
   if (navbarState.backTo) {
     navigateTo(navbarState.backTo)
-  } else {
-    router.back()
+    return
   }
+
+  router.back()
 }
 </script>
