@@ -1,17 +1,18 @@
 <template>
   <ClientOnly>
     <div>
-      <!-- Welcome header -->
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-xl font-bold text-(--ui-text-highlighted)">
-            {{ t('Welcome back, {name}', { name: authStore.user?.name?.split(' ')[0] ?? '' }) }}
-          </h1>
-          <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t("Here's what's happening with your audits.") }}</p>
-        </div>
-        <UButton icon="i-lucide-plus" @click="showAddPageDialog = true">
+      <Teleport to="#navbar-actions">
+        <UButton size="md" icon="i-lucide-plus" @click="showAddPageDialog = true">
           {{ t('Add page') }}
         </UButton>
+      </Teleport>
+
+      <!-- Welcome header -->
+      <div>
+        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">
+          {{ t('Welcome back, {name}', { name: authStore.user?.name?.split(' ')[0] ?? '' }) }}
+        </h1>
+        <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t("Here's what's happening with your audits.") }}</p>
       </div>
 
       <!-- Skeleton loading -->
@@ -210,6 +211,12 @@ const { t } = useI18n()
 const { $api } = useApi()
 const authStore = useAuthStore()
 const { siteTypeLabel } = useProjectOptions()
+const { setNavbar } = usePageNavbar()
+
+onMounted(() => {
+  setNavbar({})
+})
+
 const { formatRelativeDate, hostname } = useFormatters()
 const { confirm } = useConfirm()
 

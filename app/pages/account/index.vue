@@ -1,10 +1,6 @@
 <template>
   <ClientOnly>
   <div class="max-w-2xl space-y-8">
-    <div class="flex items-center gap-4">
-      <UButton variant="ghost" icon="i-lucide-arrow-left" size="xs" @click="router.back()" />
-      <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Profile') }}</h1>
-    </div>
 
     <!-- Profile section -->
     <UCard>
@@ -101,7 +97,12 @@ import { z } from 'zod'
 definePageMeta({ middleware: 'auth' })
 
 const { t } = useI18n()
-const router = useRouter()
+const { setNavbar } = usePageNavbar()
+
+onMounted(() => {
+  setNavbar({ title: t('Profile'), showBack: true })
+})
+
 const { $api } = useApi()
 const { fetchMe } = useAuth()
 const authStore = useAuthStore()
