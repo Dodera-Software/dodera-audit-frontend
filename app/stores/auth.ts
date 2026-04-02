@@ -5,6 +5,7 @@ export interface User {
   name: string
   email: string
   plan: 'free' | 'pro' | 'max'
+  is_admin: boolean
   extra_seats: number
   email_verified_at: string | null
   created_at: string

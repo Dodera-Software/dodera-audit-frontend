@@ -400,10 +400,17 @@ watch(pageId, async (id) => {
 }, { immediate: true })
 
 // Global nav items
-const globalNavItems = computed(() => [
-  { to: '/dashboard', icon: 'i-lucide-home', label: t('Dashboard') },
-  { to: '/projects', icon: 'i-lucide-folder', label: t('Projects') },
-])
+const globalNavItems = computed(() => {
+  const items: { to: string, icon: string, label: string }[] = []
+  if (user.value?.is_admin) {
+    items.push({ to: '/admin', icon: 'i-lucide-shield', label: t('Admin') })
+  }
+  items.push(
+    { to: '/dashboard', icon: 'i-lucide-home', label: t('Dashboard') },
+    { to: '/projects', icon: 'i-lucide-folder', label: t('Projects') },
+  )
+  return items
+})
 
 // Project folder nav
 const projectFolderNavItems = computed(() => {
