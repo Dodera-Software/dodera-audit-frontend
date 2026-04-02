@@ -214,7 +214,7 @@ const { siteTypeLabel } = useProjectOptions()
 const { setNavbar } = usePageNavbar()
 
 onMounted(() => {
-  setNavbar({})
+  setNavbar({ title: t('Dashboard') })
 })
 
 const { formatRelativeDate, hostname } = useFormatters()
