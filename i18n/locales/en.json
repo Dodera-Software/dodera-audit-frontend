@@ -696,5 +696,22 @@
   "Legal": "Legal",
   "Privacy Policy": "Privacy Policy",
   "Terms of Service": "Terms of Service",
-  "Cookie Policy": "Cookie Policy"
+  "Cookie Policy": "Cookie Policy",
+  "Process": "Process",
+  "Audit in": "Audit in",
+  "3 steps": "3 steps",
+  "No integration. No code changes. Just a URL.": "No integration. No code changes. Just a URL.",
+  "Drop in any live page — landing page, product page, checkout — no account setup required to start.": "Drop in any live page — landing page, product page, checkout — no account setup required to start.",
+  "7 AIs go to work": "7 AIs go to work",
+  "Each AI persona reads, critiques, and scores your page from a distinct visitor mindset. Done in minutes.": "Each AI persona reads, critiques, and scores your page from a distinct visitor mindset. Done in minutes.",
+  "Get your action plan": "Get your action plan",
+  "Prioritized issues, a Kanban board, and a narrative report that tells you exactly what to fix and why.": "Prioritized issues, a Kanban board, and a narrative report that tells you exactly what to fix and why.",
+  "Visual Analyst": "Visual Analyst",
+  "Trust Auditor": "Trust Auditor",
+  "Conversion Critic": "Conversion Critic",
+  "Code Inspector": "Code Inspector",
+  "Scores may be less accurate": "Scores may be less accurate",
+  "Agent output retried for accuracy": "Agent output retried for accuracy",
+  "Agent output may contain generic observations": "Agent output may contain generic observations",
+  "Audit failed": "Audit failed"
 }
