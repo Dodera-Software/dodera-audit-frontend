@@ -2,9 +2,7 @@
   <div class="mx-auto max-w-2xl">
     <h1 class="mb-6 text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Team') }}</h1>
 
-    <div v-if="loading" class="flex justify-center py-16">
-      <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
-    </div>
+    <TeamPageSkeleton v-if="loading" />
 
     <template v-else>
       <!-- Member of someone else's team -->

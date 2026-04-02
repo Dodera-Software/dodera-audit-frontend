@@ -1,7 +1,20 @@
 <template>
   <ClientOnly>
-    <div v-if="loading" class="flex justify-center py-16">
-      <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
+    <!-- Skeleton loading -->
+    <div v-if="loading">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <USkeleton class="h-10 w-10 shrink-0 rounded-lg" />
+          <div class="space-y-1.5">
+            <USkeleton class="h-5 w-40" />
+            <USkeleton class="h-3.5 w-20" />
+          </div>
+        </div>
+        <USkeleton class="h-9 w-24 rounded-lg" />
+      </div>
+      <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <UiSkeletonPageCard v-for="i in 6" :key="i" />
+      </div>
     </div>
 
     <!-- Error state -->

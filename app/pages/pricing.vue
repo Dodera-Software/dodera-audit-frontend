@@ -12,9 +12,9 @@
         <p class="mt-3 text-lg text-(--ui-text-muted)">{{ t('Start free. Upgrade when you need more audits or your team grows.') }}</p>
       </div>
 
-      <!-- Loading -->
-      <div v-if="loading" class="flex justify-center py-16">
-        <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
+      <!-- Skeleton loading -->
+      <div v-if="loading" class="grid gap-6 md:grid-cols-3">
+        <UiSkeletonPricingCard v-for="i in 3" :key="i" />
       </div>
 
       <!-- Plan cards -->

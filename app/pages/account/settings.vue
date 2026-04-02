@@ -77,9 +77,7 @@
         </div>
 
         <!-- Loading state -->
-        <div v-else-if="keyLoading" class="flex justify-center py-4">
-          <UIcon name="i-lucide-loader-2" class="h-5 w-5 animate-spin text-(--ui-text-muted)" />
-        </div>
+        <UiSkeletonApiKey v-else-if="keyLoading" />
 
         <!-- Key is set -->
         <div v-else-if="keyStatus?.has_key" class="space-y-4">

@@ -1,8 +1,6 @@
 <template>
   <ClientOnly>
-    <div v-if="loading" class="flex justify-center py-16">
-      <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
-    </div>
+    <PageDetailSkeleton v-if="loading" />
 
     <div v-else-if="page">
       <!-- Header -->
