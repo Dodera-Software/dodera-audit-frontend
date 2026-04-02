@@ -18,8 +18,9 @@ export function useApi() {
         headers,
       })
     }
-    catch (error: any) {
-      if (error?.response?.status === 401) {
+    catch (error: unknown) {
+      const err = error as { response?: { status?: number } }
+      if (err?.response?.status === 401) {
         token.value = null
         useAuthStore().clearUser()
         const route = useRoute()

@@ -1,12 +1,11 @@
 <template>
   <ClientOnly>
     <div>
-      <div class="flex items-center justify-between">
-        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Projects') }}</h1>
-        <UButton icon="i-lucide-plus" @click="showCreateDialog = true">
+      <Teleport to="#navbar-actions">
+        <UButton size="md" icon="i-lucide-plus" @click="showCreateDialog = true">
           {{ t('New project') }}
         </UButton>
-      </div>
+      </Teleport>
 
       <!-- Search -->
       <div v-if="!loading && projects.length > 0" class="mt-4">
@@ -19,9 +18,9 @@
         />
       </div>
 
-      <!-- Loading -->
-      <div v-if="loading" class="mt-6 flex justify-center py-16">
-        <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
+      <!-- Skeleton loading -->
+      <div v-if="loading" class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <UiSkeletonProjectCard v-for="i in 6" :key="i" />
       </div>
 
       <!-- Empty state -->
@@ -143,6 +142,7 @@
 
 <script setup lang="ts">
 import { Vue3Lottie } from 'vue3-lottie'
+import { scoreColor } from '~/constants/audit'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -153,7 +153,12 @@ const deleteTarget = ref<ProjectItem | null>(null)
 const { t } = useI18n()
 const { $api } = useApi()
 const apiError = useApiError()
-const { formatRelativeDate } = useFormatters()
+const { setNavbar } = usePageNavbar()
+const { formatRelativeDate, hostname } = useFormatters()
+
+onMounted(() => {
+  setNavbar({ title: t('Projects') })
+})
 
 interface PagePreview {
   id: string
@@ -179,17 +184,6 @@ const filteredProjects = computed(() => {
   if (!query) return projects.value
   return projects.value.filter(p => p.name.toLowerCase().includes(query))
 })
-
-function hostname(url: string): string {
-  try { return new URL(url).hostname }
-  catch { return url }
-}
-
-function scoreColor(score: number): string {
-  if (score >= 80) return 'text-green-500'
-  if (score >= 50) return 'text-yellow-500'
-  return 'text-red-500'
-}
 
 function openDeleteDialog(project: ProjectItem) {
   deleteTarget.value = project

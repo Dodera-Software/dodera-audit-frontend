@@ -7,16 +7,7 @@
 
     <!-- Main content -->
     <div class="flex min-w-0 flex-1 flex-col">
-      <ClientOnly>
-        <AppNavbar v-if="showNavbar" @toggle-mobile="mobileOpen = true" />
-        <!-- Mobile-only: just a hamburger row when navbar is hidden -->
-        <div v-else class="flex h-12 items-center border-b border-(--ui-border) bg-(--ui-bg) px-4 lg:hidden">
-          <UButton variant="ghost" size="xs" icon="i-lucide-menu" square @click="mobileOpen = true" />
-          <NuxtLink to="/dashboard" class="ml-2">
-            <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-6 w-auto" />
-          </NuxtLink>
-        </div>
-      </ClientOnly>
+      <AppNavbar @toggle-mobile="mobileOpen = true" />
 
       <ClientOnly>
         <div v-if="authStore.user && !authStore.isEmailVerified" class="flex items-center justify-between gap-3 border-b border-amber-200 bg-amber-50 px-4 py-2.5 dark:border-amber-900/50 dark:bg-amber-950/30">
@@ -30,7 +21,7 @@
         </div>
       </ClientOnly>
 
-      <main class="relative min-w-0 flex-1 overflow-y-auto p-5">
+      <main ref="mainEl" class="relative min-w-0 flex-1 overflow-y-auto p-5">
         <slot />
       </main>
     </div>
@@ -52,16 +43,14 @@
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(defineProps<{
-  showNavbar?: boolean
-}>(), {
-  showNavbar: false,
-})
-
 const { t } = useI18n()
 const { logout, resendVerification } = useAuth()
 const authStore = useAuthStore()
 const toast = useToast()
+
+const mainEl = ref<HTMLElement | null>(null)
+const { y: mainScrollY } = useScroll(mainEl)
+provide('mainScrollY', mainScrollY)
 
 const mobileOpen = ref(false)
 const loggingOut = ref(false)

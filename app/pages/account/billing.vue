@@ -1,6 +1,6 @@
 <template>
-  <div class="mx-auto max-w-2xl">
-    <h1 class="mb-6 text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Billing & Plan') }}</h1>
+  <ClientOnly>
+    <div class="mx-auto max-w-2xl">
 
     <!-- Success banner after checkout redirect -->
     <UAlert
@@ -13,9 +13,7 @@
       :description="t('Your plan has been upgraded. Enjoy your new features.')"
     />
 
-    <div v-if="loading" class="flex justify-center py-16">
-      <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
-    </div>
+    <BillingPageSkeleton v-if="loading" />
 
     <template v-else-if="status">
       <!-- Current plan card -->
@@ -119,7 +117,8 @@
         </div>
       </UCard>
     </template>
-  </div>
+    </div>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
@@ -132,7 +131,12 @@ const { $api } = useApi()
 const route = useRoute()
 const { formatDate } = useFormatters()
 const { redirectToPortal } = usePlan()
+const { setNavbar } = usePageNavbar()
 const toast = useToast()
+
+onMounted(() => {
+  setNavbar({ title: t('Billing & Plan'), showBack: true })
+})
 
 const status = ref<BillingStatus | null>(null)
 const loading = ref(true)

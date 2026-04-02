@@ -1,10 +1,6 @@
 <template>
   <ClientOnly>
     <div class="max-w-2xl space-y-6">
-      <div class="flex items-center gap-4">
-        <UButton variant="ghost" icon="i-lucide-arrow-left" size="xs" @click="router.back()" />
-        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Settings') }}</h1>
-      </div>
 
       <!-- Appearance -->
       <UCard>
@@ -77,9 +73,7 @@
         </div>
 
         <!-- Loading state -->
-        <div v-else-if="keyLoading" class="flex justify-center py-4">
-          <UIcon name="i-lucide-loader-2" class="h-5 w-5 animate-spin text-(--ui-text-muted)" />
-        </div>
+        <UiSkeletonApiKey v-else-if="keyLoading" />
 
         <!-- Key is set -->
         <div v-else-if="keyStatus?.has_key" class="space-y-4">
@@ -160,11 +154,15 @@
 definePageMeta({ middleware: 'auth' })
 
 const { t } = useI18n()
-const router = useRouter()
 const colorMode = useColorMode()
 const toast = useToast()
+const { setNavbar } = usePageNavbar()
 const { isMax } = usePlan()
 const { keyStatus, loading: keyLoading, saving: keySaving, fetchStatus, saveKey, removeKey } = useOpenAiKey()
+
+onMounted(() => {
+  setNavbar({ title: t('Settings'), showBack: true })
+})
 
 const themeModes = computed(() => [
   { value: 'light', icon: 'i-lucide-sun', label: t('Light') },
@@ -201,7 +199,7 @@ onMounted(async () => {
       keyForm.model = keyStatus.value.model
     }
     else if (keyStatus.value?.available_models?.length) {
-      keyForm.model = keyStatus.value.available_models[0].value
+      keyForm.model = keyStatus.value.available_models[0]?.value ?? ''
     }
   }
 })
@@ -215,9 +213,10 @@ async function handleSaveKey() {
     showEditForm.value = false
     usePlan().invalidateBillingStatus()
   }
-  catch (error: any) {
-    const message = error?.response?._data?.errors?.api_key?.[0]
-      || error?.response?._data?.message
+  catch (e: unknown) {
+    const err = e as { response?: { _data?: { errors?: Record<string, string[]>, message?: string } } }
+    const message = err?.response?._data?.errors?.api_key?.[0]
+      || err?.response?._data?.message
       || t('Failed to save API key.')
     toast.add({ title: message, color: 'error' })
   }

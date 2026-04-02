@@ -7,8 +7,15 @@
 
       <UCard>
         <!-- Loading -->
-        <div v-if="loading" class="flex justify-center py-8">
-          <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
+        <div v-if="loading" class="space-y-4 py-4">
+          <div class="flex justify-center">
+            <USkeleton class="h-12 w-12 rounded-xl" />
+          </div>
+          <div class="space-y-2 text-center">
+            <USkeleton class="mx-auto h-5 w-56" />
+            <USkeleton class="mx-auto h-4 w-72" />
+          </div>
+          <USkeleton class="h-10 w-full rounded-lg" />
         </div>
 
         <!-- Invalid / expired -->

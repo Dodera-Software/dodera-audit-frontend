@@ -109,7 +109,7 @@ export interface RowAction {
 }
 
 const props = withDefaults(defineProps<{
-  rowData: any[]
+  rowData: Record<string, unknown>[]
   columnDefs: ColDef[]
   defaultColDef?: ColDef
   pagination?: boolean
@@ -136,7 +136,7 @@ const props = withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{
-  rowClicked: [data: any]
+  rowClicked: [data: Record<string, unknown>]
   gridReady: [event: GridReadyEvent]
   pageChange: [page: number]
   refresh: []

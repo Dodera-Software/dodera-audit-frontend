@@ -1,11 +1,8 @@
 <template>
   <ClientOnly>
-    <div v-if="loading" class="flex justify-center py-16">
-      <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
-    </div>
+    <AuditHistorySkeleton v-if="loading" />
 
     <div v-else>
-      <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Audit History') }}</h1>
 
       <!-- Empty -->
       <UCard v-if="audits.length === 0" class="mt-8 py-16 text-center">
@@ -114,10 +111,19 @@ const router = useRouter()
 const route = useRoute()
 const { $api } = useApi()
 const apiError = useApiError()
+const { setNavbar } = usePageNavbar()
 const { formatDateTime } = useFormatters()
 
 const projectId = route.params.id as string
 const pageId = route.params.pageId as string
+
+onMounted(() => {
+  setNavbar({
+    title: t('Audit History'),
+    showBack: true,
+    backTo: `/projects/${projectId}/pages/${pageId}`,
+  })
+})
 
 interface AuditRow {
   id: string

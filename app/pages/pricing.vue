@@ -1,20 +1,10 @@
 <template>
-  <div class="min-h-screen bg-(--ui-bg) py-16">
-    <div class="mx-auto max-w-5xl px-6">
+  <div class="py-8">
+    <div class="mx-auto max-w-5xl">
 
-      <!-- Header -->
-      <div class="mb-12 text-center">
-        <NuxtLink to="/dashboard" class="mb-6 inline-flex items-center gap-2 text-sm text-(--ui-text-muted) hover:text-(--ui-primary)">
-          <UIcon name="i-lucide-arrow-left" class="h-3.5 w-3.5" />
-          {{ t('Back to dashboard') }}
-        </NuxtLink>
-        <h1 class="text-4xl font-bold tracking-tight text-(--ui-text-highlighted)">{{ t('Simple, honest pricing') }}</h1>
-        <p class="mt-3 text-lg text-(--ui-text-muted)">{{ t('Start free. Upgrade when you need more audits or your team grows.') }}</p>
-      </div>
-
-      <!-- Loading -->
-      <div v-if="loading" class="flex justify-center py-16">
-        <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
+      <!-- Skeleton loading -->
+      <div v-if="loading" class="grid gap-6 md:grid-cols-3">
+        <UiSkeletonPricingCard v-for="i in 3" :key="i" />
       </div>
 
       <!-- Plan cards -->
@@ -167,7 +157,17 @@ definePageMeta({ middleware: 'auth' })
 const { t } = useI18n()
 const { $api } = useApi()
 const { isFree, isPro, isMax, isPaid, redirectToPortal } = usePlan()
+const { setNavbar } = usePageNavbar()
 const toast = useToast()
+
+onMounted(() => {
+  setNavbar({
+    title: t('Pricing'),
+    subtitle: t('Start free. Upgrade when you need more audits or your team grows.'),
+    showBack: true,
+    backTo: '/dashboard',
+  })
+})
 
 const plans = ref<Record<string, PlanInfo>>({})
 const loading = ref(true)

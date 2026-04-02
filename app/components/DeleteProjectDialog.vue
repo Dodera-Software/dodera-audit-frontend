@@ -7,7 +7,7 @@
             <UIcon name="i-lucide-trash-2" class="h-5 w-5 text-red-500" />
           </div>
           <div>
-            <h2 class="text-lg font-bold text-(--ui-text-highlighted)">{{ t('Delete {name}?', { name: projectName }) }}</h2>
+            <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Delete {name}?', { name: projectName }) }}</h2>
             <p v-if="pagesCount > 0" class="mt-0.5 text-sm text-(--ui-text-muted)">
               {{ t('This project contains {count} pages with audit data.', { count: pagesCount }) }}
             </p>

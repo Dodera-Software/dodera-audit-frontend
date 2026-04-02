@@ -1,23 +1,32 @@
 <template>
   <ClientOnly>
     <div>
-      <!-- Welcome header -->
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-xl font-bold text-(--ui-text-highlighted)">
-            {{ t('Welcome back, {name}', { name: authStore.user?.name?.split(' ')[0] ?? '' }) }}
-          </h1>
-          <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t("Here's what's happening with your audits.") }}</p>
-        </div>
-        <UButton icon="i-lucide-plus" @click="showAddPageDialog = true">
+      <Teleport to="#navbar-actions">
+        <UButton size="md" icon="i-lucide-plus" @click="showAddPageDialog = true">
           {{ t('Add page') }}
         </UButton>
+      </Teleport>
+
+      <!-- Welcome header -->
+      <div>
+        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">
+          {{ t('Welcome back, {name}', { name: authStore.user?.name?.split(' ')[0] ?? '' }) }}
+        </h1>
+        <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t("Here's what's happening with your audits.") }}</p>
       </div>
 
-      <!-- Loading -->
-      <div v-if="loading" class="mt-6 flex justify-center py-16">
-        <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-(--ui-text-muted)" />
-      </div>
+      <!-- Skeleton loading -->
+      <template v-if="loading">
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <UiSkeletonStatCard v-for="i in 4" :key="i" />
+        </div>
+        <div class="mt-8">
+          <USkeleton class="h-4 w-28" />
+          <div class="mt-3 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <UiSkeletonPageCard v-for="i in 6" :key="i" />
+          </div>
+        </div>
+      </template>
 
       <template v-else>
         <!-- Stats row -->
@@ -194,6 +203,7 @@
 
 <script setup lang="ts">
 import { Vue3Lottie } from 'vue3-lottie'
+import { scoreCircleClass } from '~/constants/audit'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -201,7 +211,13 @@ const { t } = useI18n()
 const { $api } = useApi()
 const authStore = useAuthStore()
 const { siteTypeLabel } = useProjectOptions()
-const { formatRelativeDate } = useFormatters()
+const { setNavbar } = usePageNavbar()
+
+onMounted(() => {
+  setNavbar({})
+})
+
+const { formatRelativeDate, hostname } = useFormatters()
 const { confirm } = useConfirm()
 
 const showAddPageDialog = ref(false)
@@ -239,17 +255,6 @@ function thumbnailUrl(url: string): string {
 
 function faviconUrl(url: string): string {
   return `https://www.google.com/s2/favicons?domain=${hostname(url)}&sz=32`
-}
-
-function hostname(url: string): string {
-  try { return new URL(url).hostname }
-  catch { return url }
-}
-
-function scoreCircleClass(score: number): string {
-  if (score >= 80) return 'border-green-500 text-green-500'
-  if (score >= 50) return 'border-yellow-500 text-yellow-500'
-  return 'border-red-500 text-red-500'
 }
 
 const planLabel = computed(() => {

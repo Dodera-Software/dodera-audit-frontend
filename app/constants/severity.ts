@@ -1,3 +1,5 @@
+import type { BadgeColor } from '~/types'
+
 export const SEVERITY_COLORS: Record<string, string> = {
   critical: 'text-red-500',
   high: 'text-amber-500',
@@ -12,7 +14,7 @@ export const SEVERITY_BG_COLORS: Record<string, string> = {
   low: 'bg-gray-500/10',
 }
 
-export const SEVERITY_BADGE_COLORS: Record<string, string> = {
+export const SEVERITY_BADGE_COLORS: Record<string, BadgeColor> = {
   critical: 'error',
   high: 'warning',
   medium: 'primary',

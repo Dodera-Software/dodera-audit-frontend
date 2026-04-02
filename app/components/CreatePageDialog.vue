@@ -2,7 +2,7 @@
   <UModal v-model:open="open">
     <template #content>
       <div class="p-6">
-        <h2 class="text-lg font-bold text-(--ui-text-highlighted)">{{ t('Add a page') }}</h2>
+        <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Add a page') }}</h2>
         <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('PawByTech analyzes one page at a time — not your entire website.') }}</p>
 
         <UForm :schema="schema" :state="form" class="mt-5 space-y-4" @submit="handleCreate">

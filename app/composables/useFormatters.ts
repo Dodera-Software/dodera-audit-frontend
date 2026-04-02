@@ -40,5 +40,10 @@ export function useFormatters() {
     return `${(ms / 1000).toFixed(1)}s`
   }
 
-  return { formatDate, formatDateTime, formatRelativeDate, formatDuration, formatMs }
+  function hostname(url: string): string {
+    try { return new URL(url).hostname }
+    catch { return url }
+  }
+
+  return { formatDate, formatDateTime, formatRelativeDate, formatDuration, formatMs, hostname }
 }

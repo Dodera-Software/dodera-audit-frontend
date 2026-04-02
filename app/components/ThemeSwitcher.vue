@@ -1,7 +1,9 @@
 <template>
   <UButton
     variant="ghost"
-    size="sm"
+    color="neutral"
+    :size="size"
+    square
     :icon="icon"
     :aria-label="t('Toggle theme')"
     @click="toggleTheme"
@@ -9,6 +11,12 @@
 </template>
 
 <script setup lang="ts">
+withDefaults(defineProps<{
+  size?: 'xs' | 'sm' | 'md' | 'lg'
+}>(), {
+  size: 'sm',
+})
+
 const { t } = useI18n()
 const colorMode = useColorMode()
 
@@ -20,7 +28,7 @@ const icon = computed(() => {
 
 function toggleTheme() {
   const modes = ['light', 'dark', 'system'] as const
-  const current = modes.indexOf(colorMode.preference as any)
-  colorMode.preference = modes[(current + 1) % modes.length]
+  const current = modes.indexOf(colorMode.preference as 'light' | 'dark' | 'system')
+  colorMode.preference = modes[(current + 1) % modes.length]!
 }
 </script>

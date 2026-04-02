@@ -27,6 +27,12 @@ export function scoreLevel(score: number): 'good' | 'moderate' | 'poor' {
   return 'poor'
 }
 
+export function scoreCircleClass(score: number): string {
+  if (score >= SCORE_THRESHOLDS.good) return 'border-green-500 text-green-500'
+  if (score >= SCORE_THRESHOLDS.moderate) return 'border-yellow-500 text-yellow-500'
+  return 'border-red-500 text-red-500'
+}
+
 export const SCORE_CATEGORIES = [
   { key: 'clarity', icon: 'i-lucide-type' },
   { key: 'trust', icon: 'i-lucide-shield-check' },
