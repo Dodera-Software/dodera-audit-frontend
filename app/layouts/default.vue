@@ -21,7 +21,7 @@
         </div>
       </ClientOnly>
 
-      <main ref="mainEl" class="relative min-w-0 flex-1 overflow-y-auto p-5">
+      <main id="main-content" ref="mainEl" class="relative min-w-0 flex-1 overflow-y-auto p-5">
         <slot />
       </main>
     </div>

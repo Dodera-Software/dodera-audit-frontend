@@ -2,52 +2,74 @@
   <UModal v-model:open="open">
     <template #content>
       <div class="p-6">
-        <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Move to project') }}</h2>
-        <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Choose which project this page belongs to.') }}</p>
+        <!-- Header -->
+        <div class="flex items-start gap-3">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--ui-primary)/10">
+            <UIcon name="i-lucide-folder-symlink" class="h-4.5 w-4.5 text-(--ui-primary)" />
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Move to project') }}</h2>
+            <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t('Choose which project this page belongs to.') }}</p>
+          </div>
+        </div>
 
-        <div class="mt-5 space-y-4">
-          <USelect
-            v-model="selectedProjectId"
-            :items="projectOptions"
-            class="w-full"
-          />
-
-          <!-- Inline create project -->
-          <div class="flex items-center gap-2">
+        <div class="mt-5 space-y-3">
+          <div class="flex gap-2">
+            <USelect
+              v-model="selectedProjectId"
+              :items="projectOptions"
+              class="flex-1"
+            />
             <UButton
-              v-if="!showNewProjectInput"
-              variant="ghost"
+              variant="outline"
               color="neutral"
-              size="sm"
-              icon="i-lucide-plus"
-              @click="showNewProjectInput = true"
-            >
-              {{ t('Create project') }}
-            </UButton>
-            <template v-else>
-              <UInput
-                v-model="newProjectName"
-                :placeholder="t('New project name')"
-                class="flex-1"
-                size="sm"
-                @keyup.enter="handleCreateProject"
-              />
-              <UButton
-                size="sm"
-                :loading="creatingProject"
-                :disabled="!newProjectName.trim()"
-                @click="handleCreateProject"
-              >
-                {{ t('Create') }}
-              </UButton>
-            </template>
+              :icon="showNewProjectInput ? 'i-lucide-x' : 'i-lucide-plus'"
+              :label="showNewProjectInput ? t('Cancel') : t('New')"
+              @click="toggleNewProjectInput"
+            />
           </div>
 
+          <!-- Inline create project -->
+          <Transition
+            enter-active-class="transition-all duration-200 ease-out"
+            enter-from-class="opacity-0 -translate-y-1"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition-all duration-150 ease-in"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 -translate-y-1"
+          >
+            <div v-if="showNewProjectInput" class="rounded-lg border border-(--ui-border) bg-(--ui-bg-elevated) p-3">
+              <p class="mb-2 flex items-center gap-1.5 text-xs font-medium text-(--ui-text-muted)">
+                <UIcon name="i-lucide-folder-plus" class="h-3.5 w-3.5" />
+                {{ t('New project') }}
+              </p>
+              <div class="flex gap-2">
+                <UInput
+                  v-model="newProjectName"
+                  :placeholder="t('e.g. My Website')"
+                  class="flex-1"
+                  size="sm"
+                  @keyup.enter="handleCreateProject"
+                />
+                <UButton
+                  size="sm"
+                  :loading="creatingProject"
+                  :disabled="!newProjectName.trim()"
+                  icon="i-lucide-check"
+                  @click="handleCreateProject"
+                >
+                  {{ t('Create') }}
+                </UButton>
+              </div>
+            </div>
+          </Transition>
+
           <div class="flex justify-end gap-3 pt-2">
-            <UButton variant="outline" @click="open = false">
+            <UButton variant="outline" color="neutral" @click="open = false">
               {{ t('Cancel') }}
             </UButton>
             <UButton
+              icon="i-lucide-folder-symlink"
               :loading="moving"
               :disabled="!selectedProjectId || selectedProjectId === pageProjectId"
               @click="handleMove"
@@ -101,6 +123,11 @@ watch(open, async (val) => {
     // silent
   }
 })
+
+function toggleNewProjectInput() {
+  showNewProjectInput.value = !showNewProjectInput.value
+  if (!showNewProjectInput.value) newProjectName.value = ''
+}
 
 async function handleCreateProject() {
   if (!newProjectName.value.trim()) return

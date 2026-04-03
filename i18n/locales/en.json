@@ -767,5 +767,18 @@
   "My projects": "My projects",
   "Manage and organise your audit projects.": "Manage and organise your audit projects.",
   "Admin dashboard": "Admin dashboard",
-  "Manage users, audits and platform settings.": "Manage users, audits and platform settings."
+  "Manage users, audits and platform settings.": "Manage users, audits and platform settings.",
+  "New": "New",
+  "e.g. My Website": "e.g. My Website",
+  "Optional": "Optional",
+  "Helps the AI tailor the audit": "Helps the AI tailor the audit",
+  "Select a conversion goal": "Select a conversion goal",
+  "e.g. Small business owners looking for accounting software": "e.g. Small business owners looking for accounting software",
+  "View page": "View page",
+  "Rename": "Rename",
+  "Page name": "Page name",
+  "audit": "audit",
+  "You're all set!": "You're all set!",
+  "Page added successfully.": "Page added successfully.",
+  "Project created successfully.": "Project created successfully."
 }

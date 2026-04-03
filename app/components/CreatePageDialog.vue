@@ -1,9 +1,24 @@
 <template>
+  <UiSuccessOverlay
+    :show="showSuccess"
+    :title="t('You\'re all set!')"
+    :subtitle="t('Page added successfully.')"
+  />
+
   <UModal v-model:open="open">
     <template #content>
-      <div class="p-6">
-        <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Add a page') }}</h2>
-        <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('PawByTech analyzes one page at a time — not your entire website.') }}</p>
+      <div class="flex max-h-[90dvh] flex-col overflow-hidden">
+      <div class="overflow-y-auto p-6">
+        <!-- Header -->
+        <div class="flex items-start gap-3">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--ui-primary)/10">
+            <UIcon name="i-lucide-globe" class="h-4.5 w-4.5 text-(--ui-primary)" />
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Add a page') }}</h2>
+            <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t('PawByTech analyzes one page at a time — not your entire website.') }}</p>
+          </div>
+        </div>
 
         <UForm :schema="schema" :state="form" class="mt-5 space-y-4" @submit="handleCreate">
           <UAlert
@@ -21,6 +36,7 @@
               placeholder="https://example.com/landing"
               class="w-full"
               autofocus
+              leading-icon="i-lucide-link"
             />
           </UFormField>
 
@@ -35,45 +51,64 @@
               <UButton
                 variant="outline"
                 color="neutral"
-                size="sm"
-                icon="i-lucide-plus"
-                :title="t('Create project')"
-                @click="showNewProjectInput = !showNewProjectInput"
+                :icon="showNewProjectInput ? 'i-lucide-x' : 'i-lucide-plus'"
+                :label="showNewProjectInput ? t('Cancel') : t('New')"
+                @click="toggleNewProjectInput"
               />
             </div>
             <!-- Inline create project -->
-            <div v-if="showNewProjectInput" class="mt-2 flex gap-2">
-              <UInput
-                v-model="newProjectName"
-                :placeholder="t('New project name')"
-                class="flex-1"
-                size="sm"
-                @keyup.enter="handleCreateProject"
-              />
-              <UButton
-                size="sm"
-                :loading="creatingProject"
-                :disabled="!newProjectName.trim()"
-                @click="handleCreateProject"
-              >
-                {{ t('Create') }}
-              </UButton>
-            </div>
+            <Transition
+              enter-active-class="transition-all duration-200 ease-out"
+              enter-from-class="opacity-0 -translate-y-1"
+              enter-to-class="opacity-100 translate-y-0"
+              leave-active-class="transition-all duration-150 ease-in"
+              leave-from-class="opacity-100 translate-y-0"
+              leave-to-class="opacity-0 -translate-y-1"
+            >
+              <div v-if="showNewProjectInput" class="mt-2 rounded-lg border border-(--ui-border) bg-(--ui-bg-elevated) p-3">
+                <p class="mb-2 flex items-center gap-1.5 text-xs font-medium text-(--ui-text-muted)">
+                  <UIcon name="i-lucide-folder-plus" class="h-3.5 w-3.5" />
+                  {{ t('New project') }}
+                </p>
+                <div class="flex gap-2">
+                  <UInput
+                    v-model="newProjectName"
+                    :placeholder="t('e.g. My Website')"
+                    class="flex-1"
+                    size="sm"
+                    @keyup.enter="handleCreateProject"
+                  />
+                  <UButton
+                    size="sm"
+                    :loading="creatingProject"
+                    :disabled="!newProjectName.trim()"
+                    icon="i-lucide-check"
+                    @click="handleCreateProject"
+                  >
+                    {{ t('Create') }}
+                  </UButton>
+                </div>
+              </div>
+            </Transition>
           </UFormField>
 
-          <UFormField :label="t('Page name (optional)')" name="name">
+          <UFormField :label="t('Page name')" :hint="t('Optional')" name="name">
             <UInput
               v-model="form.name"
               :placeholder="t('My Landing Page')"
               class="w-full"
+              leading-icon="i-lucide-tag"
             />
           </UFormField>
+
+          <USeparator :label="t('Helps the AI tailor the audit')" class="my-1" />
 
           <UFormField :label="t('Site type')" name="site_type">
             <USelect
               v-model="form.site_type"
               :items="siteTypes"
               class="w-full"
+              :placeholder="t('Select a site type')"
             />
           </UFormField>
 
@@ -82,20 +117,21 @@
               v-model="form.conversion_goal"
               :items="conversionGoals"
               class="w-full"
+              :placeholder="t('Select a conversion goal')"
             />
           </UFormField>
 
-          <UFormField :label="t('Target audience')" name="target_audience_description">
+          <UFormField :label="t('Target audience')" :hint="t('Optional')" name="target_audience_description">
             <UTextarea
               v-model="form.target_audience_description"
-              :placeholder="t('Describe your target audience (optional)')"
+              :placeholder="t('e.g. Small business owners looking for accounting software')"
               :rows="2"
               class="w-full"
             />
           </UFormField>
 
           <div class="flex justify-end gap-3 pt-2">
-            <UButton variant="outline" @click="open = false">
+            <UButton variant="outline" color="neutral" @click="open = false">
               {{ t('Cancel') }}
             </UButton>
             <UButton type="submit" :loading="loading" :disabled="!targetProjectId">
@@ -103,6 +139,7 @@
             </UButton>
           </div>
         </UForm>
+      </div>
       </div>
     </template>
   </UModal>
@@ -138,6 +175,7 @@ const form = reactive({
 })
 
 const loading = ref(false)
+const showSuccess = ref(false)
 
 // Project picker state
 const showProjectPicker = computed(() => !props.projectId)
@@ -155,6 +193,11 @@ const projectOptions = computed(() =>
 
 const targetProjectId = computed(() => props.projectId ?? selectedProjectId.value)
 
+function toggleNewProjectInput() {
+  showNewProjectInput.value = !showNewProjectInput.value
+  if (!showNewProjectInput.value) newProjectName.value = ''
+}
+
 function resetForm() {
   form.url = ''
   form.name = ''
@@ -163,11 +206,15 @@ function resetForm() {
   form.target_audience_description = ''
   showNewProjectInput.value = false
   newProjectName.value = ''
+  showSuccess.value = false
   apiError.clear()
 }
 
 watch(open, async (val) => {
-  if (!val) return
+  if (!val) {
+    if (!showSuccess.value) resetForm()
+    return
+  }
   resetForm()
 
   if (showProjectPicker.value && fetchedProjects.value.length === 0) {
@@ -219,8 +266,13 @@ async function handleCreate() {
       method: 'POST',
       body: form,
     })
+    const createdPage = { id: data.data.id, project_id: targetProjectId.value }
     open.value = false
-    emit('created', { id: data.data.id, project_id: targetProjectId.value })
+    showSuccess.value = true
+    setTimeout(() => {
+      showSuccess.value = false
+      emit('created', createdPage)
+    }, 1800)
   }
   catch (e) {
     apiError.parse(e, t('Failed to add page.'))

@@ -54,6 +54,13 @@
               @load="($event.target as HTMLImageElement).classList.replace('opacity-0', 'opacity-100')"
               @error="($event.target as HTMLImageElement).remove()"
             >
+            <!-- Hover overlay -->
+            <div class="absolute inset-0 flex items-center justify-center bg-(--ui-bg)/60 opacity-0 backdrop-blur-[2px] transition-opacity duration-200 group-hover:opacity-100">
+              <span class="flex items-center gap-1.5 text-sm font-medium text-(--ui-text-highlighted)">
+                {{ t('View page') }}
+                <UIcon name="i-lucide-arrow-right" class="h-4 w-4" />
+              </span>
+            </div>
             <!-- Score overlay -->
             <div
               v-if="page.latest_score != null"
@@ -112,6 +119,17 @@
                         {{ t('Rename') }}
                       </UButton>
                       <UButton
+                        icon="i-lucide-folder-symlink"
+                        variant="ghost"
+                        color="neutral"
+                        size="sm"
+                        block
+                        class="justify-start"
+                        @click="openMovePage(page)"
+                      >
+                        {{ t('Move to project') }}
+                      </UButton>
+                      <UButton
                         icon="i-lucide-trash-2"
                         variant="ghost"
                         color="error"
@@ -135,7 +153,8 @@
                 {{ formatRelativeDate(page.latest_audit_date) }}
               </span>
               <span v-if="page.audits_count" class="flex items-center gap-1">
-                {{ page.audits_count }} {{ page.audits_count === 1 ? 'audit' : 'audits' }}
+                <UIcon name="i-lucide-scan" class="h-3 w-3" />
+                {{ page.audits_count }} {{ page.audits_count === 1 ? t('audit') : t('audits') }}
               </span>
             </div>
           </div>
@@ -154,6 +173,14 @@
         :page-id="renamePageTarget.id"
         :page-name="renamePageTarget.name"
         @renamed="onPageRenamed"
+      />
+
+      <MovePageDialog
+        v-if="movePageTarget"
+        v-model:open="showMovePageDialog"
+        :page-id="movePageTarget.id"
+        :page-project-id="projectId"
+        @moved="onPageMoved"
       />
     </div>
   </ClientOnly>
@@ -178,7 +205,9 @@ const { confirm } = useConfirm()
 const projectId = route.params.id as string
 const showAddPageDialog = ref(false)
 const showRenamePageDialog = ref(false)
+const showMovePageDialog = ref(false)
 const renamePageTarget = ref<PageItem | null>(null)
+const movePageTarget = ref<PageItem | null>(null)
 
 interface PageItem {
   id: string
@@ -225,6 +254,11 @@ function openRenamePage(page: PageItem) {
   showRenamePageDialog.value = true
 }
 
+function openMovePage(page: PageItem) {
+  movePageTarget.value = page
+  showMovePageDialog.value = true
+}
+
 function onPageRenamed(newName: string) {
   if (!renamePageTarget.value) {
     return
@@ -262,6 +296,12 @@ async function deletePage(page: PageItem) {
 
 function onPageCreated(page: { id: string }) {
   navigateTo(`/projects/${projectId}/pages/${page.id}`)
+}
+
+function onPageMoved(newProjectId: string) {
+  if (!project.value) return
+  project.value.pages = project.value.pages.filter(p => p.id !== movePageTarget.value?.id)
+  project.value.pages_count -= 1
 }
 
 onMounted(async () => {

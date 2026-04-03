@@ -1,9 +1,23 @@
 <template>
+  <UiSuccessOverlay
+    :show="showSuccess"
+    :title="t('You\'re all set!')"
+    :subtitle="t('Project created successfully.')"
+  />
+
   <UModal v-model:open="open">
     <template #content>
       <div class="p-6">
-        <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Create a project') }}</h2>
-        <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Projects are folders that group pages you want to audit.') }}</p>
+        <!-- Header -->
+        <div class="flex items-start gap-3">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--ui-primary)/10">
+            <UIcon name="i-lucide-folder-plus" class="h-4.5 w-4.5 text-(--ui-primary)" />
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Create a project') }}</h2>
+            <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t('Projects are folders that group pages you want to audit.') }}</p>
+          </div>
+        </div>
 
         <UForm :schema="schema" :state="form" class="mt-5 space-y-4" @submit="handleCreate">
           <UAlert
@@ -20,11 +34,12 @@
               :placeholder="t('My Website')"
               class="w-full"
               autofocus
+              leading-icon="i-lucide-folder"
             />
           </UFormField>
 
           <div class="flex justify-end gap-3 pt-2">
-            <UButton variant="outline" @click="open = false">
+            <UButton variant="outline" color="neutral" @click="open = false">
               {{ t('Cancel') }}
             </UButton>
             <UButton type="submit" :loading="loading">
@@ -54,10 +69,12 @@ const schema = createProjectSchema(t)
 
 const form = reactive({ name: '' })
 const loading = ref(false)
+const showSuccess = ref(false)
 
 watch(open, (val) => {
   if (val) {
     form.name = ''
+    showSuccess.value = false
     apiError.clear()
   }
 })
@@ -71,9 +88,14 @@ async function handleCreate() {
       method: 'POST',
       body: form,
     })
+    const createdProject = data.data
     open.value = false
-    emit('created', data.data)
-    navigateTo(`/projects/${data.data.id}`)
+    showSuccess.value = true
+    setTimeout(() => {
+      showSuccess.value = false
+      emit('created', createdProject)
+      navigateTo(`/projects/${createdProject.id}`)
+    }, 1800)
   }
   catch (e) {
     apiError.parse(e, t('Failed to create project.'))
