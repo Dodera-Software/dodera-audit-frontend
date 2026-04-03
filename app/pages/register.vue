@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { registerSchema } from '~/schemas/auth'
 
-definePageMeta({ layout: 'auth', middleware: 'guest' })
+definePageMeta({ layout: 'auth', middleware: 'guest', ssr: false })
 
 const { t } = useI18n()
 const route = useRoute()
