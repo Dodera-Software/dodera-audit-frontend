@@ -226,10 +226,16 @@ function openRenamePage(page: PageItem) {
 }
 
 function onPageRenamed(newName: string) {
-  if (renamePageTarget.value) {
-    const page = project.value?.pages.find(p => p.id === renamePageTarget.value!.id)
-    if (page) page.name = newName || null
+  if (!renamePageTarget.value) {
+    return
   }
+
+  const page = project.value?.pages.find(p => p.id === renamePageTarget.value!.id)
+  if (!page) {
+    return
+  }
+
+  page.name = newName || null
 }
 
 async function deletePage(page: PageItem) {

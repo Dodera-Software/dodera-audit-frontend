@@ -217,10 +217,16 @@ function openRenameDialog(project: ProjectItem) {
 }
 
 function onProjectRenamed(newName: string) {
-  if (renameTarget.value) {
-    const project = projects.value.find(p => p.id === renameTarget.value!.id)
-    if (project) project.name = newName
+  if (!renameTarget.value) {
+    return
   }
+
+  const project = projects.value.find(p => p.id === renameTarget.value!.id)
+  if (!project) {
+    return
+  }
+
+  project.name = newName
 }
 
 function onProjectDeleted() {
