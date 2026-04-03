@@ -26,12 +26,23 @@
       <UFormField :label="t('Password')" name="password">
         <UInput
           v-model="form.password"
-          type="password"
+          :type="showPassword ? 'text' : 'password'"
           autocomplete="current-password"
           placeholder="********"
           size="lg"
           class="w-full"
-        />
+        >
+          <template #trailing>
+            <UButton
+              :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+              variant="ghost"
+              color="neutral"
+              size="sm"
+              :aria-label="showPassword ? t('Hide password') : t('Show password')"
+              @click="showPassword = !showPassword"
+            />
+          </template>
+        </UInput>
       </UFormField>
 
       <div class="flex items-center justify-between">
@@ -66,6 +77,7 @@ const toast = useToast()
 const schema = loginSchema(t)
 const form = reactive({ email: '', password: '' })
 const loading = ref(false)
+const showPassword = ref(false)
 
 onMounted(() => {
   if (route.query.verified === '1') {
