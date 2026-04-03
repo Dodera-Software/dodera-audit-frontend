@@ -2,22 +2,31 @@
   <UModal v-model:open="open">
     <template #content>
       <div class="p-6">
-        <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Rename page') }}</h2>
-        <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t('Enter a display name for this page.') }}</p>
+        <!-- Header -->
+        <div class="flex items-start gap-3">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--ui-primary)/10">
+            <UIcon name="i-lucide-pencil" class="h-4.5 w-4.5 text-(--ui-primary)" />
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Rename page') }}</h2>
+            <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t('Enter a display name for this page.') }}</p>
+          </div>
+        </div>
 
         <UInput
           ref="inputRef"
           v-model="name"
-          class="mt-4"
+          class="mt-5"
           :placeholder="t('Page name (optional)')"
+          leading-icon="i-lucide-tag"
           @keydown.enter="handleRename"
         />
 
-        <div class="mt-6 flex justify-end gap-3">
-          <UButton variant="outline" @click="open = false">
+        <div class="mt-5 flex justify-end gap-3">
+          <UButton variant="outline" color="neutral" @click="open = false">
             {{ t('Cancel') }}
           </UButton>
-          <UButton :loading="saving" @click="handleRename">
+          <UButton icon="i-lucide-check" :loading="saving" @click="handleRename">
             {{ t('Save') }}
           </UButton>
         </div>
