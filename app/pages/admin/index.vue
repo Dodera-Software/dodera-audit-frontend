@@ -1,11 +1,15 @@
 <template>
-  <div class="space-y-6">
-    <div class="flex items-center justify-between">
-      <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Admin Dashboard') }}</h1>
+  <div>
+    <!-- Page header -->
+    <div>
+      <h1 class="text-xl font-bold text-(--ui-text-highlighted)">
+        {{ t('Admin dashboard') }}
+      </h1>
+      <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t('Manage users, audits and platform settings.') }}</p>
     </div>
 
     <!-- Quick actions -->
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <UCard>
         <div class="flex items-center gap-3">
           <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-(--ui-primary)/10">
@@ -55,12 +59,13 @@
     </div>
 
     <!-- Users table -->
-    <div v-if="loading" class="flex justify-center py-8">
+    <div v-if="loading" class="mt-6 flex justify-center py-8">
       <UIcon name="i-lucide-loader-2" class="h-6 w-6 animate-spin text-(--ui-text-muted)" />
     </div>
 
     <BaseDataTable
       v-else
+      class="mt-6"
       :row-data="users"
       :column-defs="columnDefs"
       :clickable="false"
@@ -138,6 +143,7 @@ const { confirm } = useConfirm()
 const authStore = useAuthStore()
 const { fetchMe } = useAuth()
 const apiError = useApiError()
+const { setNavbar } = usePageNavbar()
 
 // State
 const users = ref<any[]>([])
@@ -401,6 +407,7 @@ async function handleReset() {
 }
 
 onMounted(() => {
+  setNavbar({ title: t('Admin') })
   fetchUsers()
 })
 </script>

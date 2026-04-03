@@ -8,7 +8,15 @@
       </Teleport>
 
       <!-- Search -->
-      <div v-if="!loading && projects.length > 0" class="mt-4">
+      <div>
+        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">
+          {{ t('My projects') }}
+        </h1>
+        <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t('Manage and organise your audit projects.') }}</p>
+      </div>
+
+      <!-- Search -->
+      <div v-if="!loading && projects.length > 0" class="mt-6">
         <UInput
           v-model="search"
           icon="i-lucide-search"
