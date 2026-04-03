@@ -9,3 +9,35 @@
     -moz-osx-font-smoothing: grayscale;
   }
 }
+
+/* ─── nuxt-charts (Unovis) theming ────────────────────────────────── */
+:root {
+  --vis-color0: #6366f1;
+  --vis-color1: #10b981;
+  --vis-color2: #f59e0b;
+  --vis-color3: #ef4444;
+  --vis-color4: #8b5cf6;
+  --vis-color5: #ec4899;
+  --vis-color6: #06b6d4;
+  --vis-color7: #f97316;
+
+  --vis-axis-grid-color: #e4e4e7;
+  --vis-axis-tick-label-color: #71717a;
+  --vis-axis-label-color: #3f3f46;
+
+  --vis-tooltip-background-color: #ffffff;
+  --vis-tooltip-border-color: #e4e4e7;
+  --vis-tooltip-text-color: #18181b;
+  --vis-tooltip-border-radius: 8px;
+  --vis-tooltip-padding: 8px 12px;
+}
+
+.dark {
+  --vis-axis-grid-color: #27272a;
+  --vis-axis-tick-label-color: #a1a1aa;
+  --vis-axis-label-color: #d4d4d8;
+
+  --vis-tooltip-background-color: #27272a;
+  --vis-tooltip-border-color: #3f3f46;
+  --vis-tooltip-text-color: #e4e4e7;
+}

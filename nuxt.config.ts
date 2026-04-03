@@ -25,6 +25,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@pinia/nuxt',
     '@vueuse/nuxt',
+    'nuxt-charts',
   ],
 
   css: ['~/assets/css/main.css'],
@@ -60,7 +61,10 @@ export default defineNuxtConfig({
         '@vue/devtools-core',
         '@vue/devtools-kit',
         'zod',
-      ]
-    }
+        'vue3-lottie',
+        'date-fns',
+        'date-fns/locale',
+      ],
+    },
   }
 })

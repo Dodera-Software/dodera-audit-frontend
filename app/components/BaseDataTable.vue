@@ -33,6 +33,7 @@
     </div>
 
     <AgGridVue
+      ref="gridRef"
       :theme="gridTheme"
       :row-data="rowData"
       :column-defs="allColumnDefs"
@@ -45,6 +46,7 @@
       :row-class-rules="mergedRowClassRules"
       :row-selection="rowSelection"
       :overlay-no-rows-template="noRowsMessage"
+      :loading="loading"
       :get-row-id="getRowId"
       @row-clicked="onRowClicked"
       @grid-ready="(e: GridReadyEvent) => $emit('gridReady', e)"
@@ -120,11 +122,13 @@ const props = withDefaults(defineProps<{
   domLayout?: 'normal' | 'autoHeight' | 'print'
   clickable?: boolean
   rowSelection?: 'single' | 'multiple'
+  loading?: boolean
   noRowsMessage?: string
   hideSearch?: boolean
   searchPlaceholder?: string
   showRefresh?: boolean
 }>(), {
+  loading: false,
   pagination: true,
   paginationPageSize: 20,
   rowIdField: 'id',
