@@ -2,13 +2,21 @@
   <ClientOnly>
     <div>
       <Teleport to="#navbar-actions">
-        <UButton size="md" icon="i-lucide-plus" @click="showCreateDialog = true">
+        <UButton size="lg" icon="i-lucide-plus" @click="showCreateDialog = true">
           {{ t('New project') }}
         </UButton>
       </Teleport>
 
       <!-- Search -->
-      <div v-if="!loading && projects.length > 0" class="mt-4">
+      <div>
+        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">
+          {{ t('My projects') }}
+        </h1>
+        <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t('Manage and organise your audit projects.') }}</p>
+      </div>
+
+      <!-- Search -->
+      <div v-if="!loading && projects.length > 0" class="mt-6">
         <UInput
           v-model="search"
           icon="i-lucide-search"
@@ -28,7 +36,7 @@
         <Vue3Lottie animation-link="/animations/animation-bot.json" :height="140" :width="140" :loop="true" :auto-play="true" class="mx-auto" />
         <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No projects yet') }}</h3>
         <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Create a project folder to group pages you want to audit.') }}</p>
-        <UButton class="mt-6" icon="i-lucide-plus" @click="showCreateDialog = true">
+        <UButton class="mt-6" size="lg" icon="i-lucide-plus" @click="showCreateDialog = true">
           {{ t('Create your first project') }}
         </UButton>
       </div>
@@ -73,6 +81,17 @@
                 />
                 <template #content>
                   <div class="p-1">
+                    <UButton
+                      icon="i-lucide-pencil"
+                      variant="ghost"
+                      color="neutral"
+                      size="sm"
+                      block
+                      class="justify-start"
+                      @click="openRenameDialog(project)"
+                    >
+                      {{ t('Rename') }}
+                    </UButton>
                     <UButton
                       icon="i-lucide-trash-2"
                       variant="ghost"
@@ -128,6 +147,14 @@
 
       <CreateProjectDialog v-model:open="showCreateDialog" />
 
+      <RenameProjectDialog
+        v-if="renameTarget"
+        v-model:open="showRenameDialog"
+        :project-id="renameTarget.id"
+        :project-name="renameTarget.name"
+        @renamed="onProjectRenamed"
+      />
+
       <DeleteProjectDialog
         v-if="deleteTarget"
         v-model:open="showDeleteDialog"
@@ -149,6 +176,8 @@ definePageMeta({ middleware: 'auth' })
 const showCreateDialog = ref(false)
 const showDeleteDialog = ref(false)
 const deleteTarget = ref<ProjectItem | null>(null)
+const showRenameDialog = ref(false)
+const renameTarget = ref<ProjectItem | null>(null)
 
 const { t } = useI18n()
 const { $api } = useApi()
@@ -188,6 +217,24 @@ const filteredProjects = computed(() => {
 function openDeleteDialog(project: ProjectItem) {
   deleteTarget.value = project
   showDeleteDialog.value = true
+}
+
+function openRenameDialog(project: ProjectItem) {
+  renameTarget.value = project
+  showRenameDialog.value = true
+}
+
+function onProjectRenamed(newName: string) {
+  if (!renameTarget.value) {
+    return
+  }
+
+  const project = projects.value.find(p => p.id === renameTarget.value!.id)
+  if (!project) {
+    return
+  }
+
+  project.name = newName
 }
 
 function onProjectDeleted() {

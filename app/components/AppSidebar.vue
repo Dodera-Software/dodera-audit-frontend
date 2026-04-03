@@ -1,14 +1,36 @@
 <template>
   <aside
-    class="flex w-56 flex-shrink-0 flex-col border-r border-(--ui-border-accented) bg-white dark:bg-zinc-900"
-    :class="mobile ? 'h-full' : 'hidden lg:flex'"
+    class="relative flex flex-shrink-0 flex-col overflow-hidden border-r border-(--ui-border-accented) bg-white transition-[width] duration-200 ease-in-out dark:bg-zinc-900"
+    :class="[mobile ? 'h-full w-56' : 'hidden lg:flex', !mobile && isCollapsed ? 'border-r-0' : '']"
+    :style="mobile ? undefined : { width: isCollapsed ? '0px' : `${sidebarWidth}px` }"
   >
     <!-- Logo -->
-    <div class="flex h-14 items-center px-5">
-      <NuxtLink to="/dashboard" class="flex items-center gap-2.5 hover:opacity-80" @click="$emit('navigate')">
-        <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-10 w-auto" />
-        <span class="hidden text-lg font-bold text-(--ui-text-highlighted) sm:block">PawByTech</span>
+    <div
+      class="flex h-14 shrink-0 items-center transition-all duration-200"
+      :class="isTextVisible ? 'gap-1 px-5' : 'justify-center px-2'"
+    >
+      <NuxtLink
+        to="/dashboard"
+        class="flex min-w-0 items-center hover:opacity-80"
+        :class="isTextVisible ? 'flex-1 gap-2.5' : 'justify-center'"
+        @click="$emit('navigate')"
+      >
+        <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-10 w-auto shrink-0" />
+        <span
+          v-if="isTextVisible"
+          class="truncate text-lg font-bold text-(--ui-text-highlighted)"
+        >PawByTech</span>
       </NuxtLink>
+      <UButton
+        v-if="!mobile && isTextVisible"
+        icon="i-lucide-panel-left-close"
+        variant="ghost"
+        color="neutral"
+        size="sm"
+        square
+        :aria-label="t('Collapse sidebar')"
+        @click="toggle"
+      />
     </div>
 
     <!-- Team switcher -->
@@ -64,6 +86,8 @@ defineEmits<{
   navigate: []
   logout: []
 }>()
+
+const { isCollapsed, sidebarWidth, isTextVisible, toggle, startResize } = useSidebarState()
 
 const { t } = useI18n()
 const route = useRoute()
