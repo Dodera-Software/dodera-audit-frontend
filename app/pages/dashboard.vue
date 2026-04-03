@@ -2,7 +2,7 @@
   <ClientOnly>
     <div>
       <Teleport to="#navbar-actions">
-        <UButton size="md" icon="i-lucide-plus" @click="showAddPageDialog = true">
+        <UButton size="lg" icon="i-lucide-plus" @click="showAddPageDialog = true">
           {{ t('Add page') }}
         </UButton>
       </Teleport>

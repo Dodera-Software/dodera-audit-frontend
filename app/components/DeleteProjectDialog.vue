@@ -7,19 +7,21 @@
             <UIcon name="i-lucide-trash-2" class="h-5 w-5 text-red-500" />
           </div>
           <div>
-            <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Delete {name}?', { name: projectName }) }}</h2>
-            <p v-if="pagesCount > 0" class="mt-0.5 text-sm text-(--ui-text-muted)">
-              {{ t('This project contains {count} pages with audit data.', { count: pagesCount }) }}
-            </p>
+            <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Delete project') }}</h2>
+            <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ projectName }}</p>
           </div>
         </div>
 
-        <div class="mt-6 space-y-2">
-          <!-- Option: Keep pages -->
+        <!-- No pages: simple warning -->
+        <p v-if="pagesCount === 0" class="mt-5 text-sm text-(--ui-text-muted)">
+          {{ t('This will permanently delete this project and cannot be undone.') }}
+        </p>
+
+        <!-- Has pages: show choice options, delete pre-selected -->
+        <div v-else class="mt-5 space-y-2">
           <button
-            v-if="pagesCount > 0"
             class="flex w-full items-start gap-3 rounded-lg border border-(--ui-border) p-3 text-left transition-colors hover:bg-(--ui-bg-elevated)"
-            :class="{ 'border-(--ui-primary) bg-(--ui-primary)/5': choice === 'keep' }"
+            :class="choice === 'keep' ? 'border-(--ui-primary) bg-(--ui-primary)/5' : ''"
             @click="choice = 'keep'"
           >
             <UIcon name="i-lucide-folder-input" class="mt-0.5 h-5 w-5 shrink-0 text-(--ui-primary)" />
@@ -29,10 +31,9 @@
             </div>
           </button>
 
-          <!-- Option: Delete everything -->
           <button
-            class="flex w-full items-start gap-3 rounded-lg border border-(--ui-border) p-3 text-left transition-colors hover:bg-(--ui-bg-elevated)"
-            :class="{ 'border-red-500 bg-red-500/5': choice === 'delete' }"
+            class="flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-colors hover:bg-(--ui-bg-elevated)"
+            :class="choice === 'delete' ? 'border-red-500 bg-red-500/5' : 'border-(--ui-border)'"
             @click="choice = 'delete'"
           >
             <UIcon name="i-lucide-trash-2" class="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
@@ -48,12 +49,11 @@
             {{ t('Cancel') }}
           </UButton>
           <UButton
-            :color="choice === 'delete' ? 'error' : 'primary'"
+            color="error"
             :loading="deleting"
-            :disabled="!choice"
             @click="handleDelete"
           >
-            {{ choice === 'keep' ? t('Move pages & delete project') : t('Delete everything') }}
+            {{ choice === 'keep' ? t('Move pages & delete project') : t('Delete project') }}
           </UButton>
         </div>
       </div>
@@ -81,9 +81,7 @@ const choice = ref<'keep' | 'delete' | null>(null)
 const deleting = ref(false)
 
 watch(open, (val) => {
-  if (val) {
-    choice.value = props.pagesCount > 0 ? 'keep' : 'delete'
-  }
+  if (val) choice.value = 'delete'
 })
 
 async function handleDelete() {

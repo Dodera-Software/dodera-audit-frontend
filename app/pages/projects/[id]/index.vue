@@ -1,7 +1,7 @@
 <template>
   <ClientOnly>
     <Teleport to="#navbar-actions">
-      <UButton v-if="project" size="md" icon="i-lucide-plus" @click="showAddPageDialog = true">
+      <UButton v-if="project" size="lg" icon="i-lucide-plus" @click="showAddPageDialog = true">
         {{ t('Add page') }}
       </UButton>
     </Teleport>
@@ -18,7 +18,7 @@
       <UIcon name="i-lucide-alert-circle" class="h-10 w-10 text-(--ui-text-dimmed)" />
       <h2 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Could not load project') }}</h2>
       <p class="mt-1 text-sm text-(--ui-text-muted)">{{ apiError.displayMessage.value }}</p>
-      <UButton class="mt-4" variant="outline" size="sm" to="/projects">{{ t('Back to projects') }}</UButton>
+      <UButton class="mt-4" variant="outline" size="md" to="/projects">{{ t('Back to projects') }}</UButton>
     </div>
 
     <div v-else-if="project">
@@ -27,7 +27,7 @@
         <Vue3Lottie animation-link="/animations/animation-bot.json" :height="140" :width="140" :loop="true" :auto-play="true" class="mx-auto" />
         <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No pages yet') }}</h3>
         <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Add a page URL to start auditing. Each page tracks its own audit history and issues.') }}</p>
-        <UButton class="mt-6" icon="i-lucide-plus" @click="showAddPageDialog = true">
+        <UButton class="mt-6" size="xl" icon="i-lucide-plus" @click="showAddPageDialog = true">
           {{ t('Add your first page') }}
         </UButton>
       </div>
@@ -101,6 +101,17 @@
                   <template #content>
                     <div class="p-1">
                       <UButton
+                        icon="i-lucide-pencil"
+                        variant="ghost"
+                        color="neutral"
+                        size="sm"
+                        block
+                        class="justify-start"
+                        @click="openRenamePage(page)"
+                      >
+                        {{ t('Rename') }}
+                      </UButton>
+                      <UButton
                         icon="i-lucide-trash-2"
                         variant="ghost"
                         color="error"
@@ -136,6 +147,14 @@
         :project-id="projectId"
         @created="onPageCreated"
       />
+
+      <RenamePageDialog
+        v-if="renamePageTarget"
+        v-model:open="showRenamePageDialog"
+        :page-id="renamePageTarget.id"
+        :page-name="renamePageTarget.name"
+        @renamed="onPageRenamed"
+      />
     </div>
   </ClientOnly>
 </template>
@@ -158,6 +177,8 @@ const { confirm } = useConfirm()
 
 const projectId = route.params.id as string
 const showAddPageDialog = ref(false)
+const showRenamePageDialog = ref(false)
+const renamePageTarget = ref<PageItem | null>(null)
 
 interface PageItem {
   id: string
@@ -197,6 +218,18 @@ function thumbnailUrl(url: string): string {
 
 function faviconUrl(url: string): string {
   return `https://www.google.com/s2/favicons?domain=${hostname(url)}&sz=32`
+}
+
+function openRenamePage(page: PageItem) {
+  renamePageTarget.value = page
+  showRenamePageDialog.value = true
+}
+
+function onPageRenamed(newName: string) {
+  if (renamePageTarget.value) {
+    const page = project.value?.pages.find(p => p.id === renamePageTarget.value!.id)
+    if (page) page.name = newName || null
+  }
 }
 
 async function deletePage(page: PageItem) {

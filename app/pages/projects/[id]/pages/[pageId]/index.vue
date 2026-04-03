@@ -8,7 +8,7 @@
           {{ auditsThisMonth }}/{{ auditLimit }} {{ t('audits') }}
         </span>
         <UButton
-          size="md"
+          size="lg"
           :icon="!canAudit ? 'i-lucide-lock' : 'i-lucide-scan'"
           :loading="triggeringAudit"
           :disabled="!!activeScan"

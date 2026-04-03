@@ -35,23 +35,9 @@
         {{ t('and hand you a') }} <span class="font-semibold text-zinc-200">{{ t('ranked fix list with exact steps') }}</span>.
       </p>
 
-      <!-- CTA form -->
-      <div class="mx-auto mt-10 flex max-w-xl items-stretch overflow-hidden rounded-2xl border border-white/10 bg-black/30 p-1.5 shadow-[0_0_80px_rgba(0,0,0,0.4)] backdrop-blur-md transition-all duration-300 focus-within:border-emerald-500/50 focus-within:shadow-[0_0_60px_rgba(16,185,129,0.15)]">
-        <div class="flex flex-1 items-center gap-3 px-4">
-          <UIcon name="i-lucide-link" class="h-4 w-4 shrink-0 text-zinc-500" />
-          <input
-            type="url"
-            :placeholder="t('https://yourwebsite.com')"
-            class="flex-1 bg-transparent py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none"
-          />
-        </div>
-        <NuxtLink
-          to="/register"
-          class="flex shrink-0 items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-bold text-zinc-950 shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all duration-300 hover:bg-emerald-400 hover:shadow-[0_0_60px_rgba(16,185,129,0.7)] active:scale-95"
-        >
-          {{ t('Audit for free') }}
-          <UIcon name="i-lucide-arrow-right" class="h-4 w-4" />
-        </NuxtLink>
+      <!-- CTA button -->
+      <div class="mt-10 flex justify-center">
+        <LandingAuditButton :label="t('Audit for free')" />
       </div>
 
       <!-- Trust micro-copy -->
