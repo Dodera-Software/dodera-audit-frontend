@@ -37,23 +37,45 @@
       <UFormField :label="t('Password')" name="password">
         <UInput
           v-model="form.password"
-          type="password"
+          :type="showPassword ? 'text' : 'password'"
           autocomplete="new-password"
           :placeholder="t('Min. 8 characters')"
           size="lg"
           class="w-full"
-        />
+        >
+          <template #trailing>
+            <UButton
+              :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+              variant="ghost"
+              color="neutral"
+              size="sm"
+              :aria-label="showPassword ? t('Hide password') : t('Show password')"
+              @click="showPassword = !showPassword"
+            />
+          </template>
+        </UInput>
       </UFormField>
 
       <UFormField :label="t('Confirm password')" name="password_confirmation">
         <UInput
           v-model="form.password_confirmation"
-          type="password"
+          :type="showConfirmPassword ? 'text' : 'password'"
           autocomplete="new-password"
           :placeholder="t('Repeat password')"
           size="lg"
           class="w-full"
-        />
+        >
+          <template #trailing>
+            <UButton
+              :icon="showConfirmPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+              variant="ghost"
+              color="neutral"
+              size="sm"
+              :aria-label="showConfirmPassword ? t('Hide password') : t('Show password')"
+              @click="showConfirmPassword = !showConfirmPassword"
+            />
+          </template>
+        </UInput>
       </UFormField>
 
       <UFormField name="terms">
@@ -75,7 +97,7 @@
 <script setup lang="ts">
 import { registerSchema } from '~/schemas/auth'
 
-definePageMeta({ layout: 'auth', middleware: 'guest' })
+definePageMeta({ layout: 'auth', middleware: 'guest', ssr: false })
 
 const { t } = useI18n()
 const route = useRoute()
@@ -93,6 +115,8 @@ const form = reactive({
   terms: false as boolean,
 })
 const loading = ref(false)
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
 
 async function handleRegister() {
   loading.value = true
