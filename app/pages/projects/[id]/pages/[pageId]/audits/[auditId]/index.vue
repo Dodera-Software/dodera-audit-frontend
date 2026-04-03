@@ -23,7 +23,7 @@
     <!-- Report -->
     <div v-else-if="audit">
       <Teleport to="#navbar-actions">
-        <UButton variant="outline" size="md" icon="i-lucide-refresh-cw" @click="showRescanModal = true">
+        <UButton variant="outline" size="lg" icon="i-lucide-refresh-cw" @click="showRescanModal = true">
           {{ t('Re-scan') }}
         </UButton>
       </Teleport>

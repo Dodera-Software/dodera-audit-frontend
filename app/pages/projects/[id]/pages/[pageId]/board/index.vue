@@ -3,7 +3,7 @@
     <Teleport to="#navbar-actions">
       <UButton
         v-if="allIssues.length > 0"
-        size="md"
+        size="lg"
         icon="i-lucide-refresh-cw"
         :loading="triggeringAudit"
         @click="handleRunAudit"
