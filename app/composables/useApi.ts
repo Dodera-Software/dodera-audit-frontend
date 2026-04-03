@@ -1,6 +1,8 @@
 export function useApi() {
   const config = useRuntimeConfig()
   const token = useAuthToken()
+  const authStore = useAuthStore()
+  const nuxtApp = useNuxtApp()
 
   async function $api<T>(path: string, options: Parameters<typeof $fetch>[1] = {}): Promise<T> {
     const headers: Record<string, string> = {
@@ -22,9 +24,11 @@ export function useApi() {
       const err = error as { response?: { status?: number } }
       if (err?.response?.status === 401) {
         token.value = null
-        useAuthStore().clearUser()
-        const route = useRoute()
-        navigateTo(`/login?redirect=${encodeURIComponent(route.fullPath)}`)
+        authStore.clearUser()
+        await nuxtApp.runWithContext(() => {
+          const route = useRoute()
+          return navigateTo(`/login?redirect=${encodeURIComponent(route.fullPath)}`)
+        })
       }
       throw error
     }
