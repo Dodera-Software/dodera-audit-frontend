@@ -77,7 +77,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { $api } = useApi()
 
-const choice = ref<'keep' | 'delete' | null>(null)
+const choice = ref<'keep' | 'delete'>('delete')
 const deleting = ref(false)
 
 watch(open, (val) => {
@@ -85,7 +85,6 @@ watch(open, (val) => {
 })
 
 async function handleDelete() {
-  if (!choice.value) return
   deleting.value = true
 
   try {

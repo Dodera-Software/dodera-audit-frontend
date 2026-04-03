@@ -48,6 +48,7 @@
             <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Run an audit to see how this page performs for clarity, trust, and conversion.') }}</p>
             <UButton
               class="mt-6"
+              size="xl"
               :icon="!canAudit ? 'i-lucide-lock' : 'i-lucide-scan'"
               :loading="triggeringAudit"
               @click="!canAudit ? showUpgradeModal = true : triggerAudit()"
