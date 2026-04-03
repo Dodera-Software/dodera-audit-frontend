@@ -749,5 +749,14 @@
   "Active projects": "Active projects",
   "Manage billing": "Manage billing",
   "View all projects": "View all projects",
-  "Page": "Page"
+  "Page": "Page",
+  "Hide password": "Hide password",
+  "Show password": "Show password",
+  "Collapse sidebar": "Collapse sidebar",
+  "Expand sidebar": "Expand sidebar",
+  "Go to dashboard": "Go to dashboard",
+  "My projects": "My projects",
+  "Manage and organise your audit projects.": "Manage and organise your audit projects.",
+  "Admin dashboard": "Admin dashboard",
+  "Manage users, audits and platform settings.": "Manage users, audits and platform settings."
 }

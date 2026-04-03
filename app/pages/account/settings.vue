@@ -1,10 +1,6 @@
 <template>
   <ClientOnly>
     <div class="mx-auto max-w-5xl space-y-6">
-      <div class="flex items-center gap-3">
-        <UButton variant="ghost" icon="i-lucide-arrow-left" size="xs" @click="router.back()" />
-        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">{{ t('Settings') }}</h1>
-      </div>
 
       <SettingsAppearance />
 

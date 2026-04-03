@@ -20,6 +20,21 @@
         <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-8 w-auto" />
       </NuxtLink>
 
+      <!-- Desktop: sidebar expand toggle (visible only when sidebar is collapsed) -->
+      <ClientOnly>
+        <UButton
+          v-if="isSidebarCollapsed"
+          class="hidden lg:flex"
+          icon="i-lucide-panel-left-open"
+          variant="ghost"
+          color="neutral"
+          size="sm"
+          square
+          :aria-label="t('Expand sidebar')"
+          @click="toggleSidebar"
+        />
+      </ClientOnly>
+
       <!-- Desktop: back button + page title -->
       <div class="hidden items-center gap-1 lg:flex">
         <UButton
@@ -41,6 +56,19 @@
             {{ navbarState.subtitle }}
           </p>
         </div>
+
+        <!-- Logo shown after title when sidebar is fully collapsed -->
+        <ClientOnly>
+          <NuxtLink
+            v-if="isSidebarCollapsed"
+            to="/dashboard"
+            class="ml-2 flex items-center gap-2 hover:opacity-80"
+            :aria-label="t('Go to dashboard')"
+          >
+            <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-8 w-auto" />
+            <span class="text-sm font-bold text-(--ui-text-highlighted)">PawByTech</span>
+          </NuxtLink>
+        </ClientOnly>
       </div>
     </div>
 
@@ -125,6 +153,7 @@ const authStore = useAuthStore()
 const { navbarState } = usePageNavbar()
 const { isFree } = usePlan()
 const { t } = useI18n()
+const { isCollapsed: isSidebarCollapsed, toggle: toggleSidebar } = useSidebarState()
 
 const mainScrollY = inject<Ref<number>>('mainScrollY', ref(0))
 const hasScrolled = computed(() => mainScrollY.value > 8)
