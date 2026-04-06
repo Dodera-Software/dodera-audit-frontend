@@ -14,7 +14,7 @@
       <template #tooltip="{ values: tipValues }">
         <div class="rounded-lg border border-(--ui-border) bg-(--ui-bg) px-3 py-2 text-xs shadow-lg">
           <template v-for="(val, key) in tipValues" :key="key">
-            <div class="flex items-center gap-2">
+            <div v-if="String(key) !== 'label'" class="flex items-center gap-2">
               <span
                 class="inline-block h-2.5 w-2.5 rounded-full"
                 :style="{ backgroundColor: getCategoryColor(String(key)) }"
