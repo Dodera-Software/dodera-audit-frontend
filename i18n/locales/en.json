@@ -203,8 +203,6 @@
   "View latest report": "View latest report",
   "Audit history": "Audit history",
   "Issue board": "Issue board",
-  "SaaS": "SaaS",
-  "E-commerce": "E-commerce",
   "Agency": "Agency",
   "Lead Gen": "Lead Gen",
   "Blog": "Blog",
@@ -669,7 +667,6 @@
   "Built with AI. Powered by curiosity.": "Built with AI. Powered by curiosity.",
   "How it works": "How it works",
   "Features": "Features",
-  "Pricing": "Pricing",
   "Impulse Visitor": "Impulse Visitor",
   "Mobile User": "Mobile User",
   "5 Score Dimensions": "5 Score Dimensions",
@@ -700,9 +697,7 @@
   "Arrives cold from an ad or search. Evaluates whether you're a real, trustworthy company from scratch.": "Arrives cold from an ad or search. Evaluates whether you're a real, trustworthy company from scratch.",
   "Researches in depth": "Researches in depth",
   "Reads every word, checks your About page, looks for documentation, and wants to understand everything deeply.": "Reads every word, checks your About page, looks for documentation, and wants to understand everything deeply.",
-  "Product": "Product",
   "Company": "Company",
-  "About": "About",
   "Careers": "Careers",
   "Legal": "Legal",
   "Privacy Policy": "Privacy Policy",
@@ -934,5 +929,7 @@
   "The AI progress narrative couldn\\'t be generated for this audit. Your scores and issues are complete.": "The AI progress narrative couldn\\'t be generated for this audit. Your scores and issues are complete.",
   "Part of this audit couldn\\'t be completed. Some sections may be missing or incomplete.": "Part of this audit couldn\\'t be completed. Some sections may be missing or incomplete.",
   "Auth": "Auth",
-  "Auth Provider": "Auth Provider"
+  "Auth Provider": "Auth Provider",
+  "Business": "Business",
+  "Page Type": "Page Type"
 }
