@@ -54,8 +54,22 @@
           <AdminKpiCard :label="t('AI Cost')" :value="formatCurrency(kpis.cost_this_month_cents)" icon="i-lucide-coins" color="primary" :subtitle="t('{n} tokens', { n: formatNumber(kpis.tokens_this_month) })" />
         </div>
 
-        <!-- Charts -->
-        <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <!-- Daily Activity -->
+        <UCard>
+          <template #header>
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Daily Activity') }}</h3>
+              <USelect v-model="chartDays" :items="dayOptions" size="xs" class="w-20" />
+            </div>
+          </template>
+          <div v-if="chartsLoading" class="flex items-center justify-center py-12">
+            <UIcon name="i-lucide-loader-2" class="h-5 w-5 animate-spin text-(--ui-text-muted)" />
+          </div>
+          <AdminAreaChart v-else :series="activitySeries" :categories="activityCategories" :height="240" />
+        </UCard>
+
+        <!-- Distribution Charts -->
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-4">
           <UCard>
             <template #header>
               <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Plan Distribution') }}</h3>
@@ -64,7 +78,7 @@
               :labels="['Free', 'Pro', 'Max']"
               :values="[planDistribution.free || 0, planDistribution.pro || 0, planDistribution.max || 0]"
               :colors="['#a1a1aa', '#3b82f6', '#8b5cf6']"
-              :height="240"
+              :height="220"
               :empty-label="t('No users yet.')"
             />
           </UCard>
@@ -77,27 +91,11 @@
               :labels="['Email', 'Google']"
               :values="[authProviderDistribution.email || 0, authProviderDistribution.google || 0]"
               :colors="['#a1a1aa', '#4285F4']"
-              :height="240"
+              :height="220"
               :empty-label="t('No users yet.')"
             />
           </UCard>
 
-          <UCard>
-            <template #header>
-              <div class="flex items-center justify-between">
-                <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Daily Activity') }}</h3>
-                <USelect v-model="chartDays" :items="dayOptions" size="xs" class="w-20" />
-              </div>
-            </template>
-            <div v-if="chartsLoading" class="flex items-center justify-center py-12">
-              <UIcon name="i-lucide-loader-2" class="h-5 w-5 animate-spin text-(--ui-text-muted)" />
-            </div>
-            <AdminAreaChart v-else :series="activitySeries" :categories="activityCategories" :height="240" />
-          </UCard>
-        </div>
-
-        <!-- Audit Outcomes + User Roles -->
-        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <UCard>
             <template #header>
               <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Audit Outcomes') }}</h3>
@@ -106,13 +104,13 @@
               <UIcon name="i-lucide-loader-2" class="h-5 w-5 animate-spin text-(--ui-text-muted)" />
             </div>
             <AdminDonutChart
-            v-else
-            :labels="['Completed', 'Failed']"
-            :values="[outcomeTotals.completed, outcomeTotals.failed]"
-            :colors="['#10b981', '#ef4444']"
-            :height="220"
-            :empty-label="t('No audits completed yet.')"
-          />
+              v-else
+              :labels="['Completed', 'Failed']"
+              :values="[outcomeTotals.completed, outcomeTotals.failed]"
+              :colors="['#10b981', '#ef4444']"
+              :height="220"
+              :empty-label="t('No audits completed yet.')"
+            />
           </UCard>
 
           <UCard>

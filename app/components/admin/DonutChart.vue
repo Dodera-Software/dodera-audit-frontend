@@ -16,10 +16,10 @@
           <template v-for="(val, key) in tipValues" :key="key">
             <div v-if="String(key) !== 'label'" class="flex items-center gap-2">
               <span
-                class="inline-block h-2.5 w-2.5 rounded-full"
+                class="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
                 :style="{ backgroundColor: getCategoryColor(String(key)) }"
               />
-              <span class="text-(--ui-text-muted)">{{ getCategoryName(String(key)) }}</span>
+              <span class="text-(--ui-text)">{{ getCategoryName(String(key)) }}</span>
               <span class="ml-auto font-semibold tabular-nums text-(--ui-text-highlighted)">{{ val }}</span>
             </div>
           </template>
@@ -60,11 +60,22 @@ const chartCategories = computed(() => {
   return cats
 })
 
+function findCategory(key: string): { name: string, color: string } | undefined {
+  const cats = chartCategories.value
+  // Direct match
+  if (cats[key]) return cats[key]
+  // Lowercase match
+  const lower = key.replace(/\s+/g, '_').toLowerCase()
+  if (cats[lower]) return cats[lower]
+  // Search by name
+  return Object.values(cats).find(c => c.name === key)
+}
+
 function getCategoryColor(key: string): string {
-  return chartCategories.value[key]?.color ?? '#a1a1aa'
+  return findCategory(key)?.color ?? '#a1a1aa'
 }
 
 function getCategoryName(key: string): string {
-  return chartCategories.value[key]?.name ?? key
+  return findCategory(key)?.name ?? key
 }
 </script>
