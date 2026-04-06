@@ -103,14 +103,25 @@
 
           <USeparator :label="t('Helps the AI tailor the audit')" class="my-1" />
 
-          <UFormField :label="t('Site type')" name="site_type">
-            <USelect
-              v-model="form.site_type"
-              :items="siteTypes"
-              class="w-full"
-              :placeholder="t('Select a site type')"
-            />
-          </UFormField>
+          <div class="grid grid-cols-2 gap-3">
+            <UFormField :label="t('Business type')" name="site_type">
+              <USelect
+                v-model="form.site_type"
+                :items="siteTypes"
+                class="w-full"
+                :placeholder="t('Select type')"
+              />
+            </UFormField>
+
+            <UFormField :label="t('Page type')" name="page_type">
+              <USelect
+                v-model="form.page_type"
+                :items="pageTypes"
+                class="w-full"
+                :placeholder="t('Select type')"
+              />
+            </UFormField>
+          </div>
 
           <UFormField :label="t('Primary conversion goal')" name="conversion_goal">
             <USelect
@@ -162,7 +173,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { $api } = useApi()
 const apiError = useApiError()
-const { siteTypes, conversionGoals } = useProjectOptions()
+const { siteTypes, pageTypes, conversionGoals } = useProjectOptions()
 
 const schema = createPageSchema(t)
 
@@ -170,6 +181,7 @@ const form = reactive({
   url: '',
   name: '',
   site_type: '',
+  page_type: '',
   conversion_goal: '',
   target_audience_description: '',
 })
@@ -202,6 +214,7 @@ function resetForm() {
   form.url = ''
   form.name = ''
   form.site_type = ''
+  form.page_type = ''
   form.conversion_goal = ''
   form.target_audience_description = ''
   showNewProjectInput.value = false

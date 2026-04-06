@@ -2,13 +2,28 @@ export function useProjectOptions() {
   const { t } = useI18n()
 
   const siteTypes = [
-    { label: t('SaaS Landing Page'), value: 'saas' },
-    { label: t('E-commerce Store'), value: 'ecommerce' },
+    { label: t('SaaS'), value: 'saas' },
+    { label: t('E-commerce'), value: 'ecommerce' },
     { label: t('Agency / Portfolio'), value: 'agency' },
     { label: t('Lead Generation'), value: 'lead_gen' },
     { label: t('Local Business'), value: 'local' },
     { label: t('Blog / Media'), value: 'blog' },
     { label: t('Web Application'), value: 'webapp' },
+    { label: t('Other'), value: 'other' },
+  ]
+
+  const pageTypes = [
+    { label: t('Homepage'), value: 'homepage' },
+    { label: t('About'), value: 'about' },
+    { label: t('Pricing'), value: 'pricing' },
+    { label: t('Product'), value: 'product' },
+    { label: t('Service'), value: 'service' },
+    { label: t('Landing Page'), value: 'landing' },
+    { label: t('Contact'), value: 'contact' },
+    { label: t('Blog Post'), value: 'blog_post' },
+    { label: t('FAQ'), value: 'faq' },
+    { label: t('Checkout'), value: 'checkout' },
+    { label: t('Portfolio'), value: 'portfolio' },
     { label: t('Other'), value: 'other' },
   ]
 
@@ -23,10 +38,15 @@ export function useProjectOptions() {
   ]
 
   const siteTypeLabelMap = Object.fromEntries(siteTypes.map(st => [st.value, st.label]))
+  const pageTypeLabelMap = Object.fromEntries(pageTypes.map(pt => [pt.value, pt.label]))
 
   function siteTypeLabel(value: string): string {
     return siteTypeLabelMap[value] ?? value
   }
 
-  return { siteTypes, conversionGoals, siteTypeLabel }
+  function pageTypeLabel(value: string): string {
+    return pageTypeLabelMap[value] ?? value
+  }
+
+  return { siteTypes, pageTypes, conversionGoals, siteTypeLabel, pageTypeLabel }
 }

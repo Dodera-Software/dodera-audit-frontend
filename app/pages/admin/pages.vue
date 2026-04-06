@@ -20,7 +20,7 @@
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <UCard>
             <template #header>
-              <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Pages by Site Type') }}</h3>
+              <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Pages by Business Type') }}</h3>
             </template>
             <AdminDonutChart
               :labels="Object.keys(siteTypeDist).map(k => k.replace(/_/g, ' '))"
@@ -32,7 +32,7 @@
 
           <UCard>
             <template #header>
-              <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Average Score by Site Type') }}</h3>
+              <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Average Score by Business Type') }}</h3>
             </template>
             <AdminAreaChart
               v-if="avgScores.length > 0"
@@ -114,7 +114,8 @@ const siteTypeOptions = computed(() => {
 const columnDefs = computed<ColDef[]>(() => [
   { headerName: t('Name'), field: 'name', flex: 1, minWidth: 150, valueFormatter: (p: any) => p.value || extractDomain(p.data?.url) },
   { headerName: t('URL'), field: 'url', flex: 1.5, minWidth: 200, valueFormatter: (p: any) => { try { return p.value ? new URL(p.value).hostname + new URL(p.value).pathname : '' } catch { return p.value || '' } } },
-  { headerName: t('Site Type'), field: 'site_type', width: 120, valueFormatter: (p: any) => p.value ? String(p.value).replace(/_/g, ' ') : '' },
+  { headerName: t('Business'), field: 'site_type', width: 110, valueFormatter: (p: any) => p.value ? String(p.value).replace(/_/g, ' ') : '' },
+  { headerName: t('Page Type'), field: 'page_type', width: 110, valueFormatter: (p: any) => p.value ? String(p.value).replace(/_/g, ' ') : '' },
   { headerName: t('Audits'), field: 'audits_count', width: 80 },
   { headerName: t('Avg Score'), field: 'avg_score', width: 100, valueFormatter: (p: any) => p.value != null ? p.value : '-' },
   { headerName: t('Owner'), field: 'user.email', flex: 1, minWidth: 150 },
