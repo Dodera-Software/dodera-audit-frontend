@@ -101,7 +101,7 @@
 <script setup lang="ts">
 import type { InvitationInfo } from '~/composables/useTeam'
 
-definePageMeta({ layout: false })
+definePageMeta({ layout: false, ssr: false })
 
 const { t } = useI18n()
 const { fetchInvitation, acceptInvitation, declineInvitation } = useTeam()

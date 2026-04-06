@@ -121,11 +121,13 @@
       />
 
       <!-- Profile avatar -->
-      <NuxtLink to="/account" :aria-label="t('Your account')">
-        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-(--ui-primary)/15 text-sm font-semibold text-(--ui-primary) transition-opacity hover:opacity-80">
-          {{ userInitial }}
-        </div>
-      </NuxtLink>
+      <ClientOnly>
+        <NuxtLink to="/account" :aria-label="t('Your account')">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-(--ui-primary)/15 text-sm font-semibold text-(--ui-primary) transition-opacity hover:opacity-80">
+            {{ userInitial }}
+          </div>
+        </NuxtLink>
+      </ClientOnly>
     </div>
   </header>
 
