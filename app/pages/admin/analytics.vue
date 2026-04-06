@@ -135,6 +135,11 @@ const userColumnDefs = computed<ColDef[]>(() => [
     headerName: t('Plan'), field: 'plan', width: 80,
     cellClass: (p: any) => p.value === 'max' ? 'text-purple-600 font-semibold' : p.value === 'pro' ? 'text-blue-600 font-semibold' : '',
   },
+  {
+    headerName: t('Auth'), field: 'auth_provider', width: 90,
+    valueFormatter: (p: any) => p.value === 'google' ? 'Google' : 'Email',
+    cellClass: (p: any) => p.value === 'google' ? 'text-blue-600' : '',
+  },
   { headerName: t('Pages'), field: 'pages_count', width: 80 },
   { headerName: t('Audits'), field: 'audits_count', width: 80 },
   {

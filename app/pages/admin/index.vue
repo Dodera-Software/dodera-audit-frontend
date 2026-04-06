@@ -69,7 +69,20 @@
             />
           </UCard>
 
-          <UCard class="lg:col-span-2">
+          <UCard>
+            <template #header>
+              <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Auth Provider') }}</h3>
+            </template>
+            <AdminDonutChart
+              :labels="['Email', 'Google']"
+              :values="[authProviderDistribution.email || 0, authProviderDistribution.google || 0]"
+              :colors="['#a1a1aa', '#4285F4']"
+              :height="240"
+              :empty-label="t('No users yet.')"
+            />
+          </UCard>
+
+          <UCard class="lg:col-span-1">
             <template #header>
               <div class="flex items-center justify-between">
                 <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Daily Activity') }}</h3>
@@ -149,6 +162,7 @@ const loading = ref(true)
 const chartsLoading = ref(false)
 const kpis = ref<any>({})
 const planDistribution = ref<Record<string, number>>({})
+const authProviderDistribution = ref<Record<string, number>>({})
 const charts = ref<any>({ signups_per_day: [], audits_per_day: [] })
 const feed = ref<any[]>([])
 
@@ -187,6 +201,7 @@ async function fetchOverview() {
     const data = await $api<any>('/admin/overview')
     kpis.value = data.kpis
     planDistribution.value = data.plan_distribution
+    authProviderDistribution.value = data.auth_provider_distribution || {}
   }
   catch (e: any) {
     toast.add({ title: apiError.parse(e, t('Failed to load overview.')).message, color: 'error' })

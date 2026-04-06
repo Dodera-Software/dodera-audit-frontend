@@ -135,6 +135,11 @@ const columnDefs = computed<ColDef[]>(() => [
     cellEditor: 'agSelectCellEditor', cellEditorParams: { values: planOptions },
     cellClass: (p: any) => p.value === 'max' ? 'text-purple-600 font-semibold' : p.value === 'pro' ? 'text-blue-600 font-semibold' : 'text-(--ui-text-muted)',
   },
+  {
+    headerName: t('Auth'), field: 'auth_provider', editable: false, width: 90,
+    valueFormatter: (p: any) => p.value === 'google' ? 'Google' : 'Email',
+    cellClass: (p: any) => p.value === 'google' ? 'text-blue-600' : '',
+  },
   { headerName: t('Admin'), field: 'is_admin', editable: true, width: 90, cellDataType: 'boolean' },
   { headerName: t('Extra Seats'), field: 'extra_seats', editable: true, width: 120, cellDataType: 'number' },
   {
