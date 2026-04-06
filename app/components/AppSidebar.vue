@@ -78,6 +78,8 @@
 </template>
 
 <script setup lang="ts">
+import { isAdmin } from '~/constants/roles'
+
 defineProps<{
   mobile?: boolean
 }>()
@@ -118,7 +120,7 @@ const adminNavItems = computed(() => [
 
 const globalNavItems = computed(() => {
   const items: { to: string, icon: string, label: string }[] = []
-  if (user.value?.is_admin) {
+  if (isAdmin(user.value?.role)) {
     items.push({ to: '/admin', icon: 'i-lucide-shield', label: t('Admin') })
   }
   items.push(

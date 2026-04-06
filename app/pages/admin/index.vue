@@ -55,7 +55,7 @@
         </div>
 
         <!-- Charts -->
-        <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-4">
           <UCard>
             <template #header>
               <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Plan Distribution') }}</h3>
@@ -77,6 +77,19 @@
               :labels="['Email', 'Google']"
               :values="[authProviderDistribution.email || 0, authProviderDistribution.google || 0]"
               :colors="['#a1a1aa', '#4285F4']"
+              :height="240"
+              :empty-label="t('No users yet.')"
+            />
+          </UCard>
+
+          <UCard>
+            <template #header>
+              <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('User Roles') }}</h3>
+            </template>
+            <AdminDonutChart
+              :labels="['User', 'Admin', 'Super Admin']"
+              :values="[roleDistribution.user || 0, roleDistribution.admin || 0, roleDistribution.super_admin || 0]"
+              :colors="['#a1a1aa', '#8b5cf6', '#f59e0b']"
               :height="240"
               :empty-label="t('No users yet.')"
             />
@@ -163,6 +176,7 @@ const chartsLoading = ref(false)
 const kpis = ref<any>({})
 const planDistribution = ref<Record<string, number>>({})
 const authProviderDistribution = ref<Record<string, number>>({})
+const roleDistribution = ref<Record<string, number>>({})
 const charts = ref<any>({ signups_per_day: [], audits_per_day: [] })
 const feed = ref<any[]>([])
 
@@ -202,6 +216,7 @@ async function fetchOverview() {
     kpis.value = data.kpis
     planDistribution.value = data.plan_distribution
     authProviderDistribution.value = data.auth_provider_distribution || {}
+    roleDistribution.value = data.role_distribution || {}
   }
   catch (e: any) {
     toast.add({ title: apiError.parse(e, t('Failed to load overview.')).message, color: 'error' })

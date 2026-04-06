@@ -1,3 +1,5 @@
+import { isAdmin } from '~/constants/roles'
+
 export default defineNuxtRouteMiddleware(() => {
   // On SSR the auth plugin hasn't hydrated the store yet — skip
   // the check and let the client-side plugin + re-evaluation handle it.
@@ -5,7 +7,7 @@ export default defineNuxtRouteMiddleware(() => {
 
   const authStore = useAuthStore()
 
-  if (!authStore.user?.is_admin) {
+  if (!isAdmin(authStore.user?.role)) {
     return navigateTo('/dashboard')
   }
 })

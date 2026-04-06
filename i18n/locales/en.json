@@ -931,5 +931,13 @@
   "Auth": "Auth",
   "Auth Provider": "Auth Provider",
   "Business": "Business",
-  "Page Type": "Page Type"
+  "Page Type": "Page Type",
+  "Role": "Role",
+  "User Roles": "User Roles",
+  "Run new audit": "Run new audit",
+  "A full re-audit of your page": "A full re-audit of your page",
+  "Before re-auditing": "Before re-auditing",
+  "For best results, review your Issue Board and fix as many issues as possible before running a new audit. The audit will automatically detect which issues have been resolved and which remain.": "For best results, review your Issue Board and fix as many issues as possible before running a new audit. The audit will automatically detect which issues have been resolved and which remain.",
+  "You have {n} open issue(s) on your board.": "You have {n} open issue(s) on your board.",
+  "Start audit": "Start audit"
 }

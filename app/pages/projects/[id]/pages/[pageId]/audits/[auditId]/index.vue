@@ -56,7 +56,7 @@
         </UTooltip>
       </div>
 
-      <QuickRescanModal v-model="showRescanModal" :page-id="pageId" @started="handleRescanStarted" />
+      <QuickRescanModal v-model="showRescanModal" :page-id="pageId" :open-issue-count="topIssues.length" @started="handleRescanStarted" />
 
       <!-- Warnings -->
       <div v-if="audit.warnings?.length" class="mb-6 space-y-2">

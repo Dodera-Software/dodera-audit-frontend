@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import type { UserRoleValue } from '~/constants/roles'
 
 export interface User {
   id: string
@@ -7,7 +8,7 @@ export interface User {
   plan: 'free' | 'pro' | 'max'
   auth_provider: 'email' | 'google'
   avatar_url: string | null
-  is_admin: boolean
+  role: UserRoleValue
   extra_seats: number
   email_verified_at: string | null
   created_at: string

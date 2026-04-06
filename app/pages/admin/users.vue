@@ -65,6 +65,7 @@
 <script setup lang="ts">
 import type { ColDef, GridApi, GridReadyEvent, CellValueChangedEvent } from 'ag-grid-community'
 import type { RowAction } from '~/components/BaseDataTable.vue'
+import { UserRole, isSuperAdmin as checkSuperAdmin } from '~/constants/roles'
 
 definePageMeta({ middleware: ['auth', 'admin'] })
 
@@ -115,23 +116,32 @@ async function handleCreate() {
   }
 }
 
+const isSuperAdmin = computed(() => checkSuperAdmin(authStore.user?.role))
+
+function canModifyUser(row: any): boolean {
+  if (row.role === UserRole.SuperAdmin) return false
+  if (row.role === UserRole.Admin && !isSuperAdmin.value) return false
+  return true
+}
+
 function getRowActions(row: any): RowAction[] {
   const actions: RowAction[] = []
-  if (!row.email_verified_at) {
+  if (!row.email_verified_at && canModifyUser(row)) {
     actions.push({ label: t('Verify email'), icon: 'i-lucide-mail-check', color: 'success', onSelect: () => handleVerifyEmail(row) })
   }
-  if (!row.is_admin) {
+  if (canModifyUser(row)) {
     actions.push({ label: t('Delete user'), icon: 'i-lucide-trash-2', color: 'error', onSelect: () => handleDelete(row) })
   }
   return actions
 }
 
 const planOptions = ['free', 'pro', 'max']
+const isEditable = (p: any) => canModifyUser(p.data)
 const columnDefs = computed<ColDef[]>(() => [
-  { headerName: t('Name'), field: 'name', editable: true, flex: 1, minWidth: 150 },
-  { headerName: t('Email'), field: 'email', editable: true, flex: 1.5, minWidth: 200 },
+  { headerName: t('Name'), field: 'name', editable: isEditable, flex: 1, minWidth: 150 },
+  { headerName: t('Email'), field: 'email', editable: isEditable, flex: 1.5, minWidth: 200 },
   {
-    headerName: t('Plan'), field: 'plan', editable: true, width: 100,
+    headerName: t('Plan'), field: 'plan', editable: isEditable, width: 100,
     cellEditor: 'agSelectCellEditor', cellEditorParams: { values: planOptions },
     cellClass: (p: any) => p.value === 'max' ? 'text-purple-600 font-semibold' : p.value === 'pro' ? 'text-blue-600 font-semibold' : 'text-(--ui-text-muted)',
   },
@@ -140,8 +150,14 @@ const columnDefs = computed<ColDef[]>(() => [
     valueFormatter: (p: any) => p.value === 'google' ? 'Google' : 'Email',
     cellClass: (p: any) => p.value === 'google' ? 'text-blue-600' : '',
   },
-  { headerName: t('Admin'), field: 'is_admin', editable: true, width: 90, cellDataType: 'boolean' },
-  { headerName: t('Extra Seats'), field: 'extra_seats', editable: true, width: 120, cellDataType: 'number' },
+  {
+    headerName: t('Role'), field: 'role', width: 110,
+    editable: (p: any) => isSuperAdmin.value && p.data?.role !== UserRole.SuperAdmin,
+    cellEditor: 'agSelectCellEditor', cellEditorParams: { values: [UserRole.User, UserRole.Admin] },
+    valueFormatter: (p: any) => p.value ? p.value.replace(/_/g, ' ') : 'user',
+    cellClass: (p: any) => p.value === UserRole.SuperAdmin ? 'text-amber-600 font-semibold' : p.value === UserRole.Admin ? 'text-purple-600 font-semibold' : '',
+  },
+  { headerName: t('Extra Seats'), field: 'extra_seats', editable: isEditable, width: 120, cellDataType: 'number' },
   {
     headerName: t('Verified'), field: 'email_verified_at', editable: false, width: 100,
     valueFormatter: (p: any) => p.value ? 'Yes' : 'No',
