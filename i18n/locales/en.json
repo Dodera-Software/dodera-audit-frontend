@@ -944,5 +944,7 @@
   "Total Cost": "Total Cost",
   "Avg Duration": "Avg Duration",
   "Total": "Total",
-  "Failed to load AI stats.": "Failed to load AI stats."
+  "Failed to load AI stats.": "Failed to load AI stats.",
+  "Audits (month)": "Audits (month)",
+  "No data yet.": "No data yet."
 }
