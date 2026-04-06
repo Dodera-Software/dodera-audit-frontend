@@ -110,6 +110,7 @@ const adminNavItems = computed(() => [
   { to: '/admin/users', icon: 'i-lucide-users', label: t('Users') },
   { to: '/admin/analytics', icon: 'i-lucide-bar-chart-3', label: t('Analytics') },
   { to: '/admin/revenue', icon: 'i-lucide-credit-card', label: t('Revenue') },
+  { to: '/admin/ai', icon: 'i-lucide-brain', label: t('AI Agents') },
   { to: '/admin/audits', icon: 'i-lucide-scan-search', label: t('Audits') },
   { to: '/admin/issues', icon: 'i-lucide-bug', label: t('Issues') },
   { to: '/admin/pages', icon: 'i-lucide-globe', label: t('Pages') },
