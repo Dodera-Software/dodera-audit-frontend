@@ -17,7 +17,7 @@
         @click="$emit('toggle-mobile')"
       />
       <NuxtLink to="/dashboard" class="lg:hidden">
-        <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-8 w-auto" />
+        <AppLogo class="h-8 w-auto" />
       </NuxtLink>
 
       <!-- Desktop: sidebar expand toggle (visible only when sidebar is collapsed) -->
@@ -47,7 +47,7 @@
             class="mr-1 flex items-center gap-2 hover:opacity-80"
             :aria-label="t('Go to dashboard')"
           >
-            <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-8 w-auto" />
+            <AppLogo class="h-8 w-auto" />
             <span class="text-sm font-bold text-(--ui-text-highlighted)">PawByTech</span>
           </NuxtLink>
           <!-- Separator after logo when collapsed and there's a title -->

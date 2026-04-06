@@ -63,11 +63,11 @@
         <UAlert
           v-for="(warning, i) in audit.warnings"
           :key="i"
-          color="warning"
+          :color="warningColor(warning.type)"
           variant="subtle"
-          icon="i-lucide-alert-triangle"
+          :icon="warningIcon(warning.type)"
           :title="warningTitle(warning.type)"
-          :description="warning.message"
+          :description="warningDescription(warning.type)"
         />
       </div>
 
@@ -387,24 +387,72 @@ const fiveSecondImpression = computed<string | null>(() => {
   return audit.value?.brain_update?.visual_analysis?.impression_5sec ?? null
 })
 
+type WarningColor = 'warning' | 'info'
+
 const WARNING_TITLES: Record<string, () => string> = {
   screenshot_missing: () => t('Screenshot unavailable'),
-  screenshot_not_found: () => t('Screenshot not found'),
-  screenshot_empty: () => t('Screenshot empty'),
-  screenshot_error: () => t('Screenshot error'),
-  agent_failed: () => t('Agent returned an error'),
-  agent_error: () => t('Agent failed'),
-  scoring_degraded: () => t('Scores may be less accurate'),
-  low_grounding: () => t('Agent output retried for accuracy'),
-  low_grounding_final: () => t('Agent output may contain generic observations'),
-  brain_failed: () => t('Brain synthesis incomplete'),
-  brain_error: () => t('Brain synthesis failed'),
-  annotations_error: () => t('Annotations unavailable'),
-  context_truncated: () => t('Large page — partial analysis'),
-  failure: () => t('Audit failed'),
+  screenshot_not_found: () => t('Screenshot unavailable'),
+  screenshot_empty: () => t('Screenshot unavailable'),
+  screenshot_error: () => t('Screenshot unavailable'),
+  agent_failed: () => t('Partial analysis'),
+  agent_error: () => t('Partial analysis'),
+  scoring_degraded: () => t('Scores may vary slightly'),
+  low_grounding: () => t('Analysis refined for accuracy'),
+  low_grounding_final: () => t('Some insights are generalised'),
+  brain_failed: () => t('AI narrative unavailable'),
+  brain_error: () => t('AI narrative unavailable'),
+  annotations_error: () => t('Visual annotations unavailable'),
+  context_truncated: () => t('Large page — focused analysis'),
+  failure: () => t('Some data is missing'),
+}
+
+const WARNING_DESCRIPTIONS: Record<string, () => string> = {
+  screenshot_missing: () => t('We couldn\'t capture a screenshot of your page. Visual analysis may be limited, but your scores are still based on the page content.'),
+  screenshot_not_found: () => t('We couldn\'t capture a screenshot of your page. Visual analysis may be limited, but your scores are still based on the page content.'),
+  screenshot_empty: () => t('We couldn\'t capture a screenshot of your page. Visual analysis may be limited, but your scores are still based on the page content.'),
+  screenshot_error: () => t('We couldn\'t capture a screenshot of your page. Visual analysis may be limited, but your scores are still based on the page content.'),
+  agent_failed: () => t('One AI agent had trouble completing its analysis. Some insights may be missing, but your overall score is still reliable.'),
+  agent_error: () => t('One AI agent had trouble completing its analysis. Some insights may be missing, but your overall score is still reliable.'),
+  scoring_degraded: () => t('Scores for this audit are slightly less precise than usual due to a partial analysis. Your results are still a good reflection of your page.'),
+  low_grounding: () => t('One analysis was re-run to improve accuracy. Your results reflect the best available output.'),
+  low_grounding_final: () => t('Some observations may be broader than usual. Your core scores and top issues are unaffected.'),
+  brain_failed: () => t('The AI progress narrative couldn\'t be generated for this audit. Your scores and issues are complete.'),
+  brain_error: () => t('The AI progress narrative couldn\'t be generated for this audit. Your scores and issues are complete.'),
+  annotations_error: () => t('Screenshot annotations are unavailable for this audit. All other analysis completed successfully.'),
+  context_truncated: () => t('Your page is quite large, so the analysis focused on the most important sections. Key issues and scores are accurate.'),
+  failure: () => t('Part of this audit couldn\'t be completed. Some sections may be missing or incomplete.'),
+}
+
+const WARNING_COLORS: Record<string, WarningColor> = {
+  screenshot_missing: 'warning',
+  screenshot_not_found: 'warning',
+  screenshot_empty: 'warning',
+  screenshot_error: 'warning',
+  agent_failed: 'warning',
+  agent_error: 'warning',
+  scoring_degraded: 'info',
+  low_grounding: 'info',
+  low_grounding_final: 'info',
+  brain_failed: 'warning',
+  brain_error: 'warning',
+  annotations_error: 'info',
+  context_truncated: 'info',
+  failure: 'warning',
 }
 
 function warningTitle(type: string): string {
-  return WARNING_TITLES[type]?.() ?? t('Warning')
+  return WARNING_TITLES[type]?.() ?? t('Something to note')
+}
+
+function warningDescription(type: string): string {
+  return WARNING_DESCRIPTIONS[type]?.() ?? t('A minor issue occurred during this audit. Your results are still valid.')
+}
+
+function warningColor(type: string): WarningColor {
+  return WARNING_COLORS[type] ?? 'info'
+}
+
+function warningIcon(type: string): string {
+  return warningColor(type) === 'warning' ? 'i-lucide-alert-triangle' : 'i-lucide-info'
 }
 </script>

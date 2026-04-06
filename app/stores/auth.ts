@@ -5,6 +5,8 @@ export interface User {
   name: string
   email: string
   plan: 'free' | 'pro' | 'max'
+  auth_provider: 'email' | 'google'
+  avatar_url: string | null
   is_admin: boolean
   extra_seats: number
   email_verified_at: string | null
