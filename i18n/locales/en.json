@@ -918,5 +918,7 @@
   "Could not connect to Google. Please try again.": "Could not connect to Google. Please try again.",
   "We couldn\\'t capture a screenshot of your page. Visual analysis may be limited, but your scores are still based on the page content.": "We couldn\\'t capture a screenshot of your page. Visual analysis may be limited, but your scores are still based on the page content.",
   "The AI progress narrative couldn\\'t be generated for this audit. Your scores and issues are complete.": "The AI progress narrative couldn\\'t be generated for this audit. Your scores and issues are complete.",
-  "Part of this audit couldn\\'t be completed. Some sections may be missing or incomplete.": "Part of this audit couldn\\'t be completed. Some sections may be missing or incomplete."
+  "Part of this audit couldn\\'t be completed. Some sections may be missing or incomplete.": "Part of this audit couldn\\'t be completed. Some sections may be missing or incomplete.",
+  "Auth": "Auth",
+  "Auth Provider": "Auth Provider"
 }
