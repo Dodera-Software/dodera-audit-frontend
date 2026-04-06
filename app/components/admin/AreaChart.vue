@@ -12,8 +12,11 @@
       :stacked="stacked"
       :radius="4"
       :duration="400"
-      :tooltip-title-formatter="tooltipTitle"
-    />
+    >
+      <template #tooltip="{ values: tipValues }">
+        <ChartTooltip :values="tipValues" :categories="chartCategories" />
+      </template>
+    </BarChart>
     <!-- Line/Area use the same API -->
     <component
       v-else
@@ -26,8 +29,11 @@
       :y-grid-line="true"
       :stacked="stacked"
       :duration="400"
-      :tooltip-title-formatter="tooltipTitle"
-    />
+    >
+      <template #tooltip="{ values: tipValues }">
+        <ChartTooltip :values="tipValues" :categories="chartCategories" />
+      </template>
+    </component>
   </div>
   <div v-else class="flex flex-col items-center justify-center py-8 text-center" :style="{ minHeight: `${height}px` }">
     <UIcon name="i-lucide-bar-chart-3" class="mb-2 h-8 w-8 text-(--ui-text-dimmed)" />
@@ -80,8 +86,4 @@ const chartCategories = computed(() => {
 const xFormatter = computed(() =>
   (i: number) => chartData.value[i]?._label as string ?? '',
 )
-
-function tooltipTitle(data: Record<string, unknown>): string {
-  return String(data._label ?? '')
-}
 </script>
