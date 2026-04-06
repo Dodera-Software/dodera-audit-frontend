@@ -911,5 +911,19 @@
   "Before re-auditing": "Before re-auditing",
   "For best results, review your Issue Board and fix as many issues as possible before running a new audit. The audit will automatically detect which issues have been resolved and which remain.": "For best results, review your Issue Board and fix as many issues as possible before running a new audit. The audit will automatically detect which issues have been resolved and which remain.",
   "You have {n} open issue(s) on your board.": "You have {n} open issue(s) on your board.",
-  "Start audit": "Start audit"
+  "Start audit": "Start audit",
+  "Once you delete your account, there is no going back. All your projects, pages, audits, and data will be permanently removed.": "Once you delete your account, there is no going back. All your projects, pages, audits, and data will be permanently removed.",
+  "Delete your account?": "Delete your account?",
+  "This action is permanent and cannot be undone.": "This action is permanent and cannot be undone.",
+  "Deleting your account will:": "Deleting your account will:",
+  "Remove all your projects, pages, and audit history": "Remove all your projects, pages, and audit history",
+  "Cancel any active subscription": "Cancel any active subscription",
+  "Remove you from any teams": "Remove you from any teams",
+  "Delete your personal information": "Delete your personal information",
+  "Confirm your password": "Confirm your password",
+  "Enter your password": "Enter your password",
+  "Type DELETE to confirm": "Type DELETE to confirm",
+  "Delete my account": "Delete my account",
+  "Account deleted. Goodbye.": "Account deleted. Goodbye.",
+  "Failed to delete account.": "Failed to delete account."
 }
