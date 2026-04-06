@@ -707,9 +707,6 @@
   "Trust Auditor": "Trust Auditor",
   "Conversion Critic": "Conversion Critic",
   "Code Inspector": "Code Inspector",
-  "Scores may be less accurate": "Scores may be less accurate",
-  "Agent output retried for accuracy": "Agent output retried for accuracy",
-  "Agent output may contain generic observations": "Agent output may contain generic observations",
   "Audit failed": "Audit failed",
   "Admin": "Admin",
   "Admin Dashboard": "Admin Dashboard",
@@ -914,5 +911,12 @@
   "Owner Plan": "Owner Plan",
   "Delete project": "Delete project",
   "No audits completed yet.": "No audits completed yet.",
-  "You\\'re all set!": "You\\'re all set!"
+  "You\\'re all set!": "You\\'re all set!",
+  "Signing you in...": "Signing you in...",
+  "or": "or",
+  "Google sign-in failed. Please try again.": "Google sign-in failed. Please try again.",
+  "Could not connect to Google. Please try again.": "Could not connect to Google. Please try again.",
+  "We couldn\\'t capture a screenshot of your page. Visual analysis may be limited, but your scores are still based on the page content.": "We couldn\\'t capture a screenshot of your page. Visual analysis may be limited, but your scores are still based on the page content.",
+  "The AI progress narrative couldn\\'t be generated for this audit. Your scores and issues are complete.": "The AI progress narrative couldn\\'t be generated for this audit. Your scores and issues are complete.",
+  "Part of this audit couldn\\'t be completed. Some sections may be missing or incomplete.": "Part of this audit couldn\\'t be completed. Some sections may be missing or incomplete."
 }
