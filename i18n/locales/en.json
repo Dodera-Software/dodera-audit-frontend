@@ -901,5 +901,14 @@
   "Owner Plan": "Owner Plan",
   "Delete project": "Delete project",
   "No audits completed yet.": "No audits completed yet.",
-  "You\\'re all set!": "You\\'re all set!"
+  "You\\'re all set!": "You\\'re all set!",
+  "Go back": "Go back",
+  "error.404.title": "Page not found",
+  "error.404.description": "The page you're looking for doesn't exist or has been moved.",
+  "error.403.title": "Access denied",
+  "error.403.description": "You don't have permission to view this page.",
+  "error.500.title": "Something went wrong",
+  "error.500.description": "We're having trouble on our end. Please try again in a moment.",
+  "error.generic.title": "An error occurred",
+  "error.generic.description": "Something unexpected happened. Try going back or returning to the dashboard."
 }

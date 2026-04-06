@@ -33,10 +33,27 @@
           :aria-label="t('Expand sidebar')"
           @click="toggleSidebar"
         />
+        <!-- Separator after expand button when collapsed -->
+        <div v-if="isSidebarCollapsed" class="hidden h-5 w-px bg-(--ui-border) lg:block" />
       </ClientOnly>
 
       <!-- Desktop: back button + page title -->
       <div class="hidden items-center gap-1 lg:flex">
+        <!-- Logo shown when sidebar is fully collapsed — stays leftmost -->
+        <ClientOnly>
+          <NuxtLink
+            v-if="isSidebarCollapsed"
+            to="/dashboard"
+            class="mr-1 flex items-center gap-2 hover:opacity-80"
+            :aria-label="t('Go to dashboard')"
+          >
+            <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-8 w-auto" />
+            <span class="text-sm font-bold text-(--ui-text-highlighted)">PawByTech</span>
+          </NuxtLink>
+          <!-- Separator after logo when collapsed and there's a title -->
+          <div v-if="isSidebarCollapsed && navbarState.title" class="ml-1 h-5 w-px bg-(--ui-border)" />
+        </ClientOnly>
+
         <UButton
           v-if="navbarState.showBack"
           variant="ghost"
@@ -56,19 +73,6 @@
             {{ navbarState.subtitle }}
           </p>
         </div>
-
-        <!-- Logo shown after title when sidebar is fully collapsed -->
-        <ClientOnly>
-          <NuxtLink
-            v-if="isSidebarCollapsed"
-            to="/dashboard"
-            class="ml-2 flex items-center gap-2 hover:opacity-80"
-            :aria-label="t('Go to dashboard')"
-          >
-            <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-8 w-auto" />
-            <span class="text-sm font-bold text-(--ui-text-highlighted)">PawByTech</span>
-          </NuxtLink>
-        </ClientOnly>
       </div>
     </div>
 
@@ -119,6 +123,9 @@
         :aria-label="t('Settings')"
         to="/account/settings"
       />
+
+      <!-- Separator before avatar -->
+      <div class="h-5 w-px bg-(--ui-border)" />
 
       <!-- Profile avatar -->
       <NuxtLink to="/account" :aria-label="t('Your account')">

@@ -1,11 +1,10 @@
 <template>
   <ClientOnly>
-    <div class="mx-auto max-w-2xl">
+    <div class="mx-auto max-w-2xl flex flex-col gap-4">
 
     <!-- Success banner after checkout redirect -->
     <UAlert
       v-if="showSuccess"
-      class="mb-6"
       color="success"
       variant="subtle"
       icon="i-lucide-check-circle"
@@ -17,11 +16,17 @@
 
     <template v-else-if="status">
       <!-- Current plan card -->
-      <UCard class="mb-4">
-        <div class="flex items-start justify-between gap-4">
+      <UCard>
+        <template #header>
+          <div class="flex items-center gap-2">
+            <UIcon name="i-lucide-zap" class="h-4 w-4 text-(--ui-primary)" />
+            <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Current plan') }}</h2>
+          </div>
+        </template>
+
+        <div class="space-y-4">
           <div>
-            <p class="text-xs font-medium uppercase tracking-wide text-(--ui-text-dimmed)">{{ t('Current plan') }}</p>
-            <div class="mt-1 flex items-center gap-2">
+            <div class="flex items-center gap-2">
               <span class="text-2xl font-bold text-(--ui-text-highlighted)">{{ status.plan_label }}</span>
               <UBadge
                 :color="status.plan === 'free' ? 'neutral' : 'success'"
@@ -38,32 +43,38 @@
               {{ t('Access until') }} {{ formatDate(status.subscription_ends_at) }}
             </p>
           </div>
-          <div class="flex gap-2">
+
+          <USeparator />
+
+          <div class="flex justify-end gap-2">
             <UButton
               v-if="status.plan !== 'free'"
               variant="outline"
-              size="sm"
               icon="i-lucide-settings"
               :loading="portalLoading"
               @click="openPortal"
             >
-              {{ t('Manage') }}
+              {{ t('Manage billing') }}
             </UButton>
             <UButton
               v-if="status.plan !== 'max'"
-              size="sm"
               icon="i-lucide-zap"
               to="/pricing"
             >
-              {{ status.plan === 'free' ? t('Upgrade') : t('Upgrade to Max') }}
+              {{ status.plan === 'free' ? t('Upgrade plan') : t('Upgrade to Max') }}
             </UButton>
           </div>
         </div>
       </UCard>
 
       <!-- Usage card -->
-      <UCard class="mb-4">
-        <h3 class="mb-4 text-sm font-semibold text-(--ui-text-highlighted)">{{ t('This month\'s usage') }}</h3>
+      <UCard>
+        <template #header>
+          <div class="flex items-center gap-2">
+            <UIcon name="i-lucide-bar-chart-2" class="h-4 w-4 text-(--ui-text-muted)" />
+            <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('This month\'s usage') }}</h2>
+          </div>
+        </template>
 
         <div class="space-y-4">
           <!-- Audits -->
@@ -113,7 +124,7 @@
               {{ t('Get persona insights, AI fix suggestions, Project Brain, and more.') }}
             </p>
           </div>
-          <UButton size="sm" to="/pricing">{{ t('See plans') }}</UButton>
+          <UButton to="/pricing">{{ t('See plans') }}</UButton>
         </div>
       </UCard>
     </template>
