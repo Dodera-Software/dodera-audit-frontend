@@ -130,6 +130,17 @@
                       <template #content>
                         <div class="p-1">
                           <UButton
+                            icon="i-lucide-pencil"
+                            variant="ghost"
+                            color="neutral"
+                            size="sm"
+                            block
+                            class="justify-start"
+                            @click="openRenamePage(page)"
+                          >
+                            {{ t('Rename') }}
+                          </UButton>
+                          <UButton
                             icon="i-lucide-folder-open"
                             variant="ghost"
                             color="neutral"
@@ -190,6 +201,14 @@
         @created="onPageCreated"
       />
 
+      <RenamePageDialog
+        v-if="renamePageTarget"
+        v-model:open="showRenamePageDialog"
+        :page-id="renamePageTarget.id"
+        :page-name="renamePageTarget.name"
+        @renamed="onPageRenamed"
+      />
+
       <MovePageDialog
         v-if="movePageTarget"
         v-model:open="showMovePageDialog"
@@ -222,7 +241,9 @@ const { confirm } = useConfirm()
 
 const showAddPageDialog = ref(false)
 const showMovePageDialog = ref(false)
+const showRenamePageDialog = ref(false)
 const movePageTarget = ref<PageItem | null>(null)
+const renamePageTarget = ref<PageItem | null>(null)
 
 interface PageItem {
   id: string
@@ -293,6 +314,17 @@ async function deletePage(page: PageItem) {
 
 function onPageCreated(page: { id: string, project_id: string }) {
   navigateTo(`/projects/${page.project_id}/pages/${page.id}`)
+}
+
+function openRenamePage(page: PageItem) {
+  renamePageTarget.value = page
+  showRenamePageDialog.value = true
+}
+
+function onPageRenamed(newName: string) {
+  if (!renamePageTarget.value) return
+  const page = pages.value.find(p => p.id === renamePageTarget.value!.id)
+  if (page) page.name = newName || null
 }
 
 function openMovePage(page: PageItem) {
