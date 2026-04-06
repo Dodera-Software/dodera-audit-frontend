@@ -55,7 +55,7 @@
         </div>
 
         <!-- Charts -->
-        <div class="grid grid-cols-1 gap-4 lg:grid-cols-4">
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <UCard>
             <template #header>
               <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Plan Distribution') }}</h3>
@@ -84,19 +84,6 @@
 
           <UCard>
             <template #header>
-              <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('User Roles') }}</h3>
-            </template>
-            <AdminDonutChart
-              :labels="['User', 'Admin', 'Super Admin']"
-              :values="[roleDistribution.user || 0, roleDistribution.admin || 0, roleDistribution.super_admin || 0]"
-              :colors="['#a1a1aa', '#8b5cf6', '#f59e0b']"
-              :height="240"
-              :empty-label="t('No users yet.')"
-            />
-          </UCard>
-
-          <UCard class="lg:col-span-1">
-            <template #header>
               <div class="flex items-center justify-between">
                 <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Daily Activity') }}</h3>
                 <USelect v-model="chartDays" :items="dayOptions" size="xs" class="w-20" />
@@ -109,15 +96,16 @@
           </UCard>
         </div>
 
-        <!-- Audit Outcomes -->
-        <UCard>
-          <template #header>
-            <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Audit Outcomes') }}</h3>
-          </template>
-          <div v-if="chartsLoading" class="flex items-center justify-center py-12">
-            <UIcon name="i-lucide-loader-2" class="h-5 w-5 animate-spin text-(--ui-text-muted)" />
-          </div>
-          <AdminDonutChart
+        <!-- Audit Outcomes + User Roles -->
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <UCard>
+            <template #header>
+              <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Audit Outcomes') }}</h3>
+            </template>
+            <div v-if="chartsLoading" class="flex items-center justify-center py-12">
+              <UIcon name="i-lucide-loader-2" class="h-5 w-5 animate-spin text-(--ui-text-muted)" />
+            </div>
+            <AdminDonutChart
             v-else
             :labels="['Completed', 'Failed']"
             :values="[outcomeTotals.completed, outcomeTotals.failed]"
@@ -125,7 +113,21 @@
             :height="220"
             :empty-label="t('No audits completed yet.')"
           />
-        </UCard>
+          </UCard>
+
+          <UCard>
+            <template #header>
+              <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('User Roles') }}</h3>
+            </template>
+            <AdminDonutChart
+              :labels="['User', 'Admin', 'Super Admin']"
+              :values="[roleDistribution.user || 0, roleDistribution.admin || 0, roleDistribution.super_admin || 0]"
+              :colors="['#a1a1aa', '#8b5cf6', '#f59e0b']"
+              :height="220"
+              :empty-label="t('No users yet.')"
+            />
+          </UCard>
+        </div>
 
         <!-- Activity Feed -->
         <UCard>
