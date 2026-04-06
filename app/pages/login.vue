@@ -4,23 +4,7 @@
     <p class="mt-2 text-(--ui-text-muted)">{{ t('Welcome back') }}</p>
 
     <div class="mt-4">
-      <button
-        type="button"
-        class="mx-auto flex w-fit cursor-pointer"
-        :disabled="googleLoading"
-        @click="handleGoogleLogin"
-      >
-        <img
-          src="~/assets/google/auth/web_mobile_desktop/svg/light/web_light_rd_ctn.svg"
-          alt="Continue with Google"
-          class="h-10 dark:hidden"
-        />
-        <img
-          src="~/assets/google/auth/web_mobile_desktop/svg/dark/web_dark_rd_ctn.svg"
-          alt="Continue with Google"
-          class="hidden h-10 dark:block"
-        />
-      </button>
+      <GoogleAuthButton :loading="googleLoading" @click="handleGoogleLogin" />
 
       <DividerLabel class="my-5">{{ t('or') }}</DividerLabel>
     </div>

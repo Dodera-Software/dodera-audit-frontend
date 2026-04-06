@@ -4,23 +4,7 @@
     <p class="mt-2 text-(--ui-text-muted)">{{ t('Start auditing in minutes') }}</p>
 
     <div class="mt-4">
-      <button
-        type="button"
-        class="mx-auto flex w-fit cursor-pointer"
-        :disabled="googleLoading"
-        @click="handleGoogleRegister"
-      >
-        <img
-          src="~/assets/google/auth/web_mobile_desktop/svg/light/web_light_rd_SU.svg"
-          alt="Sign up with Google"
-          class="h-10 dark:hidden"
-        />
-        <img
-          src="~/assets/google/auth/web_mobile_desktop/svg/dark/web_dark_rd_SU.svg"
-          alt="Sign up with Google"
-          class="hidden h-10 dark:block"
-        />
-      </button>
+      <GoogleAuthButton action="signup" :loading="googleLoading" @click="handleGoogleRegister" />
 
       <DividerLabel class="my-5">{{ t('or') }}</DividerLabel>
     </div>
