@@ -87,6 +87,11 @@ export function useAuth() {
     })
   }
 
+  async function googleRedirect() {
+    const data = await $api<{ url: string }>('/auth/google/redirect')
+    window.location.href = data.url
+  }
+
   return {
     login,
     register,
@@ -95,5 +100,6 @@ export function useAuth() {
     forgotPassword,
     resetPassword,
     resendVerification,
+    googleRedirect,
   }
 }

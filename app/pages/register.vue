@@ -3,7 +3,29 @@
     <h2 class="text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Create your account') }}</h2>
     <p class="mt-2 text-(--ui-text-muted)">{{ t('Start auditing in minutes') }}</p>
 
-    <UForm :schema="schema" :state="form" class="mt-4 space-y-5" @submit="handleRegister">
+    <div class="mt-4">
+      <button
+        type="button"
+        class="mx-auto flex w-fit cursor-pointer"
+        :disabled="googleLoading"
+        @click="handleGoogleRegister"
+      >
+        <img
+          src="~/assets/google/auth/web_mobile_desktop/svg/light/web_light_rd_SU.svg"
+          alt="Sign up with Google"
+          class="h-10 dark:hidden"
+        />
+        <img
+          src="~/assets/google/auth/web_mobile_desktop/svg/dark/web_dark_rd_SU.svg"
+          alt="Sign up with Google"
+          class="hidden h-10 dark:block"
+        />
+      </button>
+
+      <DividerLabel class="my-5">{{ t('or') }}</DividerLabel>
+    </div>
+
+    <UForm :schema="schema" :state="form" class="space-y-5" @submit="handleRegister">
       <UAlert
         v-if="apiError.hasErrors.value"
         color="error"
@@ -101,7 +123,7 @@ definePageMeta({ layout: 'auth', middleware: 'guest', ssr: false })
 
 const { t } = useI18n()
 const route = useRoute()
-const { register } = useAuth()
+const { register, googleRedirect } = useAuth()
 const apiError = useApiError()
 
 const invitationToken = route.query.invitation as string | undefined
@@ -115,8 +137,20 @@ const form = reactive({
   terms: false as boolean,
 })
 const loading = ref(false)
+const googleLoading = ref(false)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
+
+async function handleGoogleRegister() {
+  googleLoading.value = true
+  try {
+    await googleRedirect()
+  }
+  catch {
+    apiError.parse(null, t('Could not connect to Google. Please try again.'))
+    googleLoading.value = false
+  }
+}
 
 async function handleRegister() {
   loading.value = true

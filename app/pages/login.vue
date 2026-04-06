@@ -3,7 +3,29 @@
     <h2 class="text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Sign in to your account') }}</h2>
     <p class="mt-2 text-(--ui-text-muted)">{{ t('Welcome back') }}</p>
 
-    <UForm :schema="schema" :state="form" class="mt-4 space-y-5" @submit="handleLogin">
+    <div class="mt-4">
+      <button
+        type="button"
+        class="mx-auto flex w-fit cursor-pointer"
+        :disabled="googleLoading"
+        @click="handleGoogleLogin"
+      >
+        <img
+          src="~/assets/google/auth/web_mobile_desktop/svg/light/web_light_rd_ctn.svg"
+          alt="Continue with Google"
+          class="h-10 dark:hidden"
+        />
+        <img
+          src="~/assets/google/auth/web_mobile_desktop/svg/dark/web_dark_rd_ctn.svg"
+          alt="Continue with Google"
+          class="hidden h-10 dark:block"
+        />
+      </button>
+
+      <DividerLabel class="my-5">{{ t('or') }}</DividerLabel>
+    </div>
+
+    <UForm :schema="schema" :state="form" class="space-y-5" @submit="handleLogin">
       <UAlert
         v-if="apiError.hasErrors.value"
         color="error"
@@ -70,20 +92,35 @@ definePageMeta({ layout: 'auth', middleware: 'guest', ssr: false })
 
 const { t } = useI18n()
 const route = useRoute()
-const { login } = useAuth()
+const { login, googleRedirect } = useAuth()
 const apiError = useApiError()
 const toast = useToast()
 
 const schema = loginSchema(t)
 const form = reactive({ email: '', password: '' })
 const loading = ref(false)
+const googleLoading = ref(false)
 const showPassword = ref(false)
 
 onMounted(() => {
   if (route.query.verified === '1') {
     toast.add({ title: t('Email verified!'), description: t('Your email has been verified. You can now sign in.'), color: 'success' })
   }
+  if (route.query.error === 'google_auth_failed') {
+    apiError.parse(null, t('Google sign-in failed. Please try again.'))
+  }
 })
+
+async function handleGoogleLogin() {
+  googleLoading.value = true
+  try {
+    await googleRedirect()
+  }
+  catch {
+    apiError.parse(null, t('Could not connect to Google. Please try again.'))
+    googleLoading.value = false
+  }
+}
 
 async function handleLogin() {
   loading.value = true
