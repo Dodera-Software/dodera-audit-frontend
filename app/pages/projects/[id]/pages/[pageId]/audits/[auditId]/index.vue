@@ -56,7 +56,7 @@
         </UTooltip>
       </div>
 
-      <QuickRescanModal v-model="showRescanModal" :page-id="pageId" :open-issue-count="topIssues.length" @started="handleRescanStarted" />
+      <QuickRescanModal v-model="showRescanModal" :page-id="pageId" :open-issue-count="openIssuesCount" @started="handleRescanStarted" />
 
       <!-- Warnings -->
       <div v-if="audit.warnings?.length" class="mb-6 space-y-2">
@@ -300,6 +300,7 @@ const audit = ref<AuditDetail | null>(null)
 const delta = ref<{ overall: number | null, scores: Record<string, number | null> } | null>(null)
 const scoreHistory = ref<ScoreHistoryEntry[]>([])
 const topIssues = ref<IssueItem[]>([])
+const openIssuesCount = ref(0)
 const velocity = ref<VelocityData | null>(null)
 const loading = ref(true)
 const showSuccess = ref(false)
@@ -337,6 +338,7 @@ async function fetchAuditData() {
       delta: { overall: number | null, scores: Record<string, number | null> }
       score_history: ScoreHistoryEntry[]
       top_issues: IssueItem[]
+      open_issues_count: number
       velocity: VelocityData | null
     }>(`/audits/${auditId}`)
 
@@ -344,6 +346,7 @@ async function fetchAuditData() {
     delta.value = data.delta
     scoreHistory.value = data.score_history
     topIssues.value = data.top_issues
+    openIssuesCount.value = data.open_issues_count ?? 0
     velocity.value = data.velocity ?? null
   }
   catch (e) {
