@@ -306,6 +306,10 @@ async function deletePage(page: PageItem) {
   try {
     await $api(`/pages/${page.id}`, { method: 'DELETE' })
     pages.value = pages.value.filter(p => p.id !== page.id)
+    // Update stat cards reactively
+    if (stats.value) {
+      stats.value.pages_count = Math.max(0, (stats.value.pages_count ?? 1) - 1)
+    }
   }
   catch {
     // best-effort

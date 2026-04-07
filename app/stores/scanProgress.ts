@@ -1,6 +1,16 @@
 import { defineStore } from 'pinia'
 import type { ScanStepStatus } from '~/constants/scan'
-import { SCAN_STEP_KEYS, ANALYSIS_AGENTS_TOTAL } from '~/constants/scan'
+import { SCAN_STEP_KEYS } from '~/constants/scan'
+
+export interface ExplorationStep {
+  stepNumber: number
+  maxSteps: number
+  action: string
+  description: string
+  screenshotThumbnail: string | null
+  findingCount: number
+  finding: { category: string, severity: string, title: string } | null
+}
 
 interface ActiveScan {
   auditId: string
@@ -8,9 +18,15 @@ interface ActiveScan {
   status: 'scanning' | 'complete' | 'failed'
   currentStep: string
   stepStatuses: Record<string, ScanStepStatus>
-  agentsCompleted: number
-  agentsTotal: number
-  completedAgentNames: string[]
+  // Exploration tracking
+  explorationSteps: ExplorationStep[]
+  explorationMaxSteps: number
+  currentScreenshot: string | null
+  // Analysis pass tracking
+  currentPass: number
+  totalPasses: number
+  currentPassName: string | null
+  // Shared
   error: string | null
 }
 
@@ -54,9 +70,12 @@ export const useScanProgressStore = defineStore('scanProgress', {
         status: 'scanning',
         currentStep: 'validating',
         stepStatuses: buildStepStatuses('validating'),
-        agentsCompleted: 0,
-        agentsTotal: ANALYSIS_AGENTS_TOTAL,
-        completedAgentNames: [],
+        explorationSteps: [],
+        explorationMaxSteps: 0, // Updated dynamically from first exploration event
+        currentScreenshot: null,
+        currentPass: 0,
+        totalPasses: 3,
+        currentPassName: null,
         error: null,
       }
     },
@@ -67,17 +86,47 @@ export const useScanProgressStore = defineStore('scanProgress', {
       this.activeScan.stepStatuses = buildStepStatuses('validating')
     },
 
-    handleScanProgress(auditId: string, step: string, agentsCompleted?: number, agentsTotal?: number, agentName?: string) {
+    handleScanProgress(auditId: string, step: string, pass?: number, passTotal?: number, passName?: string) {
       if (this.activeScan?.auditId !== auditId) return
+
       this.activeScan.currentStep = step
       this.activeScan.stepStatuses = buildStepStatuses(step)
-      if (step === 'analyzing' && agentsCompleted != null && agentsTotal != null) {
-        this.activeScan.agentsCompleted = agentsCompleted
-        this.activeScan.agentsTotal = agentsTotal
-        if (agentName && !this.activeScan.completedAgentNames.includes(agentName)) {
-          this.activeScan.completedAgentNames.push(agentName)
-        }
+
+      if (step === 'analyzing') {
+        if (pass != null) this.activeScan.currentPass = pass
+        if (passTotal != null) this.activeScan.totalPasses = passTotal
+        if (passName != null) this.activeScan.currentPassName = passName
       }
+    },
+
+    handleExplorationStep(auditId: string, detail: {
+      step_number: number
+      max_steps: number
+      action: string
+      description: string
+      screenshot_thumbnail?: string | null
+      finding_count: number
+      finding?: { category: string, severity: string, title: string } | null
+    }) {
+      if (this.activeScan?.auditId !== auditId) return
+
+      this.activeScan.currentStep = 'exploring'
+      this.activeScan.stepStatuses = buildStepStatuses('exploring')
+      this.activeScan.explorationMaxSteps = detail.max_steps
+
+      if (detail.screenshot_thumbnail) {
+        this.activeScan.currentScreenshot = detail.screenshot_thumbnail
+      }
+
+      this.activeScan.explorationSteps.push({
+        stepNumber: detail.step_number,
+        maxSteps: detail.max_steps,
+        action: detail.action,
+        description: detail.description,
+        screenshotThumbnail: detail.screenshot_thumbnail || null,
+        findingCount: detail.finding_count,
+        finding: detail.finding || null,
+      })
     },
 
     handleScanComplete(auditId: string) {

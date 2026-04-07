@@ -1,8 +1,5 @@
 <template>
-  <UCard
-    class="transition-all duration-200"
-    :class="isLowestIntent ? 'border-2 border-amber-400/60' : ''"
-  >
+  <UCard class="transition-all duration-200">
     <!-- Header -->
     <div class="flex items-center gap-3">
       <div
@@ -15,26 +12,10 @@
         <h3 class="font-semibold text-(--ui-text-highlighted)">{{ personaName }}</h3>
         <p class="text-xs text-(--ui-text-muted)">{{ personaDescription }}</p>
       </div>
-      <div class="flex shrink-0 flex-col items-end gap-1">
-        <UBadge :color="verdictConfig.color" variant="subtle">
-          <UIcon :name="verdictConfig.icon" class="mr-1 h-3 w-3" />
-          {{ verdictLabel }}
-        </UBadge>
-        <UTooltip v-if="lowConfidence" :text="t('Limited page data — findings may be less accurate')">
-          <UBadge color="neutral" variant="subtle" class="cursor-default">
-            <UIcon name="i-lucide-signal-low" class="mr-1 h-3 w-3" />
-            {{ t('Low confidence') }}
-          </UBadge>
-        </UTooltip>
-      </div>
-    </div>
-
-    <!-- Scores -->
-    <div class="mt-4 flex gap-4">
-      <div v-for="score in scoreEntries" :key="score.key" class="flex-1 text-center">
-        <p class="text-xs text-(--ui-text-muted)">{{ score.label }}</p>
-        <p class="text-lg font-bold tabular-nums" :class="scoreColor(score.value)">{{ score.value }}</p>
-      </div>
+      <UBadge :color="verdictConfig.color" variant="subtle">
+        <UIcon :name="verdictConfig.icon" class="mr-1 h-3 w-3" />
+        {{ verdictLabel }}
+      </UBadge>
     </div>
 
     <!-- Narrative excerpt -->
@@ -49,7 +30,7 @@
 
     <!-- Top issue -->
     <div v-if="persona.top_issue" class="mt-3 rounded-md bg-(--ui-bg-elevated) p-2.5">
-      <p class="text-xs font-medium text-(--ui-text-muted)">{{ t('Top issue') }}</p>
+      <p class="text-xs font-medium text-(--ui-text-muted)">{{ t('Top concern') }}</p>
       <p class="mt-0.5 text-sm text-(--ui-text-highlighted)">{{ persona.top_issue }}</p>
     </div>
 
@@ -65,9 +46,36 @@
               <UIcon :name="meta.icon" class="h-4 w-4" />
             </div>
             <h3 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ personaName }}</h3>
+            <UBadge :color="verdictConfig.color" variant="subtle" size="xs">
+              {{ verdictLabel }}
+            </UBadge>
           </div>
           <div class="overflow-y-auto px-6 py-5">
-            <p class="whitespace-pre-line text-sm leading-relaxed text-(--ui-text)">{{ persona.narrative }}</p>
+            <!-- Key moments at the top -->
+            <div v-if="persona.moments?.length" class="mb-6">
+              <h4 class="text-xs font-semibold uppercase tracking-wide text-(--ui-text-dimmed)">{{ t('Key moments') }}</h4>
+              <div class="mt-3 space-y-2">
+                <div v-for="(moment, idx) in persona.moments" :key="idx" class="flex items-start gap-3 rounded-lg bg-(--ui-bg-elevated) px-3 py-2.5">
+                  <div class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold"
+                    :class="momentClass(moment.moment_type)"
+                  >
+                    <UIcon :name="momentIcon(moment.moment_type)" class="h-3 w-3" />
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-sm font-medium text-(--ui-text-highlighted)">{{ moment.description }}</p>
+                    <p class="mt-0.5 text-xs text-(--ui-text-dimmed)">{{ moment.element }} · {{ momentLabel(moment.moment_type) }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Full narrative -->
+            <div>
+              <h4 class="text-xs font-semibold uppercase tracking-wide text-(--ui-text-dimmed)">{{ t('Full narrative') }}</h4>
+              <div class="mt-3 space-y-3 text-sm leading-relaxed text-(--ui-text)">
+                <p v-for="(para, idx) in narrativeParagraphs" :key="idx">{{ para }}</p>
+              </div>
+            </div>
           </div>
           <div class="flex shrink-0 justify-end border-t border-(--ui-border) px-6 py-4">
             <UButton variant="ghost" @click="showModal = false">{{ t('Close') }}</UButton>
@@ -79,7 +87,6 @@
 </template>
 
 <script setup lang="ts">
-import { scoreColor } from '~/constants/audit'
 import { PERSONA_META, VERDICT_CONFIG } from '~/constants/persona'
 import type { VerdictKey } from '~/constants/persona'
 
@@ -91,6 +98,7 @@ const props = defineProps<{
     would_convert: string
     top_issue?: string
     confidence?: number
+    moments?: Array<{ element: string, moment_type: string, description: string, timestamp_seconds: number }>
   }
   isLowestIntent: boolean
 }>()
@@ -132,18 +140,59 @@ const verdictLabel = computed(() => {
   return labels[props.persona.would_convert]?.() ?? t('Uncertain')
 })
 
-const scoreEntries = computed(() => [
-  { key: 'trust', label: t('Trust'), value: props.persona.scores.trust },
-  { key: 'clarity', label: t('Clarity'), value: props.persona.scores.clarity },
-  { key: 'action_intent', label: t('Action'), value: props.persona.scores.action_intent },
-])
-
 const narrativeExcerpt = computed(() => {
   const sentences = props.persona.narrative.split(/(?<=[.!?])\s+/)
   return sentences.slice(0, 3).join(' ')
 })
 
-const lowConfidence = computed(() => {
-  return props.persona.confidence !== undefined && props.persona.confidence < 80
+const narrativeParagraphs = computed(() => {
+  // Split into paragraphs by double newline or every ~3 sentences
+  const text = props.persona.narrative
+  if (text.includes('\n\n')) {
+    return text.split('\n\n').filter(p => p.trim())
+  }
+  // Split into chunks of ~3 sentences for readability
+  const sentences = text.split(/(?<=[.!?])\s+/)
+  const paragraphs: string[] = []
+  for (let i = 0; i < sentences.length; i += 3) {
+    paragraphs.push(sentences.slice(i, i + 3).join(' '))
+  }
+  return paragraphs
 })
+
+function momentIcon(type: string): string {
+  const icons: Record<string, string> = {
+    trust_gain: 'i-lucide-shield-check',
+    conversion: 'i-lucide-check',
+    hesitation: 'i-lucide-pause',
+    confusion: 'i-lucide-help-circle',
+    trust_loss: 'i-lucide-shield-x',
+    exit_intent: 'i-lucide-log-out',
+  }
+  return icons[type] ?? 'i-lucide-circle'
+}
+
+function momentClass(type: string): string {
+  const classes: Record<string, string> = {
+    trust_gain: 'bg-green-500/15 text-green-500',
+    conversion: 'bg-green-500/15 text-green-500',
+    hesitation: 'bg-amber-500/15 text-amber-500',
+    confusion: 'bg-amber-500/15 text-amber-500',
+    trust_loss: 'bg-red-500/15 text-red-500',
+    exit_intent: 'bg-red-500/15 text-red-500',
+  }
+  return classes[type] ?? 'bg-(--ui-bg-accented) text-(--ui-text-dimmed)'
+}
+
+function momentLabel(type: string): string {
+  const labels: Record<string, string> = {
+    trust_gain: t('Trust gained'),
+    conversion: t('Conversion moment'),
+    hesitation: t('Hesitation'),
+    confusion: t('Confusion'),
+    trust_loss: t('Trust lost'),
+    exit_intent: t('Exit intent'),
+  }
+  return labels[type] ?? type
+}
 </script>
