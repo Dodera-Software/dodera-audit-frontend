@@ -155,6 +155,7 @@
               class="w-full"
             />
           </UFormField>
+        </div>
 
           <div data-tutorial="form-submit" class="flex justify-end gap-3 pt-2">
             <UButton variant="outline" color="neutral" @click="open = false">
