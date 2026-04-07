@@ -19,6 +19,7 @@
     "ag-grid-community": "^35.1.0",
     "ag-grid-vue3": "^35.1.0",
     "date-fns": "^4.1.0",
+    "driver.js": "^1.4.0",
     "laravel-echo": "^2.3.1",
     "nuxt": "^4.4.2",
     "nuxt-charts": "^2.1.4",
