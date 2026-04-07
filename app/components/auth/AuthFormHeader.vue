@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-8">
+  <div class="mb-8 text-center">
     <h2 class="text-3xl font-bold tracking-tight text-(--ui-text-highlighted)">
       {{ title }}
     </h2>
