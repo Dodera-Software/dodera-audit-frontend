@@ -28,37 +28,21 @@ interface Props {
   error: NuxtError
 }
 
-interface ErrorMessages {
-  title: string
-  description: string
-}
-
 const props = defineProps<Props>()
 
 const { t } = useI18n()
 
-const errorMessageMap: Record<number, ErrorMessages> = {
-  404: {
-    title: 'Page not found',
-    description: "The page you're looking for doesn't exist or has been moved.",
-  },
-  403: {
-    title: 'Access denied',
-    description: "You don't have permission to view this page.",
-  },
-  500: {
-    title: 'Something went wrong',
-    description: "We're having trouble on our end. Please try again in a moment.",
-  },
-}
+const title = computed(() => {
+  if (props.error.statusCode === 404) return t('Page not found')
+  if (props.error.statusCode === 403) return t('Access denied')
+  if (props.error.statusCode === 500) return t('Something went wrong')
+  return t('An error occurred')
+})
 
-const defaultMessages: ErrorMessages = {
-  title: 'An error occurred',
-  description: 'Something unexpected happened. Try going back or returning to the dashboard.',
-}
-
-const errorMessages = computed(() => errorMessageMap[props.error.statusCode] ?? defaultMessages)
-
-const title = computed(() => t(errorMessages.value.title))
-const description = computed(() => t(errorMessages.value.description))
+const description = computed(() => {
+  if (props.error.statusCode === 404) return t("The page you're looking for doesn't exist or has been moved.")
+  if (props.error.statusCode === 403) return t("You don't have permission to view this page.")
+  if (props.error.statusCode === 500) return t("We're having trouble on our end. Please try again in a moment.")
+  return t('Something unexpected happened. Try going back or returning to the dashboard.')
+})
 </script>
