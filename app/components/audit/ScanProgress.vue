@@ -29,23 +29,34 @@
 
         <!-- PHASE: Preparing (validating) -->
         <Transition name="phase" mode="out-in">
-          <div v-if="phase === 'preparing'" key="preparing" class="flex flex-col items-center text-center">
-            <Vue3Lottie
-              animation-link="/animations/searching.json"
-              :height="200"
-              :width="200"
-              :loop="true"
-              :auto-play="true"
-            />
-            <p class="mt-2 text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
+          <div v-if="phase === 'preparing'" key="preparing" class="flex w-full flex-col items-center text-center">
+            <p class="text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
               {{ t('Audit in progress') }}
             </p>
-            <h1 class="mt-3 text-5xl font-bold tracking-tight text-(--ui-text-highlighted)">
-              {{ t('Preparing your audit') }}
+            <h1 class="mt-3 text-4xl font-bold tracking-tight text-(--ui-text-highlighted)">
+              {{ t('Loading your page') }}
             </h1>
-            <p class="mt-4 max-w-md text-lg text-(--ui-text-muted)">
-              {{ t('Loading your page and setting up the AI auditor') }}
-            </p>
+
+            <div class="mt-8 w-full max-w-3xl">
+              <BrowserFrame :url="url" :loading="true" :scan-line="true">
+                <div class="flex flex-col items-center gap-5">
+                  <div class="relative">
+                    <div class="absolute -inset-3 animate-ping rounded-full bg-blue-500/20" />
+                    <div class="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-500/10 ring-1 ring-blue-500/30 backdrop-blur-sm">
+                      <UIcon name="i-lucide-globe" class="h-8 w-8 text-blue-400" />
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Connecting to site') }}</p>
+                    <div class="flex items-center justify-center gap-1.5">
+                      <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-400" style="animation-delay: 0ms" />
+                      <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-400" style="animation-delay: 150ms" />
+                      <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-400" style="animation-delay: 300ms" />
+                    </div>
+                  </div>
+                </div>
+              </BrowserFrame>
+            </div>
           </div>
         </Transition>
 
@@ -55,6 +66,7 @@
             <ExplorationViewer
               :steps="scan.explorationSteps"
               :current-screenshot="scan.currentScreenshot"
+              :url="url"
             />
           </div>
         </Transition>
@@ -119,45 +131,67 @@
 
         <!-- PHASE: Synthesizing -->
         <Transition name="phase" mode="out-in">
-          <div v-if="phase === 'synthesizing'" key="synthesizing" class="flex w-full max-w-2xl flex-col items-center text-center">
-            <div class="relative flex h-36 w-36 items-center justify-center">
-              <div class="absolute inset-0 animate-spin-slow rounded-full border border-dashed border-indigo-500/30" />
-              <div class="absolute inset-2 animate-spin-slow-reverse rounded-full border border-dashed border-purple-500/20" />
-              <div class="flex h-24 w-24 items-center justify-center rounded-3xl bg-indigo-500/10 ring-1 ring-indigo-500/20">
-                <UIcon name="i-lucide-sparkles" class="h-12 w-12 text-indigo-400" />
-              </div>
-            </div>
-            <p class="mt-6 text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
+          <div v-if="phase === 'synthesizing'" key="synthesizing" class="flex w-full flex-col items-center text-center">
+            <p class="text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
               {{ t('Final analysis') }}
             </p>
             <h1 class="mt-3 text-4xl font-bold tracking-tight text-(--ui-text-highlighted)">
               {{ t('Synthesizing insights') }}
             </h1>
-            <p class="mt-4 text-lg text-(--ui-text-muted)">
-              {{ t('Combining all findings into a coherent report') }}
-            </p>
+
+            <div class="mt-8 w-full max-w-3xl">
+              <BrowserFrame
+                :url="url"
+                :screenshot="lastScreenshot"
+                :screenshot-blurred="true"
+              >
+                <div class="flex flex-col items-center gap-5">
+                  <div class="relative">
+                    <div class="absolute -inset-4 animate-spin-slow rounded-full border border-dashed border-purple-400/40" />
+                    <div class="absolute -inset-8 animate-spin-slow-reverse rounded-full border border-dashed border-indigo-400/20" />
+                    <div class="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-500/15 ring-1 ring-purple-500/30 backdrop-blur-sm">
+                      <UIcon name="i-lucide-sparkles" class="h-8 w-8 text-purple-400" />
+                    </div>
+                  </div>
+                  <p class="text-sm font-semibold text-white drop-shadow-md">{{ t('Combining all findings into a coherent report') }}</p>
+                </div>
+              </BrowserFrame>
+            </div>
           </div>
         </Transition>
 
         <!-- PHASE: Assembling -->
         <Transition name="phase" mode="out-in">
-          <div v-if="phase === 'assembling'" key="assembling" class="flex flex-col items-center text-center">
-            <Vue3Lottie
-              animation-link="/animations/animation-bot.json"
-              :height="200"
-              :width="200"
-              :loop="true"
-              :auto-play="true"
-            />
-            <p class="mt-2 text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
+          <div v-if="phase === 'assembling'" key="assembling" class="flex w-full flex-col items-center text-center">
+            <p class="text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
               {{ t('Final step') }}
             </p>
-            <h1 class="mt-3 text-5xl font-bold tracking-tight text-(--ui-text-highlighted)">
+            <h1 class="mt-3 text-4xl font-bold tracking-tight text-(--ui-text-highlighted)">
               {{ t('Building your report') }}
             </h1>
-            <p class="mt-4 text-lg text-(--ui-text-muted)">
-              {{ t('Your scored audit report is almost ready') }}
-            </p>
+
+            <div class="mt-8 w-full max-w-3xl">
+              <BrowserFrame
+                :url="url"
+                :screenshot="lastScreenshot"
+                :screenshot-blurred="true"
+                :scan-line="true"
+              >
+                <div class="flex flex-col items-center gap-5">
+                  <div class="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-green-500/15 ring-1 ring-green-500/30 backdrop-blur-sm">
+                    <UIcon name="i-lucide-file-check" class="h-8 w-8 text-green-400" />
+                  </div>
+                  <div class="space-y-1">
+                    <p class="text-sm font-semibold text-white drop-shadow-md">{{ t('Your scored audit report is almost ready') }}</p>
+                    <div class="flex items-center justify-center gap-1.5">
+                      <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-green-400" style="animation-delay: 0ms" />
+                      <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-green-400" style="animation-delay: 150ms" />
+                      <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-green-400" style="animation-delay: 300ms" />
+                    </div>
+                  </div>
+                </div>
+              </BrowserFrame>
+            </div>
           </div>
         </Transition>
       </div>
@@ -176,11 +210,11 @@
 </template>
 
 <script setup lang="ts">
-import { Vue3Lottie } from 'vue3-lottie'
 import { SCAN_STEPS } from '~/constants/scan'
 import type { ScanStepStatus } from '~/constants/scan'
 import type { ExplorationStep } from '~/stores/scanProgress'
 import ExplorationViewer from '~/components/audit/ExplorationViewer.vue'
+import BrowserFrame from '~/components/audit/BrowserFrame.vue'
 
 const props = defineProps<{
   scan: {
@@ -194,7 +228,18 @@ const props = defineProps<{
     totalPasses: number
     currentPassName: string | null
   }
+  url: string
 }>()
+
+const lastScreenshot = computed(() => {
+  if (props.scan.currentScreenshot) return props.scan.currentScreenshot
+  const steps = props.scan.explorationSteps
+  for (let i = steps.length - 1; i >= 0; i--) {
+    const thumb = steps[i]?.screenshotThumbnail
+    if (thumb) return thumb
+  }
+  return null
+})
 
 defineEmits<{ retry: [] }>()
 

@@ -15,6 +15,7 @@ export interface ExplorationStep {
 interface ActiveScan {
   auditId: string
   projectId: string
+  url: string
   status: 'scanning' | 'complete' | 'failed'
   currentStep: string
   stepStatuses: Record<string, ScanStepStatus>
@@ -63,10 +64,11 @@ export const useScanProgressStore = defineStore('scanProgress', {
   },
 
   actions: {
-    startScan(auditId: string, projectId: string) {
+    startScan(auditId: string, projectId: string, url: string = '') {
       this.activeScan = {
         auditId,
         projectId,
+        url,
         status: 'scanning',
         currentStep: 'validating',
         stepStatuses: buildStepStatuses('validating'),

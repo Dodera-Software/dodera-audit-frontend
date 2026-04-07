@@ -64,6 +64,10 @@ export default defineNuxtConfig({
         'vue3-lottie',
         'date-fns',
         'date-fns/locale',
+        'pusher-js',
+        'driver.js',
+        'ag-grid-vue3',
+        'ag-grid-community',
       ],
     },
   }

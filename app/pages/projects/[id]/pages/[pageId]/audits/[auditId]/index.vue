@@ -2,7 +2,7 @@
   <ClientOnly>
     <!-- Scan in progress -->
     <div v-if="activeScan && !showSuccess">
-      <ScanProgress :scan="activeScan" @retry="navigateTo(`/projects/${projectId}/pages/${pageId}`)" />
+      <ScanProgress :scan="activeScan" :url="activeScan.url" @retry="navigateTo(`/projects/${projectId}/pages/${pageId}`)" />
     </div>
 
     <!-- Success celebration -->
@@ -320,6 +320,13 @@ onMounted(async () => {
   }
 
   await fetchAuditData()
+
+  // If the audit is still in progress (e.g. navigated here from re-scan or page refresh),
+  // start tracking it in the scan store so the progress UI shows
+  if (audit.value && ['pending', 'scanning', 'analyzing'].includes(audit.value.status)) {
+    scanStore.startScan(auditId, pageId)
+  }
+
   loading.value = false
 })
 
@@ -347,7 +354,7 @@ async function fetchAuditData() {
 }
 
 function handleRescanStarted(newAuditId: string) {
-  navigateTo(`/projects/${projectId}/pages/${pageId}/audits/${newAuditId}`)
+  navigateTo(`/projects/${projectId}/pages/${pageId}?audit=${newAuditId}`)
 }
 
 watch(() => activeScan.value?.status, async (status) => {

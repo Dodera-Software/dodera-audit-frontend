@@ -20,7 +20,7 @@
 
       <!-- Scan progress -->
       <div v-if="activeScan && !showSuccess">
-        <ScanProgress :scan="activeScan" @retry="triggerAudit" />
+        <ScanProgress :scan="activeScan" :url="activeScan.url" @retry="triggerAudit" />
       </div>
 
       <!-- Success celebration -->
@@ -388,7 +388,7 @@ onMounted(async () => {
 
   const auditParam = route.query.audit as string | undefined
   if (auditParam && !activeScan.value) {
-    scanStore.startScan(auditParam, pageId)
+    scanStore.startScan(auditParam, pageId, page.value?.url ?? '')
   }
 })
 
@@ -417,7 +417,7 @@ async function triggerAudit() {
 
   try {
     const data = await $api<{ data: { id: string } }>(`/pages/${pageId}/audits`, { method: 'POST' })
-    scanStore.startScan(data.data.id, pageId)
+    scanStore.startScan(data.data.id, pageId, page.value?.url ?? '')
     // Immediately refresh billing status so the counter updates
     invalidateBillingStatus()
     await fetchBillingStatus()
