@@ -39,14 +39,20 @@
         </Transition>
       </Teleport>
     </ClientOnly>
+
+    <!-- First-time user tutorial — no ClientOnly so Pinia reactivity works immediately -->
+    <UiTutorialOverlay />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useTutorialStore } from '~/stores/tutorial'
+
 const { t } = useI18n()
 const { logout, resendVerification } = useAuth()
 const authStore = useAuthStore()
 const toast = useToast()
+const tutorialStore = useTutorialStore()
 
 const mainEl = ref<HTMLElement | null>(null)
 const { y: mainScrollY } = useScroll(mainEl)
@@ -55,6 +61,10 @@ provide('mainScrollY', mainScrollY)
 const mobileOpen = ref(false)
 const loggingOut = ref(false)
 const resendPending = ref(false)
+
+onMounted(() => {
+  tutorialStore.checkFirstVisit()
+})
 
 async function handleLogout() {
   if (loggingOut.value) return

@@ -48,12 +48,12 @@
             </UButton>
           </div>
 
-          <!-- Empty -->
-          <div v-if="pages.length === 0" class="mt-4 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
-            <Vue3Lottie animation-link="/animations/animation-bot.json" :height="120" :width="120" :loop="true" :auto-play="true" class="mx-auto" />
-            <h3 class="mt-3 font-semibold text-(--ui-text-highlighted)">{{ t('No pages to audit yet') }}</h3>
-            <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Add a page URL to get a detailed AI-powered audit.') }}</p>
-            <UButton class="mt-4" icon="i-lucide-plus" size="sm" @click="showAddPageDialog = true">
+          <!-- Empty state: show when no pages, or during tutorial (so the CTA button is always present) -->
+          <div v-if="pages.length === 0 || tutorialActive" class="mt-4 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
+            <Vue3Lottie animation-link="/animations/animation-bot.json" :height="140" :width="140" :loop="true" :auto-play="true" class="mx-auto" />
+            <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No pages to audit yet') }}</h3>
+            <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Add a page URL to get a detailed AI-powered audit.') }}</p>
+            <UButton data-tutorial="audit-first-page-btn" class="mt-6" size="lg" icon="i-lucide-plus" @click="showAddPageDialog = true">
               {{ t('Audit your first page') }}
             </UButton>
           </div>
@@ -226,6 +226,7 @@ definePageMeta({ middleware: 'auth' })
 const { t } = useI18n()
 const { $api } = useApi()
 const authStore = useAuthStore()
+const { tutorialActive } = storeToRefs(useTutorialStore())
 const { siteTypeLabel } = useProjectOptions()
 const { setNavbar } = usePageNavbar()
 

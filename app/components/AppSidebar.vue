@@ -1,5 +1,6 @@
 <template>
   <aside
+    data-tutorial="sidebar"
     class="relative flex flex-shrink-0 flex-col overflow-hidden border-r border-(--ui-border-accented) bg-white transition-[width] duration-200 ease-in-out dark:bg-zinc-900"
     :class="[mobile ? 'h-full w-56' : 'hidden lg:flex', !mobile && isCollapsed ? 'border-r-0' : '']"
     :style="mobile ? undefined : { width: isCollapsed ? '0px' : `${sidebarWidth}px` }"
@@ -66,6 +67,7 @@
           :icon="item.icon"
           :variant="isActive(item.to) ? 'soft' : 'ghost'"
           :color="isActive(item.to) ? 'primary' : 'neutral'"
+          :data-tutorial="navTutorialId(item.to)"
           size="md"
           block
           class="justify-start"
@@ -174,6 +176,14 @@ const activeNavItems = computed(() => {
   if (projectId.value) return projectFolderNavItems.value
   return globalNavItems.value
 })
+
+function navTutorialId(to: string): string | undefined {
+  const map: Record<string, string> = {
+    '/dashboard': 'nav-dashboard',
+    '/projects': 'nav-projects',
+  }
+  return map[to]
+}
 
 function isActive(path: string): boolean {
   if (path === '/dashboard') return route.path === '/dashboard'
