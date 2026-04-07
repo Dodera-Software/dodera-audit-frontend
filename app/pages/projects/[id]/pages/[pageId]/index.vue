@@ -41,7 +41,7 @@
 
       <template v-if="!activeScan && !showSuccess">
         <!-- No audits -->
-        <div v-if="page.audits_count === 0" class="mt-8">
+        <div v-if="page.audits_count === 0">
           <UCard class="py-16 text-center">
             <Vue3Lottie animation-link="/animations/animation-bot.json" :height="140" :width="140" :loop="true" :auto-play="true" class="mx-auto" />
             <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Page not audited yet') }}</h3>
@@ -59,7 +59,7 @@
         </div>
 
         <!-- Two-column layout -->
-        <div v-else class="mt-6 grid gap-6 lg:grid-cols-3">
+        <div v-else class="grid gap-6 lg:grid-cols-3">
           <!-- Left (2/3) -->
           <div class="space-y-6 lg:col-span-2">
             <!-- Score + chart card -->

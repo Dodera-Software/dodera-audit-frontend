@@ -1,4 +1,12 @@
 {
+  "Page not found": "Page not found",
+  "The page you're looking for doesn't exist or has been moved.": "The page you're looking for doesn't exist or has been moved.",
+  "Access denied": "Access denied",
+  "You don't have permission to view this page.": "You don't have permission to view this page.",
+  "Something went wrong": "Something went wrong",
+  "We're having trouble on our end. Please try again in a moment.": "We're having trouble on our end. Please try again in a moment.",
+  "An error occurred": "An error occurred",
+  "Something unexpected happened. Try going back or returning to the dashboard.": "Something unexpected happened. Try going back or returning to the dashboard.",
   "Forgot your password?": "Forgot your password?",
   "Password reset link sent. Check your email.": "Password reset link sent. Check your email.",
   "Email": "Email",

@@ -16,10 +16,10 @@
           />
         </template>
         <div class="flex min-w-0 flex-1 flex-col items-start">
-          <span class="truncate text-left text-xs font-semibold leading-tight text-(--ui-text-highlighted)">
+          <span class="truncate text-left text-sm font-semibold leading-tight text-(--ui-text-highlighted)">
             {{ activeWorkspace?.name ?? t("My Team") }}
           </span>
-          <span v-if="activeWorkspace?.type === 'team'" class="truncate text-left text-[10px] leading-tight text-(--ui-text-dimmed)">
+          <span v-if="activeWorkspace?.type === 'team'" class="truncate text-left text-xs leading-tight text-(--ui-text-dimmed)">
             {{ t("owned by {name}", { name: activeWorkspace.owner_name }) }}
           </span>
         </div>
