@@ -32,17 +32,31 @@ const props = defineProps<Props>()
 
 const { t } = useI18n()
 
-const title = computed(() => {
-  if (props.error.statusCode === 404) return t('Page not found')
-  if (props.error.statusCode === 403) return t('Access denied')
-  if (props.error.statusCode === 500) return t('Something went wrong')
-  return t('An error occurred')
-})
+interface ErrorMessages {
+  title: string
+  description: string
+}
 
-const description = computed(() => {
-  if (props.error.statusCode === 404) return t("The page you're looking for doesn't exist or has been moved.")
-  if (props.error.statusCode === 403) return t("You don't have permission to view this page.")
-  if (props.error.statusCode === 500) return t("We're having trouble on our end. Please try again in a moment.")
-  return t('Something unexpected happened. Try going back or returning to the dashboard.')
-})
+const errorMap = computed<Record<number, ErrorMessages>>(() => ({
+  404: {
+    title: t('Page not found'),
+    description: t("The page you're looking for doesn't exist or has been moved."),
+  },
+  403: {
+    title: t('Access denied'),
+    description: t("You don't have permission to view this page."),
+  },
+  500: {
+    title: t('Something went wrong'),
+    description: t("We're having trouble on our end. Please try again in a moment."),
+  },
+}))
+
+const fallback = computed<ErrorMessages>(() => ({
+  title: t('An error occurred'),
+  description: t('Something unexpected happened. Try going back or returning to the dashboard.'),
+}))
+
+const title = computed(() => (errorMap.value[props.error.statusCode] ?? fallback.value).title)
+const description = computed(() => (errorMap.value[props.error.statusCode] ?? fallback.value).description)
 </script>
