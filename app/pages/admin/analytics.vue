@@ -14,20 +14,14 @@
           <template #header>
             <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Conversion Funnel') }}</h3>
           </template>
-          <div v-if="funnelSteps.every(s => s.count === 0)" class="py-6 text-center text-sm text-(--ui-text-muted)">
-            {{ t('No user activity yet.') }}
-          </div>
-          <div v-else class="space-y-3">
-            <AdminFunnelStep
-              v-for="(step, i) in funnelSteps"
-              :key="step.key"
-              :label="step.label"
-              :count="step.count"
-              :total="funnelSteps[0]?.count || 1"
-              :previous="i > 0 ? funnelSteps[i - 1]?.count : undefined"
-              :color="step.color"
-            />
-          </div>
+          <AdminAreaChart
+            :series="funnelChartSeries"
+            :categories="funnelChartCategories"
+            type="bar"
+            :colors="['#6366f1']"
+            :height="240"
+            :empty-label="t('No user activity yet.')"
+          />
         </UCard>
 
         <!-- User Engagement -->
@@ -116,6 +110,12 @@ const funnelSteps = computed(() => [
   { key: 'ran_second_audit', label: t('Second Audit'), count: funnel.value.ran_second_audit || 0, color: 'bg-pink-500' },
   { key: 'upgraded', label: t('Upgraded to Paid'), count: funnel.value.upgraded || 0, color: 'bg-primary' },
 ])
+
+const funnelChartSeries = computed(() => [
+  { name: t('Users'), data: funnelSteps.value.map(s => s.count) },
+])
+
+const funnelChartCategories = computed(() => funnelSteps.value.map(s => s.label))
 
 const signupSeries = computed(() => [
   { name: 'Signups', data: signupData.value.map((d: any) => d.count) },
