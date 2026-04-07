@@ -26,11 +26,7 @@
 
               <!-- Dog logo -->
               <div class="relative mx-auto mb-1 flex h-28 w-28 items-center justify-center rounded-full bg-(--ui-bg) shadow-lg ring-4 ring-(--ui-primary)/20">
-                <img
-                  src="~/assets/logo/pawbytech-logo.png"
-                  alt="PawByTech"
-                  class="h-24 w-24 object-contain drop-shadow-md"
-                />
+                <AppLogo class="h-24 w-24 object-contain drop-shadow-md" />
               </div>
 
               <h2 class="relative mt-4 text-3xl font-bold tracking-tight text-(--ui-text-highlighted)">

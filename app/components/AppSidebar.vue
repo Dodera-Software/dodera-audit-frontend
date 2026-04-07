@@ -67,6 +67,7 @@
           :icon="item.icon"
           :variant="isActive(item.to) ? 'soft' : 'ghost'"
           :color="isActive(item.to) ? 'primary' : 'neutral'"
+          :data-tutorial="navTutorialId(item.to)"
           size="md"
           block
           class="justify-start"
