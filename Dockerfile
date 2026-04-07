@@ -13,6 +13,7 @@ ARG NUXT_PUBLIC_REVERB_HOST
 ARG NUXT_PUBLIC_REVERB_PORT
 ARG NUXT_PUBLIC_REVERB_SCHEME
 
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build
 
 # ---------- Production ----------
