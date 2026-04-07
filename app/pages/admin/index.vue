@@ -1,6 +1,14 @@
 <template>
   <ClientOnly>
     <div class="flex flex-col gap-4">
+      <!-- Tutorial testing strip -->
+      <div class="flex items-center justify-between rounded-xl border border-dashed border-(--ui-border) px-4 py-3">
+        <div>
+          <p class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Product tour') }}</p>
+          <p class="mt-0.5 text-xs text-(--ui-text-muted)">{{ t('Preview the onboarding tutorial for new users') }}</p>
+        </div>
+        <UiTutorialTriggerButton variant="outline" size="sm" />
+      </div>
       <!-- Skeleton -->
       <template v-if="loading">
         <AdminKpiSkeleton />

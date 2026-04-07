@@ -2,10 +2,10 @@
   <ClientOnly>
     <AuditHistorySkeleton v-if="loading" />
 
-    <div v-else>
+    <UiPageShell v-else>
 
       <!-- Empty -->
-      <UCard v-if="audits.length === 0" class="mt-8 py-16 text-center">
+      <UCard v-if="audits.length === 0" class="py-16 text-center">
         <Vue3Lottie animation-link="/animations/animation-bot.json" :height="140" :width="140" :loop="true" :auto-play="true" class="mx-auto" />
         <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No audits yet') }}</h3>
         <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Run your first audit to see history.') }}</p>
@@ -13,7 +13,7 @@
 
       <template v-else>
         <!-- Hero stats -->
-        <div class="mt-6 grid gap-3 sm:grid-cols-2">
+        <div class="grid gap-4 sm:grid-cols-2">
           <UCard class="border-green-500/20 bg-green-500/5">
             <div class="flex items-center gap-2">
               <UIcon name="i-lucide-trophy" class="h-4 w-4 text-green-500" />
@@ -51,19 +51,19 @@
         </div>
 
         <!-- Chart -->
-        <UCard v-if="chartAudits.length >= 2" class="mt-6">
+        <UCard v-if="chartAudits.length >= 2">
           <h3 class="mb-4 text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Score trend') }}</h3>
           <ScoreTrendChart :data="chartAudits" :height="200" clickable @point-click="onChartClick" />
         </UCard>
 
         <!-- Rocket motivation -->
-        <div class="mt-8 flex flex-col items-center">
+        <div class="flex flex-col items-center">
           <Vue3Lottie animation-link="/animations/RocketLP.json" :height="100" :width="100" :loop="true" :auto-play="true" />
           <p class="mt-2 text-sm font-medium text-(--ui-text-muted)">{{ t('Keep auditing to track your improvement journey!') }}</p>
         </div>
 
         <!-- Audit list -->
-        <div class="mt-6 space-y-3">
+        <div class="space-y-3">
           <UCard
             v-for="audit in audits"
             :key="audit.id"
@@ -97,7 +97,7 @@
           </UCard>
         </div>
       </template>
-    </div>
+    </UiPageShell>
   </ClientOnly>
 </template>
 

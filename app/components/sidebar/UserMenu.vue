@@ -1,6 +1,6 @@
 <template>
   <div class="border-t border-(--ui-border-accented) p-3">
-    <UPopover :ui="{ content: 'w-52' }">
+    <UPopover v-model:open="popoverOpen" :ui="{ content: 'w-52' }">
       <UButton variant="ghost" color="neutral" size="md" block class="justify-start">
         <template #leading>
           <div class="relative">
@@ -48,6 +48,23 @@
             {{ item.label }}
           </UButton>
 
+          <!-- Admin link (admin users only) -->
+          <template v-if="authStore.user?.is_admin">
+            <USeparator class="my-1" />
+            <UButton
+              to="/admin"
+              icon="i-lucide-shield"
+              variant="ghost"
+              color="neutral"
+              size="sm"
+              block
+              class="justify-start"
+              @click="$emit('navigate')"
+            >
+              {{ t('Admin dashboard') }}
+            </UButton>
+          </template>
+
           <USeparator class="my-1" />
 
           <div class="flex items-center justify-between px-2.5 py-2">
@@ -65,6 +82,8 @@
               />
             </div>
           </div>
+
+          <UiTutorialTriggerButton block @click="popoverOpen = false" />
 
           <USeparator class="my-1" />
 
@@ -94,6 +113,7 @@ defineEmits<{
 const { t } = useI18n()
 const colorMode = useColorMode()
 const authStore = useAuthStore()
+const popoverOpen = ref(false)
 
 const user = computed(() => authStore.user)
 const userInitial = computed(() => (user.value?.name ?? '').charAt(0).toUpperCase())

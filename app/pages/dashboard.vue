@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <div>
+    <UiPageShell>
       <Teleport to="#navbar-actions">
         <UButton size="lg" icon="i-lucide-plus" @click="showAddPageDialog = true">
           {{ t('Add page') }}
@@ -8,21 +8,18 @@
       </Teleport>
 
       <!-- Welcome header -->
-      <div>
-        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">
-          {{ t('Welcome back, {name}', { name: authStore.user?.name?.split(' ')[0] ?? '' }) }}
-        </h1>
-        <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t("Here's what's happening with your audits.") }}</p>
-      </div>
+      <UiPageHeader :title="t('Welcome back, {name}', { name: authStore.user?.name?.split(' ')[0] ?? '' })">
+        <template #subtitle>{{ t("Here's what's happening with your audits.") }}</template>
+      </UiPageHeader>
 
       <!-- Skeleton loading -->
       <template v-if="loading">
-        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <UiSkeletonStatCard v-for="i in 4" :key="i" />
         </div>
-        <div class="mt-8">
+        <div>
           <USkeleton class="h-4 w-28" />
-          <div class="mt-3 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <div class="mt-3 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             <UiSkeletonPageCard v-for="i in 6" :key="i" />
           </div>
         </div>
@@ -30,7 +27,7 @@
 
       <template v-else>
         <!-- Stats row -->
-        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <UCard v-for="stat in statCards" :key="stat.label">
             <div class="flex items-start gap-3">
               <UIcon :name="stat.icon" class="mt-0.5 h-5 w-5 shrink-0 text-(--ui-text-muted)" />
@@ -43,7 +40,7 @@
         </div>
 
         <!-- Recent pages -->
-        <div class="mt-8">
+        <div>
           <div class="flex items-center justify-between">
             <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Recent pages') }}</h2>
             <UButton v-if="pages.length > 0" variant="ghost" size="sm" to="/projects" trailing-icon="i-lucide-arrow-right">
@@ -51,18 +48,18 @@
             </UButton>
           </div>
 
-          <!-- Empty -->
-          <div v-if="pages.length === 0" class="mt-4 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
-            <Vue3Lottie animation-link="/animations/animation-bot.json" :height="120" :width="120" :loop="true" :auto-play="true" class="mx-auto" />
-            <h3 class="mt-3 font-semibold text-(--ui-text-highlighted)">{{ t('No pages to audit yet') }}</h3>
-            <p class="mt-1 text-sm text-(--ui-text-muted)">{{ t('Add a page URL to get a detailed AI-powered audit.') }}</p>
-            <UButton class="mt-4" icon="i-lucide-plus" size="sm" @click="showAddPageDialog = true">
+          <!-- Empty state: show when no pages, or during tutorial (so the CTA button is always present) -->
+          <div v-if="pages.length === 0 || tutorialActive" class="mt-4 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
+            <Vue3Lottie animation-link="/animations/animation-bot.json" :height="140" :width="140" :loop="true" :auto-play="true" class="mx-auto" />
+            <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No pages to audit yet') }}</h3>
+            <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Add a page URL to get a detailed AI-powered audit.') }}</p>
+            <UButton data-tutorial="audit-first-page-btn" class="mt-6" size="lg" icon="i-lucide-plus" @click="showAddPageDialog = true">
               {{ t('Audit your first page') }}
             </UButton>
           </div>
 
           <!-- Page cards with thumbnails -->
-          <div v-else class="mt-3 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <div v-else class="mt-3 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             <div
               v-for="page in recentPages"
               :key="page.id"
@@ -216,7 +213,7 @@
         :page-project-id="movePageTarget.project_id"
         @moved="onPageMoved"
       />
-    </div>
+    </UiPageShell>
   </ClientOnly>
 </template>
 
@@ -229,6 +226,7 @@ definePageMeta({ middleware: 'auth' })
 const { t } = useI18n()
 const { $api } = useApi()
 const authStore = useAuthStore()
+const { tutorialActive } = storeToRefs(useTutorialStore())
 const { siteTypeLabel } = useProjectOptions()
 const { setNavbar } = usePageNavbar()
 

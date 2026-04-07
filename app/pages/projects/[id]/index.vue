@@ -8,7 +8,7 @@
 
     <!-- Skeleton loading -->
     <div v-if="loading">
-      <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <UiSkeletonPageCard v-for="i in 6" :key="i" />
       </div>
     </div>
@@ -23,7 +23,7 @@
 
     <div v-else-if="project">
       <!-- Pages list -->
-      <div v-if="project.pages.length === 0" class="mt-8 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
+      <div v-if="project.pages.length === 0" class="rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
         <Vue3Lottie animation-link="/animations/animation-bot.json" :height="140" :width="140" :loop="true" :auto-play="true" class="mx-auto" />
         <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No pages yet') }}</h3>
         <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Add a page URL to start auditing. Each page tracks its own audit history and issues.') }}</p>
@@ -33,7 +33,7 @@
       </div>
 
       <!-- Pages list -->
-      <div v-else class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div v-else class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <div
           v-for="page in project.pages"
           :key="page.id"

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+@import "driver.js/dist/driver.css";
 
 /* ─── Base ──────────────────────────────────────────────────────────── */
 @layer base {
@@ -41,3 +42,5 @@
   --vis-tooltip-border-color: #3f3f46;
   --vis-tooltip-text-color: #e4e4e7;
 }
+
+@import "./onboarding.css";

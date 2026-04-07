@@ -29,79 +29,84 @@
             icon="i-lucide-alert-circle"
           />
 
-          <UFormField :label="t('Page URL')" name="url">
-            <UInput
-              v-model="form.url"
-              type="url"
-              placeholder="https://example.com/landing"
-              class="w-full"
-              autofocus
-              leading-icon="i-lucide-link"
-            />
-          </UFormField>
+          <div data-tutorial="form-url">
+            <UFormField :label="t('Page URL')" name="url">
+              <UInput
+                v-model="form.url"
+                type="url"
+                placeholder="https://example.com/landing"
+                class="w-full"
+                autofocus
+                leading-icon="i-lucide-link"
+              />
+            </UFormField>
+          </div>
 
           <!-- Project picker (shown when no projectId is locked) -->
-          <UFormField v-if="showProjectPicker" :label="t('Project')" name="project">
-            <div class="flex gap-2">
-              <USelect
-                v-model="selectedProjectId"
-                :items="projectOptions"
-                class="flex-1"
-              />
-              <UButton
-                variant="outline"
-                color="neutral"
-                :icon="showNewProjectInput ? 'i-lucide-x' : 'i-lucide-plus'"
-                :label="showNewProjectInput ? t('Cancel') : t('New')"
-                @click="toggleNewProjectInput"
-              />
-            </div>
-            <!-- Inline create project -->
-            <Transition
-              enter-active-class="transition-all duration-200 ease-out"
-              enter-from-class="opacity-0 -translate-y-1"
-              enter-to-class="opacity-100 translate-y-0"
-              leave-active-class="transition-all duration-150 ease-in"
-              leave-from-class="opacity-100 translate-y-0"
-              leave-to-class="opacity-0 -translate-y-1"
-            >
-              <div v-if="showNewProjectInput" class="mt-2 rounded-lg border border-(--ui-border) bg-(--ui-bg-elevated) p-3">
-                <p class="mb-2 flex items-center gap-1.5 text-xs font-medium text-(--ui-text-muted)">
-                  <UIcon name="i-lucide-folder-plus" class="h-3.5 w-3.5" />
-                  {{ t('New project') }}
-                </p>
-                <div class="flex gap-2">
-                  <UInput
-                    v-model="newProjectName"
-                    :placeholder="t('e.g. My Website')"
-                    class="flex-1"
-                    size="sm"
-                    @keyup.enter="handleCreateProject"
-                  />
-                  <UButton
-                    size="sm"
-                    :loading="creatingProject"
-                    :disabled="!newProjectName.trim()"
-                    icon="i-lucide-check"
-                    @click="handleCreateProject"
-                  >
-                    {{ t('Create') }}
-                  </UButton>
-                </div>
+          <div data-tutorial="form-project">
+            <UFormField v-if="showProjectPicker" :label="t('Project')" name="project">
+              <div class="flex gap-2">
+                <USelect
+                  v-model="selectedProjectId"
+                  :items="projectOptions"
+                  class="flex-1"
+                />
+                <UButton
+                  variant="outline"
+                  color="neutral"
+                  :icon="showNewProjectInput ? 'i-lucide-x' : 'i-lucide-plus'"
+                  :label="showNewProjectInput ? t('Cancel') : t('New')"
+                  @click="toggleNewProjectInput"
+                />
               </div>
-            </Transition>
-          </UFormField>
+              <!-- Inline create project -->
+              <Transition
+                enter-active-class="transition-all duration-200 ease-out"
+                enter-from-class="opacity-0 -translate-y-1"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition-all duration-150 ease-in"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 -translate-y-1"
+              >
+                <div v-if="showNewProjectInput" class="mt-2 rounded-lg border border-(--ui-border) bg-(--ui-bg-elevated) p-3">
+                  <p class="mb-2 flex items-center gap-1.5 text-xs font-medium text-(--ui-text-muted)">
+                    <UIcon name="i-lucide-folder-plus" class="h-3.5 w-3.5" />
+                    {{ t('New project') }}
+                  </p>
+                  <div class="flex gap-2">
+                    <UInput
+                      v-model="newProjectName"
+                      :placeholder="t('e.g. My Website')"
+                      class="flex-1"
+                      size="sm"
+                      @keyup.enter="handleCreateProject"
+                    />
+                    <UButton
+                      size="sm"
+                      :loading="creatingProject"
+                      :disabled="!newProjectName.trim()"
+                      icon="i-lucide-check"
+                      @click="handleCreateProject"
+                    >
+                      {{ t('Create') }}
+                    </UButton>
+                  </div>
+                </div>
+              </Transition>
+            </UFormField>
 
-          <UFormField :label="t('Page name')" :hint="t('Optional')" name="name">
-            <UInput
-              v-model="form.name"
-              :placeholder="t('My Landing Page')"
-              class="w-full"
-              leading-icon="i-lucide-tag"
-            />
-          </UFormField>
+            <UFormField :label="t('Page name')" :hint="t('Optional')" name="name">
+              <UInput
+                v-model="form.name"
+                :placeholder="t('My Landing Page')"
+                class="w-full"
+                leading-icon="i-lucide-tag"
+              />
+            </UFormField>
+          </div>
 
-          <USeparator :label="t('Helps the AI tailor the audit')" class="my-1" />
+          <div data-tutorial="form-ai-fields">
+            <USeparator :label="t('Helps the AI tailor the audit')" class="my-1" />
 
           <div class="grid grid-cols-2 gap-3">
             <UFormField :label="t('Business type')" name="site_type">
@@ -123,14 +128,14 @@
             </UFormField>
           </div>
 
-          <UFormField :label="t('Primary conversion goal')" name="conversion_goal">
-            <USelect
-              v-model="form.conversion_goal"
-              :items="conversionGoals"
-              class="w-full"
-              :placeholder="t('Select a conversion goal')"
-            />
-          </UFormField>
+            <UFormField :label="t('Primary conversion goal')" name="conversion_goal">
+              <USelect
+                v-model="form.conversion_goal"
+                :items="conversionGoals"
+                class="w-full"
+                :placeholder="t('Select a conversion goal')"
+              />
+            </UFormField>
 
           <UFormField :label="t('Target audience')" :hint="t('Optional')" name="target_audience_description">
             <UTextarea
@@ -151,7 +156,7 @@
             />
           </UFormField>
 
-          <div class="flex justify-end gap-3 pt-2">
+          <div data-tutorial="form-submit" class="flex justify-end gap-3 pt-2">
             <UButton variant="outline" color="neutral" @click="open = false">
               {{ t('Cancel') }}
             </UButton>
