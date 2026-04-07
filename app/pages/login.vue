@@ -1,13 +1,13 @@
 <template>
   <div>
-    <h2 class="text-2xl font-bold text-(--ui-text-highlighted)">{{ t('Sign in to your account') }}</h2>
-    <p class="mt-2 text-(--ui-text-muted)">{{ t('Welcome back') }}</p>
+    <AuthFormHeader
+      :title="t('Welcome back')"
+      :subtitle="t('Sign in to see your audits, scores, and improvement history.')"
+    />
 
-    <div class="mt-4">
-      <GoogleAuthButton :loading="googleLoading" @click="handleGoogleLogin" />
+    <GoogleAuthButton :loading="googleLoading" @click="handleGoogleLogin" />
 
-      <DividerLabel class="my-5">{{ t('or') }}</DividerLabel>
-    </div>
+    <DividerLabel class="my-6">{{ t('or continue with email') }}</DividerLabel>
 
     <UForm :schema="schema" :state="form" class="space-y-5" @submit="handleLogin">
       <UAlert
@@ -26,33 +26,16 @@
           placeholder="you@example.com"
           size="lg"
           class="w-full"
+          icon="i-lucide-mail"
         />
       </UFormField>
 
       <UFormField :label="t('Password')" name="password">
-        <UInput
-          v-model="form.password"
-          :type="showPassword ? 'text' : 'password'"
-          autocomplete="current-password"
-          placeholder="********"
-          size="lg"
-          class="w-full"
-        >
-          <template #trailing>
-            <UButton
-              :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-              variant="ghost"
-              color="neutral"
-              size="sm"
-              :aria-label="showPassword ? t('Hide password') : t('Show password')"
-              @click="showPassword = !showPassword"
-            />
-          </template>
-        </UInput>
+        <AuthPasswordInput v-model="form.password" autocomplete="current-password" />
       </UFormField>
 
-      <div class="flex items-center justify-between">
-        <UButton variant="link" size="xs" to="/auth/forgot-password">
+      <div class="flex justify-end">
+        <UButton variant="link" size="xs" to="/auth/forgot-password" class="h-auto p-0 text-xs">
           {{ t('Forgot password?') }}
         </UButton>
       </div>
@@ -60,12 +43,13 @@
       <UButton type="submit" :loading="loading" block size="lg">
         {{ t('Sign in') }}
       </UButton>
-
-      <p class="text-center text-sm text-(--ui-text-muted)">
-        {{ t("Don't have an account?") }}
-        <UButton variant="link" size="xs" to="/register">{{ t('Create one') }}</UButton>
-      </p>
     </UForm>
+
+    <AuthFormFooter
+      :message="t('Don\u0027t have an account?')"
+      :link-text="t('Create one')"
+      link-to="/register"
+    />
   </div>
 </template>
 
@@ -84,7 +68,6 @@ const schema = loginSchema(t)
 const form = reactive({ email: '', password: '' })
 const loading = ref(false)
 const googleLoading = ref(false)
-const showPassword = ref(false)
 
 onMounted(() => {
   if (route.query.verified === '1') {

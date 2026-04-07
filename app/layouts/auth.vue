@@ -1,12 +1,17 @@
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-(--ui-bg)">
-    <div class="w-full max-w-md px-4">
-      <div class="mb-8 flex justify-center">
-        <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-20 w-auto" />
+  <div class="flex min-h-screen">
+    <AuthBrandPanel />
+
+    <!-- Right form panel -->
+    <div class="flex flex-1 flex-col items-center justify-center overflow-y-auto bg-(--ui-bg)">
+      <!-- Mobile logo -->
+      <div class="mb-6 flex justify-center lg:hidden">
+        <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-14 w-auto" />
       </div>
-      <UCard>
+
+      <div class="w-full max-w-md px-6 py-10">
         <slot />
-      </UCard>
+      </div>
     </div>
   </div>
 </template>
