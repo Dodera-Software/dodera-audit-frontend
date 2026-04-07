@@ -1,38 +1,35 @@
 <template>
   <ClientOnly>
-    <div>
+    <UiPageShell>
       <Teleport to="#navbar-actions">
         <UButton size="lg" icon="i-lucide-plus" @click="showCreateDialog = true">
           {{ t('New project') }}
         </UButton>
       </Teleport>
 
-      <!-- Search -->
-      <div>
-        <h1 class="text-xl font-bold text-(--ui-text-highlighted)">
-          {{ t('My projects') }}
-        </h1>
-        <p class="mt-0.5 text-sm text-(--ui-text-muted)">{{ t('Manage and organise your audit projects.') }}</p>
-      </div>
+      <UiPageHeader
+        :title="t('My projects')"
+        :subtitle="t('Manage and organise your audit projects.')"
+      />
 
       <!-- Search -->
-      <div v-if="!loading && projects.length > 0" class="mt-6">
+      <div v-if="!loading && projects.length > 0">
         <UInput
           v-model="search"
           icon="i-lucide-search"
           :placeholder="t('Search projects...')"
-          size="sm"
-          class="max-w-xs"
+          size="md"
+          class="max-w-sm"
         />
       </div>
 
       <!-- Skeleton loading -->
-      <div v-if="loading" class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div v-if="loading" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <UiSkeletonProjectCard v-for="i in 6" :key="i" />
       </div>
 
       <!-- Empty state -->
-      <div v-else-if="projects.length === 0" class="mt-6 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
+      <div v-else-if="projects.length === 0" class="rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
         <Vue3Lottie animation-link="/animations/animation-bot.json" :height="140" :width="140" :loop="true" :auto-play="true" class="mx-auto" />
         <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No projects yet') }}</h3>
         <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Create a project folder to group pages you want to audit.') }}</p>
@@ -42,14 +39,14 @@
       </div>
 
       <!-- No search results -->
-      <div v-else-if="filteredProjects.length === 0" class="mt-6 rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
+      <div v-else-if="filteredProjects.length === 0" class="rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
         <UIcon name="i-lucide-search-x" class="mx-auto h-12 w-12 text-(--ui-text-muted)" />
         <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No projects found') }}</h3>
         <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Try a different search term.') }}</p>
       </div>
 
       <!-- Project folder grid -->
-      <div v-else class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div v-else class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <div
           v-for="project in filteredProjects"
           :key="project.id"
@@ -163,7 +160,7 @@
         :pages-count="deleteTarget.pages_count"
         @deleted="onProjectDeleted"
       />
-    </div>
+    </UiPageShell>
   </ClientOnly>
 </template>
 

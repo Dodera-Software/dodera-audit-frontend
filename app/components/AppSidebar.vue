@@ -41,37 +41,56 @@
     <SidebarContextHeader ref="contextRef" @navigate="$emit('navigate')" />
 
     <!-- Navigation -->
-    <nav class="flex-1 space-y-1 overflow-y-auto px-3 pt-3">
-      <UButton
-        v-for="item in activeNavItems"
-        :key="item.to"
-        :to="item.to"
-        :icon="item.icon"
-        :variant="isActive(item.to) ? 'soft' : 'ghost'"
-        :color="isActive(item.to) ? 'primary' : 'neutral'"
-        :data-tutorial="navTutorialId(item.to)"
-        size="md"
-        block
-        class="justify-start"
-        @click="$emit('navigate')"
-      >
-        {{ item.label }}
-      </UButton>
+    <nav class="flex-1 overflow-y-auto px-3 pt-3">
+      <!-- Global shortcuts when inside a project/page context -->
+      <template v-if="projectId || isAdminRoute">
+        <UButton
+          to="/dashboard"
+          icon="i-lucide-home"
+          variant="ghost"
+          color="neutral"
+          size="md"
+          block
+          class="justify-start"
+          @click="$emit('navigate')"
+        >
+          {{ t('Dashboard') }}
+        </UButton>
+        <USeparator class="my-2" />
+      </template>
+
+      <div class="space-y-1">
+        <UButton
+          v-for="item in activeNavItems"
+          :key="item.to"
+          :to="item.to"
+          :icon="item.icon"
+          :variant="isActive(item.to) ? 'soft' : 'ghost'"
+          :color="isActive(item.to) ? 'primary' : 'neutral'"
+          size="md"
+          block
+          class="justify-start"
+          @click="$emit('navigate')"
+        >
+          {{ item.label }}
+        </UButton>
+      </div>
     </nav>
 
-    <!-- Upgrade CTA for free users -->
-    <div v-if="isFree" class="px-3 pb-2">
-      <NuxtLink
+    <!-- Upgrade CTA (hidden only for Max users) -->
+    <div v-if="!isMax" class="px-3 pb-2">
+      <UButton
         to="/pricing"
-        class="flex items-center gap-2.5 rounded-xl border border-(--ui-primary)/25 bg-(--ui-primary)/8 px-3 py-2.5 transition-colors hover:bg-(--ui-primary)/15"
+        icon="i-lucide-zap"
+        color="primary"
+        variant="soft"
+        size="md"
+        block
+        class="justify-center"
         @click="$emit('navigate')"
       >
-        <UIcon name="i-lucide-zap" class="h-4 w-4 shrink-0 text-(--ui-primary)" />
-        <div class="min-w-0 flex-1">
-          <p class="truncate text-xs font-semibold text-(--ui-primary)">{{ t('Upgrade plan') }}</p>
-          <p class="truncate text-[10px] text-(--ui-text-dimmed)">{{ t('Unlock full access') }}</p>
-        </div>
-      </NuxtLink>
+        {{ t('Upgrade') }}
+      </UButton>
     </div>
 
     <!-- User menu -->
@@ -96,7 +115,7 @@ const { isCollapsed, sidebarWidth, isTextVisible, toggle, startResize } = useSid
 const { t } = useI18n()
 const route = useRoute()
 const authStore = useAuthStore()
-const { isFree } = usePlan()
+const { isFree, isMax } = usePlan()
 
 const user = computed(() => authStore.user)
 
@@ -112,6 +131,7 @@ const adminNavItems = computed(() => [
   { to: '/admin/users', icon: 'i-lucide-users', label: t('Users') },
   { to: '/admin/analytics', icon: 'i-lucide-bar-chart-3', label: t('Analytics') },
   { to: '/admin/revenue', icon: 'i-lucide-credit-card', label: t('Revenue') },
+  { to: '/admin/ai', icon: 'i-lucide-brain', label: t('AI Agents') },
   { to: '/admin/audits', icon: 'i-lucide-scan-search', label: t('Audits') },
   { to: '/admin/issues', icon: 'i-lucide-bug', label: t('Issues') },
   { to: '/admin/pages', icon: 'i-lucide-globe', label: t('Pages') },
