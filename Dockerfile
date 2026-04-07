@@ -3,7 +3,7 @@ FROM node:22-slim AS build
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci --legacy-peer-deps --ignore-scripts
+RUN npm pkg delete scripts.postinstall && npm ci --legacy-peer-deps
 
 COPY . .
 
