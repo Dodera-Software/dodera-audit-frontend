@@ -23,7 +23,7 @@
           v-model="form.email"
           type="email"
           autocomplete="email"
-          placeholder="you@example.com"
+          :placeholder="t('you@example.com')"
           size="lg"
           class="w-full"
           icon="i-lucide-mail"

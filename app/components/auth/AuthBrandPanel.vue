@@ -36,14 +36,14 @@
         </div>
 
         <h1 class="mt-3 text-center text-4xl font-bold leading-tight tracking-tight text-white">
-          Audit smarter.<br />
+          {{ t('Audit smarter.') }}<br />
           <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
-            Convert better.
+            {{ t('Convert better.') }}
           </span>
         </h1>
 
         <p class="mt-3 max-w-xs text-center text-sm leading-relaxed text-zinc-400">
-          AI-powered website audits that turn UX insights into measurable results.
+          {{ t('AI-powered website audits that turn UX insights into measurable results.') }}
         </p>
 
         <!-- Feature pills -->
@@ -63,7 +63,7 @@
 
       <!-- Footer -->
       <p class="text-center text-xs text-zinc-600">
-        © {{ currentYear }} PawByTech · All rights reserved.
+        © {{ currentYear }} PawByTech · {{ t('All rights reserved.') }}
       </p>
     </div>
   </div>
@@ -72,11 +72,12 @@
 <script setup lang="ts">
 import { Vue3Lottie } from 'vue3-lottie'
 
+const { t } = useI18n()
 const currentYear = new Date().getFullYear()
 
-const features = [
-  { icon: 'i-lucide-search', text: 'Drop a URL — your AI audit is ready in under 3 minutes' },
-  { icon: 'i-lucide-list-checks', text: 'Get a ranked fix list with exact steps to improve conversions' },
-  { icon: 'i-lucide-trending-up', text: 'Track your score week over week and prove ROI' },
-]
+const features = computed(() => [
+  { icon: 'i-lucide-search', text: t('Drop a URL — your AI audit is ready in under 3 minutes') },
+  { icon: 'i-lucide-list-checks', text: t('Get a ranked fix list with exact steps to improve conversions') },
+  { icon: 'i-lucide-trending-up', text: t('Track your score week over week and prove ROI') },
+])
 </script>
