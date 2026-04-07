@@ -1,10 +1,4 @@
 <template>
-  <UiSuccessOverlay
-    :show="showSuccess"
-    :title="t('You\'re all set!')"
-    :subtitle="t('Project created successfully.')"
-  />
-
   <UModal v-model:open="open">
     <template #content>
       <div class="p-6">
@@ -64,17 +58,16 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { $api } = useApi()
 const apiError = useApiError()
+const { showOverlay } = useSuccessOverlay()
 
 const schema = createProjectSchema(t)
 
 const form = reactive({ name: '' })
 const loading = ref(false)
-const showSuccess = ref(false)
 
 watch(open, (val) => {
   if (val) {
     form.name = ''
-    showSuccess.value = false
     apiError.clear()
   }
 })
@@ -90,12 +83,12 @@ async function handleCreate() {
     })
     const createdProject = data.data
     open.value = false
-    showSuccess.value = true
-    setTimeout(() => {
-      showSuccess.value = false
-      emit('created', createdProject)
-      navigateTo(`/projects/${createdProject.id}`)
-    }, 1800)
+    showOverlay({
+      title: t("You're all set!"),
+      subtitle: t('Project created successfully.'),
+    })
+    emit('created', createdProject)
+    navigateTo(`/projects/${createdProject.id}`)
   }
   catch (e) {
     apiError.parse(e, t('Failed to create project.'))

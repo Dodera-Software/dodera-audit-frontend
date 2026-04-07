@@ -1,10 +1,4 @@
 <template>
-  <UiSuccessOverlay
-    :show="showSuccess"
-    :title="t('You\'re all set!')"
-    :subtitle="t('Page added successfully.')"
-  />
-
   <UModal v-model:open="open">
     <template #content>
       <div class="flex max-h-[90dvh] flex-col overflow-hidden">
@@ -190,6 +184,7 @@ const { t } = useI18n()
 const { $api } = useApi()
 const apiError = useApiError()
 const { siteTypes, pageTypes, conversionGoals } = useProjectOptions()
+const { showOverlay } = useSuccessOverlay()
 
 const schema = createPageSchema(t)
 
@@ -204,7 +199,6 @@ const form = reactive({
 })
 
 const loading = ref(false)
-const showSuccess = ref(false)
 
 // Project picker state
 const showProjectPicker = computed(() => !props.projectId)
@@ -237,13 +231,12 @@ function resetForm() {
   form.ai_note = ''
   showNewProjectInput.value = false
   newProjectName.value = ''
-  showSuccess.value = false
   apiError.clear()
 }
 
 watch(open, async (val) => {
   if (!val) {
-    if (!showSuccess.value) resetForm()
+    resetForm()
     return
   }
   resetForm()
@@ -299,11 +292,11 @@ async function handleCreate() {
     })
     const createdPage = { id: data.data.id, project_id: targetProjectId.value }
     open.value = false
-    showSuccess.value = true
-    setTimeout(() => {
-      showSuccess.value = false
-      emit('created', createdPage)
-    }, 1800)
+    showOverlay({
+      title: t("You're all set!"),
+      subtitle: t('Page added successfully.'),
+    })
+    emit('created', createdPage)
   }
   catch (e) {
     apiError.parse(e, t('Failed to add page.'))
