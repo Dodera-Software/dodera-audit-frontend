@@ -35,6 +35,19 @@
         <p class="mt-1 text-sm leading-relaxed text-(--ui-text-highlighted)">{{ issue.description || issue.title }}</p>
       </div>
 
+      <!-- Issue screenshot (captured at the moment the AI found it) -->
+      <div v-if="issue.screenshot_url" class="overflow-hidden rounded-lg border border-(--ui-border)">
+        <p class="bg-(--ui-bg-elevated) px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-(--ui-text-dimmed)">
+          {{ t('What the AI saw') }}
+        </p>
+        <img
+          :src="issue.screenshot_url"
+          alt="Screenshot of the issue"
+          class="w-full"
+          loading="lazy"
+        />
+      </div>
+
       <!-- Metadata row -->
       <div class="flex gap-6">
         <div>
@@ -217,6 +230,7 @@ interface IssueDetail {
   roi_score: number
   element_reference: string | null
   element_bounding_box: { x: number, y: number, width: number, height: number } | null
+  screenshot_url: string | null
   persona_source: string[] | null
   persona_quote: string | null
   fix_steps: string[] | null

@@ -42,7 +42,11 @@
       <div
         v-for="cat in categoryData"
         :key="cat.key"
-        class="rounded-xl border border-(--ui-border) bg-(--ui-bg) p-4"
+        class="cursor-pointer rounded-xl border p-4 transition-all hover:shadow-sm"
+        :class="expandedCategory === cat.key
+          ? 'border-(--ui-primary) bg-(--ui-primary)/5 shadow-sm ring-1 ring-(--ui-primary)/20'
+          : 'border-(--ui-border) bg-(--ui-bg) hover:border-(--ui-border-hover)'"
+        @click="toggleDetails(cat.key)"
       >
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
@@ -73,6 +77,34 @@
       </div>
     </div>
 
+    <!-- Score details panel (expanded for selected category) -->
+    <Transition name="details-slide">
+      <div v-if="expandedCategory && getCategoryDetails(expandedCategory).length > 0" class="mt-3 rounded-xl border border-(--ui-border) bg-(--ui-bg) p-4">
+        <div class="mb-3 flex items-center justify-between">
+          <h4 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Why this score') }}</h4>
+          <UButton variant="ghost" size="xs" icon="i-lucide-x" @click="expandedCategory = null" />
+        </div>
+        <div class="space-y-2">
+          <div
+            v-for="(detail, idx) in getCategoryDetails(expandedCategory)"
+            :key="idx"
+            class="flex items-start gap-2.5 rounded-lg px-2.5 py-2"
+            :class="detail.impact === 'positive' ? 'bg-green-500/5' : detail.impact === 'negative' ? 'bg-red-500/5' : 'bg-(--ui-bg-elevated)'"
+          >
+            <UIcon
+              :name="detail.impact === 'positive' ? 'i-lucide-check-circle' : detail.impact === 'negative' ? 'i-lucide-alert-circle' : 'i-lucide-info'"
+              class="mt-0.5 h-4 w-4 shrink-0"
+              :class="detail.impact === 'positive' ? 'text-green-500' : detail.impact === 'negative' ? 'text-red-500' : 'text-(--ui-text-dimmed)'"
+            />
+            <div class="min-w-0">
+              <p class="text-xs font-semibold text-(--ui-text-highlighted)">{{ detail.label }}</p>
+              <p class="mt-0.5 text-[11px] leading-relaxed text-(--ui-text-muted)">{{ detail.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Score trend chart -->
     <div v-if="scoreHistory.length >= 2" class="mt-8">
       <div class="rounded-xl border border-(--ui-border) bg-(--ui-bg) p-6">
@@ -94,15 +126,33 @@
 import { scoreColor, SCORE_CATEGORIES } from '~/constants/audit'
 import type { ScoreCategoryKey } from '~/constants/audit'
 
+interface ScoreDetail {
+  label: string
+  impact: 'positive' | 'negative' | 'neutral'
+  description: string
+}
+
 const props = defineProps<{
   overallScore: number
   scores: Record<string, number>
+  scoreDetails?: Record<string, ScoreDetail[]> | null
   delta: { overall: number | null, scores: Record<string, number | null> } | null
   scoreHistory: Array<{ overall_score: number, created_at: string }>
 }>()
 
 const { t } = useI18n()
 const { formatDate } = useFormatters()
+
+// Score detail expansion
+const expandedCategory = ref<string | null>(null)
+
+function toggleDetails(key: string) {
+  expandedCategory.value = expandedCategory.value === key ? null : key
+}
+
+function getCategoryDetails(key: string): ScoreDetail[] {
+  return props.scoreDetails?.[key] ?? []
+}
 
 // Radial ring math
 const radius = 88
@@ -210,3 +260,16 @@ function categoryDescription(key: ScoreCategoryKey): string {
   return descriptions[key]()
 }
 </script>
+
+<style scoped>
+.details-slide-enter-active,
+.details-slide-leave-active {
+  transition: all 0.3s ease;
+}
+.details-slide-enter-from,
+.details-slide-leave-to {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(-8px);
+}
+</style>

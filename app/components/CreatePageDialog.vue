@@ -137,15 +137,24 @@
               />
             </UFormField>
 
-            <UFormField :label="t('Target audience')" :hint="t('Optional')" name="target_audience_description">
-              <UTextarea
-                v-model="form.target_audience_description"
-                :placeholder="t('e.g. Small business owners looking for accounting software')"
-                :rows="2"
-                class="w-full"
-              />
-            </UFormField>
-          </div>
+          <UFormField :label="t('Target audience')" :hint="t('Optional')" name="target_audience_description">
+            <UTextarea
+              v-model="form.target_audience_description"
+              :placeholder="t('e.g. Small business owners looking for accounting software')"
+              :rows="2"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UFormField :label="t('Note for AI auditor')" :hint="t('Optional · max 300 chars')" name="ai_note">
+            <UTextarea
+              v-model="form.ai_note"
+              :placeholder="t('e.g. Focus on the pricing section — we recently redesigned it. Ignore the blog link, it is under construction.')"
+              :rows="2"
+              :maxlength="300"
+              class="w-full"
+            />
+          </UFormField>
 
           <div data-tutorial="form-submit" class="flex justify-end gap-3 pt-2">
             <UButton variant="outline" color="neutral" @click="open = false">
@@ -190,6 +199,7 @@ const form = reactive({
   page_type: '',
   conversion_goal: '',
   target_audience_description: '',
+  ai_note: '',
 })
 
 const loading = ref(false)
@@ -223,6 +233,7 @@ function resetForm() {
   form.page_type = ''
   form.conversion_goal = ''
   form.target_audience_description = ''
+  form.ai_note = ''
   showNewProjectInput.value = false
   newProjectName.value = ''
   showSuccess.value = false

@@ -1,12 +1,12 @@
 <template>
   <ClientOnly>
-    <!-- Scan in progress or just completed (before watcher sets showSuccess) -->
-    <div v-if="activeScan && !showSuccess" class="fixed inset-0 z-40 flex items-center justify-center overflow-y-auto bg-(--ui-bg)">
+    <!-- Scan in progress -->
+    <div v-if="activeScan && !showSuccess">
       <ScanProgress :scan="activeScan" @retry="navigateTo(`/projects/${projectId}/pages/${pageId}`)" />
     </div>
 
     <!-- Success celebration -->
-    <div v-else-if="showSuccess" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-(--ui-bg)">
+    <div v-else-if="showSuccess" class="flex flex-col items-center justify-center py-20">
       <Vue3Lottie
         animation-link="/animations/success.json"
         :height="280"
@@ -87,6 +87,7 @@
         v-if="audit.overall_score != null && audit.scores"
         :overall-score="audit.overall_score"
         :scores="audit.scores"
+        :score-details="audit.score_details"
         :delta="delta"
         :score-history="scoreHistory"
       />
@@ -152,35 +153,25 @@
         <TopIssuesSummary :issues="topIssues" :project-id="projectId" :page-id="pageId" />
       </div>
 
-      <!-- Persona verdicts -->
+      <!-- Persona verdicts — visible to all plans -->
       <div v-if="personaOutputs.length" class="mt-12">
         <div class="mb-6 flex items-center gap-3">
           <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-(--ui-bg-accented)">
             <UIcon name="i-lucide-users" class="h-5 w-5 text-(--ui-text-muted)" />
           </div>
-          <div class="flex-1">
+          <div>
             <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('Persona verdicts') }}</h2>
             <p class="text-xs text-(--ui-text-dimmed)">{{ t('How different visitor types experience your page') }}</p>
           </div>
-          <UBadge v-if="isFree" color="warning" variant="subtle" size="xs" icon="i-lucide-lock">
-            {{ t('Pro feature') }}
-          </UBadge>
         </div>
-        <PlanGate
-          :locked="isFree"
-          :title="t('Persona insights')"
-          :description="t('See how the Skeptic, Impulse Visitor, and Comparison Shopper experience your page.')"
-          @upgrade="showUpgradeModal = true"
-        >
-          <div class="grid gap-6 lg:grid-cols-3">
-            <PersonaCard
-              v-for="persona in personaOutputs"
-              :key="persona.persona"
-              :persona="persona"
-              :is-lowest-intent="persona.persona === lowestIntentPersona"
-            />
-          </div>
-        </PlanGate>
+        <div class="grid gap-6 lg:grid-cols-3">
+          <PersonaCard
+            v-for="persona in personaOutputs"
+            :key="persona.persona"
+            :persona="persona"
+            :is-lowest-intent="persona.persona === lowestIntentPersona"
+          />
+        </div>
       </div>
 
       <UpgradeModal
@@ -272,6 +263,7 @@ interface AuditDetail {
   trigger_type: string
   overall_score: number | null
   scores: Record<string, number> | null
+  score_details: Record<string, Array<{ label: string, impact: string, description: string }>> | null
   annotations: unknown[] | null
   persona_outputs: PersonaOutputEntry[] | null
   brain_update: {
@@ -313,7 +305,7 @@ watchEffect(() => {
     title: t('Audit Report'),
     showBack: true,
     backTo: `/projects/${projectId}/pages/${pageId}`,
-    hidden: !!(activeScan.value) || showSuccess.value,
+    hidden: false,
   })
 })
 

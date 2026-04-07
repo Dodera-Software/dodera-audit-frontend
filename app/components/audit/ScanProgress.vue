@@ -1,7 +1,7 @@
 <template>
-  <div class="relative flex h-full w-full flex-col items-center justify-center overflow-hidden">
+  <div class="relative flex w-full flex-col items-center pt-8 pb-16">
 
-    <!-- Dynamic background glow — shifts color per active agent -->
+    <!-- Dynamic background glow -->
     <div
       class="pointer-events-none absolute inset-0 transition-all duration-1000"
       :style="{ background: `radial-gradient(ellipse 80% 60% at 50% 35%, ${glowColor} 0%, transparent 68%)` }"
@@ -25,9 +25,9 @@
 
     <!-- ====== ACTIVE SCAN ====== -->
     <template v-else>
-      <div class="relative z-10 flex w-full flex-col items-center justify-center px-6">
+      <div class="relative z-10 flex w-full flex-col items-center px-6">
 
-        <!-- PHASE: Preparing (validating / scanning / extracting) -->
+        <!-- PHASE: Preparing (validating) -->
         <Transition name="phase" mode="out-in">
           <div v-if="phase === 'preparing'" key="preparing" class="flex flex-col items-center text-center">
             <Vue3Lottie
@@ -40,102 +40,79 @@
             <p class="mt-2 text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
               {{ t('Audit in progress') }}
             </p>
-            <Transition name="step-text" mode="out-in">
-              <h1 :key="scan.currentStep" class="mt-3 text-5xl font-bold tracking-tight text-(--ui-text-highlighted)">
-                {{ preparingHeadline }}
-              </h1>
-            </Transition>
-            <p class="mt-4 max-w-md text-lg text-(--ui-text-muted)">{{ preparingSubtitle }}</p>
-
-            <!-- Step pills -->
-            <div class="mt-14 flex flex-wrap items-center justify-center gap-3">
-              <div
-                v-for="step in PREPARING_STEPS"
-                :key="step"
-                class="flex items-center gap-2.5 rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-500"
-                :class="stepPillClass(step)"
-              >
-                <UIcon v-if="stepStatus(step) === 'done'" name="i-lucide-check-circle-2" class="h-4 w-4" />
-                <UIcon v-else-if="stepStatus(step) === 'active'" name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
-                <div v-else class="h-2 w-2 rounded-full bg-current opacity-30" />
-                {{ stepPillLabel(step) }}
-              </div>
-            </div>
+            <h1 class="mt-3 text-5xl font-bold tracking-tight text-(--ui-text-highlighted)">
+              {{ t('Preparing your audit') }}
+            </h1>
+            <p class="mt-4 max-w-md text-lg text-(--ui-text-muted)">
+              {{ t('Loading your page and setting up the AI auditor') }}
+            </p>
           </div>
         </Transition>
 
-        <!-- PHASE: Analyzing (Parallel Agent Grid) -->
+        <!-- PHASE: Exploring (AI browsing the page live) -->
         <Transition name="phase" mode="out-in">
-          <div v-if="phase === 'analyzing'" key="analyzing" class="flex w-full max-w-3xl flex-col items-center">
+          <div v-if="phase === 'exploring'" key="exploring" class="flex w-full flex-col items-center">
+            <ExplorationViewer
+              :steps="scan.explorationSteps"
+              :current-screenshot="scan.currentScreenshot"
+            />
+          </div>
+        </Transition>
 
-            <p class="text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
-              {{ t('Audit in progress') }}
-            </p>
-            <h1 class="mt-3 text-5xl font-bold tracking-tight text-(--ui-text-highlighted)">
-              {{ t('AI agents analyzing') }}
-            </h1>
-            <p class="mt-4 text-lg text-(--ui-text-muted)">
-              {{ t('All agents are running in parallel') }}
-            </p>
-
-            <!-- Agent grid — cards light up as each completes -->
-            <div class="mt-10 grid w-full grid-cols-5 gap-3">
-              <div
-                v-for="agent in ALL_AGENTS"
-                :key="agent.key"
-                class="flex flex-col items-center gap-3 rounded-2xl border p-4 transition-all duration-500"
-                :class="isAgentDone(agent.backendName)
-                  ? `${agent.cardClass} scale-[1.02]`
-                  : 'border-(--ui-border)/50 bg-(--ui-bg-elevated)/30'"
-              >
-                <!-- Icon with status -->
-                <div
-                  class="flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-500"
-                  :class="isAgentDone(agent.backendName)
-                    ? `${agent.iconBgClass}`
-                    : 'bg-(--ui-bg-accented)'"
-                >
-                  <UIcon
-                    v-if="isAgentDone(agent.backendName)"
-                    name="i-lucide-check"
-                    class="h-6 w-6 text-green-500"
-                  />
-                  <UIcon
-                    v-else
-                    :name="agent.icon"
-                    class="h-6 w-6 animate-pulse text-(--ui-text-dimmed)"
-                  />
-                </div>
-
-                <!-- Name -->
-                <span
-                  class="text-center text-xs font-semibold transition-colors duration-500"
-                  :class="isAgentDone(agent.backendName) ? 'text-(--ui-text-highlighted)' : 'text-(--ui-text-dimmed)'"
-                >
-                  {{ agent.shortName }}
-                </span>
-
-                <!-- Status badge -->
-                <span
-                  class="rounded-full px-2 py-0.5 text-[10px] font-medium transition-all duration-300"
-                  :class="isAgentDone(agent.backendName)
-                    ? 'bg-green-500/10 text-green-500'
-                    : 'bg-(--ui-bg-accented) text-(--ui-text-dimmed)'"
-                >
-                  {{ isAgentDone(agent.backendName) ? t('Done') : t('Running') }}
-                </span>
+        <!-- PHASE: Analyzing (3 sequential passes) -->
+        <Transition name="phase" mode="out-in">
+          <div v-if="phase === 'analyzing'" key="analyzing" class="flex w-full max-w-2xl flex-col items-center text-center">
+            <div class="relative flex h-28 w-28 items-center justify-center">
+              <div class="absolute inset-0 animate-spin-slow rounded-full border border-dashed border-indigo-500/30" />
+              <div class="flex h-20 w-20 items-center justify-center rounded-3xl bg-indigo-500/10 ring-1 ring-indigo-500/20">
+                <UIcon name="i-lucide-brain" class="h-10 w-10 text-indigo-400" />
               </div>
             </div>
 
-            <!-- Progress bar -->
-            <div class="mt-8 w-full">
-              <div class="mb-2.5 flex items-center justify-between text-sm text-(--ui-text-dimmed)">
-                <span class="font-medium">
-                  {{ scan.agentsCompleted }} {{ t('of') }} {{ scan.agentsTotal }} {{ t('agents complete') }}
+            <p class="mt-6 text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
+              {{ t('Deep analysis') }}
+            </p>
+            <Transition name="step-text" mode="out-in">
+              <h1 :key="passHeadline" class="mt-3 text-4xl font-bold tracking-tight text-(--ui-text-highlighted)">
+                {{ passHeadline }}
+              </h1>
+            </Transition>
+            <p class="mt-4 text-lg text-(--ui-text-muted)">
+              {{ passSubtitle }}
+            </p>
+
+            <!-- Pass indicators -->
+            <!-- Pass indicators: currentPass is 1-based from backend, idx is 0-based -->
+            <div class="mt-10 flex items-center gap-4">
+              <div
+                v-for="(p, idx) in analysisPasses"
+                :key="p.key"
+                class="flex items-center gap-2.5 rounded-xl border px-5 py-3 transition-all duration-500"
+                :class="idx < activePassIdx
+                  ? 'border-green-500/30 bg-green-500/5'
+                  : idx === activePassIdx
+                    ? 'border-indigo-500/30 bg-indigo-500/5 shadow-[0_0_30px_rgba(99,102,241,0.15)]'
+                    : 'border-(--ui-border)/50 bg-(--ui-bg-elevated)/30'"
+              >
+                <UIcon
+                  v-if="idx < activePassIdx"
+                  name="i-lucide-check-circle-2"
+                  class="h-5 w-5 text-green-500"
+                />
+                <UIcon
+                  v-else-if="idx === activePassIdx"
+                  name="i-lucide-loader-2"
+                  class="h-5 w-5 animate-spin text-indigo-400"
+                />
+                <UIcon
+                  v-else
+                  :name="p.icon"
+                  class="h-5 w-5 text-(--ui-text-dimmed)"
+                />
+                <span class="text-sm font-semibold" :class="idx === scan.currentPass ? 'text-(--ui-text-highlighted)' : 'text-(--ui-text-dimmed)'">
+                  {{ p.label }}
                 </span>
-                <span>{{ agentProgressPct }}%</span>
               </div>
-              <UProgress :value="agentProgressPct" size="sm" />
             </div>
           </div>
         </Transition>
@@ -143,46 +120,22 @@
         <!-- PHASE: Synthesizing -->
         <Transition name="phase" mode="out-in">
           <div v-if="phase === 'synthesizing'" key="synthesizing" class="flex w-full max-w-2xl flex-col items-center text-center">
-
-            <!-- Brain icon with orbiting dots -->
             <div class="relative flex h-36 w-36 items-center justify-center">
               <div class="absolute inset-0 animate-spin-slow rounded-full border border-dashed border-indigo-500/30" />
               <div class="absolute inset-2 animate-spin-slow-reverse rounded-full border border-dashed border-purple-500/20" />
               <div class="flex h-24 w-24 items-center justify-center rounded-3xl bg-indigo-500/10 ring-1 ring-indigo-500/20">
-                <UIcon name="i-lucide-brain" class="h-12 w-12 text-indigo-400" />
+                <UIcon name="i-lucide-sparkles" class="h-12 w-12 text-indigo-400" />
               </div>
             </div>
-
             <p class="mt-6 text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
               {{ t('Final analysis') }}
             </p>
-            <h1 class="mt-3 text-5xl font-bold tracking-tight text-(--ui-text-highlighted)">
+            <h1 class="mt-3 text-4xl font-bold tracking-tight text-(--ui-text-highlighted)">
               {{ t('Synthesizing insights') }}
             </h1>
-
-            <!-- Rotating insight messages -->
-            <Transition name="step-text" mode="out-in">
-              <p :key="synthInsightIndex" class="mt-4 text-lg text-(--ui-text-muted)">
-                {{ synthInsights[synthInsightIndex] }}
-              </p>
-            </Transition>
-
-            <!-- Agent connection visualization -->
-            <div class="mt-10 grid grid-cols-5 gap-3">
-              <div
-                v-for="(agent, i) in ALL_AGENTS"
-                :key="agent.key"
-                class="flex flex-col items-center gap-2 rounded-xl border px-3 py-3 transition-all duration-700"
-                :class="synthHighlightIdx === i
-                  ? `${agent.cardClass} scale-105`
-                  : 'border-(--ui-border)/50 bg-(--ui-bg-elevated)/50 opacity-60'"
-              >
-                <UIcon :name="agent.icon" class="h-5 w-5 transition-colors duration-500" :class="synthHighlightIdx === i ? agent.iconClass : 'text-(--ui-text-dimmed)'" />
-                <span class="text-[10px] font-semibold" :class="synthHighlightIdx === i ? 'text-(--ui-text-highlighted)' : 'text-(--ui-text-dimmed)'">
-                  {{ agent.shortName }}
-                </span>
-              </div>
-            </div>
+            <p class="mt-4 text-lg text-(--ui-text-muted)">
+              {{ t('Combining all findings into a coherent report') }}
+            </p>
           </div>
         </Transition>
 
@@ -209,8 +162,8 @@
         </Transition>
       </div>
 
-      <!-- Step progress dots — always visible at bottom -->
-      <div class="absolute bottom-8 left-0 right-0 flex items-center justify-center gap-2">
+      <!-- Step progress dots -->
+      <div class="mt-10 flex items-center justify-center gap-2">
         <div
           v-for="step in SCAN_STEPS"
           :key="step.key"
@@ -226,8 +179,8 @@
 import { Vue3Lottie } from 'vue3-lottie'
 import { SCAN_STEPS } from '~/constants/scan'
 import type { ScanStepStatus } from '~/constants/scan'
-
-const { allAgents: ALL_AGENTS } = useScanAgents()
+import type { ExplorationStep } from '~/stores/scanProgress'
+import ExplorationViewer from '~/components/audit/ExplorationViewer.vue'
 
 const props = defineProps<{
   scan: {
@@ -235,9 +188,11 @@ const props = defineProps<{
     currentStep: string
     stepStatuses: Record<string, ScanStepStatus>
     error: string | null
-    agentsCompleted: number
-    agentsTotal: number
-    completedAgentNames: string[]
+    explorationSteps: ExplorationStep[]
+    currentScreenshot: string | null
+    currentPass: number
+    totalPasses: number
+    currentPassName: string | null
   }
 }>()
 
@@ -245,12 +200,9 @@ defineEmits<{ retry: [] }>()
 
 const { t } = useI18n()
 
-const PREPARING_STEPS = ['validating', 'scanning', 'extracting'] as const
-
 const STEP_TO_PHASE: Record<string, string> = {
   validating: 'preparing',
-  scanning: 'preparing',
-  extracting: 'preparing',
+  exploring: 'exploring',
   analyzing: 'analyzing',
   synthesizing: 'synthesizing',
   assembling: 'assembling',
@@ -258,100 +210,45 @@ const STEP_TO_PHASE: Record<string, string> = {
 
 const phase = computed(() => STEP_TO_PHASE[props.scan.currentStep] ?? 'preparing')
 
-const preparingHeadline = computed(() => {
-  const map: Record<string, () => string> = {
-    validating: () => t('Validating your URL'),
-    scanning: () => t('Loading your page'),
-    extracting: () => t('Extracting content'),
-  }
-  return map[props.scan.currentStep]?.() ?? t('Preparing...')
-})
+// Convert 1-based backend pass number to 0-based index for the UI
+const activePassIdx = computed(() => Math.max(0, (props.scan.currentPass ?? 1) - 1))
 
-const preparingSubtitle = computed(() => {
-  const map: Record<string, () => string> = {
-    validating: () => t('Checking that your page is reachable and loads correctly'),
-    scanning: () => t('Opening your page in a real browser to capture what visitors see'),
-    extracting: () => t('Pulling headings, CTAs, trust signals, and page structure'),
-  }
-  return map[props.scan.currentStep]?.() ?? ''
-})
-
-function isAgentDone(backendName: string): boolean {
-  return props.scan.completedAgentNames.includes(backendName)
-}
-
-const agentProgressPct = computed(() => {
-  if (props.scan.agentsTotal === 0) return 0
-  return Math.round((props.scan.agentsCompleted / props.scan.agentsTotal) * 100)
-})
-
-// Synthesizing phase — rotating insights and agent highlights
-const synthInsights = computed(() => [
-  t('Cross-referencing trust signals with conversion data'),
-  t('Comparing persona reactions against technical findings'),
-  t('Identifying patterns across all audit categories'),
-  t('Calculating weighted scores from specialist and persona data'),
-  t('Detecting recurring issues and improvement trends'),
-  t('Building your personalized action plan'),
+const analysisPasses = computed(() => [
+  { key: 'deep', icon: 'i-lucide-scan-search', label: t('Deep Analysis') },
+  { key: 'persona', icon: 'i-lucide-users', label: t('Persona Simulation') },
 ])
-const synthInsightIndex = ref(0)
-const synthHighlightIdx = ref(0)
-let synthInsightTimer: ReturnType<typeof setInterval> | null = null
-let synthHighlightTimer: ReturnType<typeof setInterval> | null = null
 
-watch(phase, (val) => {
-  if (val === 'synthesizing') {
-    synthInsightIndex.value = 0
-    synthHighlightIdx.value = 0
-    synthInsightTimer = setInterval(() => {
-      synthInsightIndex.value = (synthInsightIndex.value + 1) % synthInsights.value.length
-    }, 3000)
-    synthHighlightTimer = setInterval(() => {
-      synthHighlightIdx.value = (synthHighlightIdx.value + 1) % ALL_AGENTS.value.length
-    }, 800)
+const passHeadline = computed(() => {
+  const map: Record<string, () => string> = {
+    deep_analysis: () => t('Analyzing your page'),
+    persona_simulation: () => t('Simulating visitor perspectives'),
+    brain_synthesis: () => t('Synthesizing insights'),
   }
-  else {
-    if (synthInsightTimer) { clearInterval(synthInsightTimer); synthInsightTimer = null }
-    if (synthHighlightTimer) { clearInterval(synthHighlightTimer); synthHighlightTimer = null }
-  }
+  return map[props.scan.currentPassName || '']?.() ?? t('Running deep analysis')
 })
 
-onUnmounted(() => {
-  if (synthInsightTimer) clearInterval(synthInsightTimer)
-  if (synthHighlightTimer) clearInterval(synthHighlightTimer)
+const passSubtitle = computed(() => {
+  const map: Record<string, () => string> = {
+    deep_analysis: () => t('Evaluating clarity, trust, conversion, and SEO from exploration data'),
+    persona_simulation: () => t('Three visitor personas are reacting to what the AI explored'),
+    brain_synthesis: () => t('Combining all findings into a coherent report'),
+  }
+  return map[props.scan.currentPassName || '']?.() ?? t('Processing exploration findings')
 })
 
 const glowColor = computed(() => {
-  if (phase.value === 'analyzing') {
-    // Glow shifts to last completed agent's color
-    const names = props.scan.completedAgentNames
-    if (names.length > 0) {
-      const lastDone = ALL_AGENTS.value.find(a => a.backendName === names[names.length - 1])
-      if (lastDone) return lastDone.glow
-    }
-    return 'rgba(99,102,241,0.2)'
+  const colors: Record<string, string> = {
+    preparing: 'rgba(99,102,241,0.15)',
+    exploring: 'rgba(59,130,246,0.2)',
+    analyzing: 'rgba(129,90,213,0.2)',
+    synthesizing: 'rgba(129,90,213,0.25)',
+    assembling: 'rgba(99,102,241,0.2)',
   }
-  return PHASE_GLOW[phase.value] ?? PHASE_GLOW.default
+  return colors[phase.value] ?? colors.preparing
 })
 
 function stepStatus(key: string): ScanStepStatus {
   return props.scan.stepStatuses[key] ?? 'pending'
-}
-
-function stepPillLabel(key: string): string {
-  const map: Record<string, () => string> = {
-    validating: () => t('Validate URL'),
-    scanning: () => t('Load page'),
-    extracting: () => t('Extract content'),
-  }
-  return map[key]?.() ?? key
-}
-
-const STEP_PILL_CLASSES: Record<ScanStepStatus, string> = {
-  done: 'border-green-500/30 bg-green-500/10 text-green-500',
-  active: 'border-blue-500/50 bg-blue-500/10 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.15)]',
-  failed: 'border-(--ui-border) text-(--ui-text-dimmed)',
-  pending: 'border-(--ui-border) text-(--ui-text-dimmed)',
 }
 
 const STEP_DOT_CLASSES: Record<ScanStepStatus, string> = {
@@ -361,25 +258,12 @@ const STEP_DOT_CLASSES: Record<ScanStepStatus, string> = {
   pending: 'h-1.5 w-1.5 bg-(--ui-border)',
 }
 
-const PHASE_GLOW: Record<string, string> = {
-  synthesizing: 'rgba(129,90,213,0.25)',
-  assembling: 'rgba(99,102,241,0.2)',
-  default: 'rgba(99,102,241,0.15)',
-}
-
-function stepPillClass(key: string): string {
-  return STEP_PILL_CLASSES[stepStatus(key)]
-}
-
 function stepDotClass(key: string): string {
   return STEP_DOT_CLASSES[stepStatus(key)]
 }
-
-
 </script>
 
 <style scoped>
-/* Phase transitions */
 .phase-enter-active,
 .phase-leave-active {
   transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1),
@@ -394,22 +278,6 @@ function stepDotClass(key: string): string {
   transform: translateY(-28px) scale(0.97);
 }
 
-/* Agent card transitions — slides left to right (sense of progress) */
-.agent-enter-active,
-.agent-leave-active {
-  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.agent-enter-from {
-  opacity: 0;
-  transform: translateX(48px) scale(0.96);
-}
-.agent-leave-to {
-  opacity: 0;
-  transform: translateX(-48px) scale(0.96);
-}
-
-/* Step headline transitions */
 .step-text-enter-active,
 .step-text-leave-active {
   transition: opacity 0.25s ease, transform 0.25s ease;
@@ -423,19 +291,6 @@ function stepDotClass(key: string): string {
   transform: translateY(-12px);
 }
 
-/* Completed agent chip pop-in */
-.chip-enter-active {
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.chip-enter-from {
-  opacity: 0;
-  transform: scale(0.4);
-}
-.chip-move {
-  transition: all 0.3s ease;
-}
-
-/* Synthesizing orbit animations */
 @keyframes spin-slow {
   to { transform: rotate(360deg); }
 }

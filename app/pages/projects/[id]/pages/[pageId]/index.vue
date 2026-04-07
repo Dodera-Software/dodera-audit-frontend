@@ -18,16 +18,13 @@
         </UButton>
       </Teleport>
 
-      <!-- Scan progress — full viewport takeover -->
-      <div
-        v-if="activeScan && !showSuccess"
-        class="fixed inset-0 z-40 flex items-center justify-center overflow-y-auto bg-(--ui-bg)"
-      >
+      <!-- Scan progress -->
+      <div v-if="activeScan && !showSuccess">
         <ScanProgress :scan="activeScan" @retry="triggerAudit" />
       </div>
 
       <!-- Success celebration -->
-      <div v-if="showSuccess" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-(--ui-bg)">
+      <div v-if="showSuccess" class="flex flex-col items-center justify-center py-20">
         <Vue3Lottie
           animation-link="/animations/success.json"
           :height="280"
@@ -183,6 +180,35 @@
               </dl>
             </UCard>
 
+            <!-- AI Note -->
+            <UCard>
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-semibold uppercase tracking-wide text-(--ui-text-dimmed)">{{ t('AI auditor note') }}</h3>
+                <UButton
+                  v-if="!editingAiNote"
+                  variant="ghost"
+                  size="xs"
+                  icon="i-lucide-pencil"
+                  @click="startEditAiNote"
+                />
+              </div>
+              <div v-if="editingAiNote" class="mt-2">
+                <UTextarea
+                  v-model="aiNoteValue"
+                  :rows="2"
+                  :maxlength="300"
+                  :placeholder="t('e.g. Focus on the pricing section — we recently redesigned it.')"
+                  class="w-full"
+                />
+                <div class="mt-2 flex justify-end gap-2">
+                  <UButton variant="ghost" size="xs" @click="editingAiNote = false">{{ t('Cancel') }}</UButton>
+                  <UButton size="xs" :loading="savingAiNote" @click="saveAiNote">{{ t('Save') }}</UButton>
+                </div>
+              </div>
+              <p v-else-if="page.ai_note" class="mt-2 text-sm text-(--ui-text-highlighted)">{{ page.ai_note }}</p>
+              <p v-else class="mt-2 text-xs text-(--ui-text-dimmed) italic">{{ t('No custom instructions. The AI will use default audit strategy.') }}</p>
+            </UCard>
+
             <!-- Score breakdown -->
             <UCard v-if="latestScores">
               <h3 class="text-xs font-semibold uppercase tracking-wide text-(--ui-text-dimmed)">{{ t('Score breakdown') }}</h3>
@@ -268,6 +294,7 @@ interface PageDetail {
   latest_audit_date: string | null
   audits_count: number
   scores?: Record<string, number> | null
+  ai_note?: string | null
 }
 
 interface BrainData {
@@ -285,6 +312,33 @@ const scoreHistory = ref<Array<{ overall_score: number, created_at: string }>>([
 
 const activeScan = computed(() => scanStore.scanForProject(pageId))
 const showSuccess = ref(false)
+
+// AI note inline editing
+const editingAiNote = ref(false)
+const aiNoteValue = ref('')
+const savingAiNote = ref(false)
+
+function startEditAiNote() {
+  aiNoteValue.value = page.value?.ai_note || ''
+  editingAiNote.value = true
+}
+
+async function saveAiNote() {
+  savingAiNote.value = true
+  try {
+    await $api(`/pages/${pageId}`, { method: 'PATCH', body: { ai_note: aiNoteValue.value || null } })
+    if (page.value) {
+      page.value.ai_note = aiNoteValue.value || null
+    }
+    editingAiNote.value = false
+  }
+  catch (e) {
+    apiError.parse(e, t('Failed to save note.'))
+  }
+  finally {
+    savingAiNote.value = false
+  }
+}
 
 const siteTypeLabel = computed(() => {
   const labels: Record<string, () => string> = {
@@ -382,7 +436,7 @@ watchEffect(() => {
     subtitle: page.value?.url ?? undefined,
     showBack: true,
     backTo: `/projects/${projectId}`,
-    hidden: !!(activeScan.value) || showSuccess.value,
+    hidden: false,
   })
 })
 
