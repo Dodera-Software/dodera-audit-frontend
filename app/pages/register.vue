@@ -35,7 +35,7 @@
           v-model="form.email"
           type="email"
           autocomplete="email"
-          :placeholder="t('you@example.com')"
+          placeholder="you@example.com"
           size="lg"
           class="w-full"
           icon="i-lucide-mail"
