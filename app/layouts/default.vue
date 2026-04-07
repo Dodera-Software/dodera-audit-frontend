@@ -22,6 +22,13 @@
       </ClientOnly>
 
       <main id="main-content" ref="mainEl" class="relative min-w-0 flex-1 overflow-y-auto p-5">
+        <ClientOnly>
+          <UiSuccessOverlay
+            :show="successOverlay.show.value"
+            :title="successOverlay.title.value"
+            :subtitle="successOverlay.subtitle.value"
+          />
+        </ClientOnly>
         <slot />
       </main>
     </div>
@@ -53,6 +60,7 @@ const { logout, resendVerification } = useAuth()
 const authStore = useAuthStore()
 const toast = useToast()
 const tutorialStore = useTutorialStore()
+const successOverlay = useSuccessOverlay()
 
 const mainEl = ref<HTMLElement | null>(null)
 const { y: mainScrollY } = useScroll(mainEl)
