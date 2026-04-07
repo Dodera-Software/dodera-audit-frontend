@@ -1,38 +1,39 @@
 <template>
   <ClientOnly>
-    <div class="mx-auto max-w-2xl">
+    <div class="mx-auto max-w-2xl flex flex-col gap-4">
 
     <TeamPageSkeleton v-if="loading" />
 
     <template v-else>
       <!-- Member of someone else's team -->
       <template v-if="membership">
-        <UCard class="mb-4">
-          <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-(--ui-primary)/10">
-              <UIcon name="i-lucide-users" class="h-5 w-5 text-(--ui-primary)" />
+        <UCard>
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-users" class="h-4 w-4 text-(--ui-primary)" />
+              <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ membership.team_name }}</h2>
             </div>
-            <div>
-              <p class="font-semibold text-(--ui-text-highlighted)">{{ membership.team_name }}</p>
-              <p class="text-xs text-(--ui-text-muted)">{{ t('You are a member of this team') }}</p>
-            </div>
-          </div>
+          </template>
+          <p class="text-sm text-(--ui-text-muted)">{{ t('You are a member of this team') }}</p>
         </UCard>
 
         <UCard>
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <p class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Leave team') }}</p>
-              <p class="mt-0.5 text-xs text-(--ui-text-muted)">{{ t('You will lose access to all shared projects.') }}</p>
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-triangle-alert" class="h-4 w-4 text-red-500" />
+              <h2 class="text-sm font-semibold text-red-500">{{ t('Leave team') }}</h2>
             </div>
+          </template>
+          <p class="text-sm text-(--ui-text-muted)">{{ t('You will lose access to all shared projects.') }}</p>
+          <div class="mt-3 flex justify-end">
             <UButton
               color="error"
               variant="outline"
-              size="sm"
+              icon="i-lucide-log-out"
               :loading="leaveLoading"
               @click="handleLeave"
             >
-              {{ t('Leave') }}
+              {{ t('Leave team') }}
             </UButton>
           </div>
         </UCard>
@@ -41,14 +42,20 @@
       <!-- Team owner view -->
       <template v-else-if="team">
         <!-- Team name -->
-        <UCard class="mb-4">
+        <UCard>
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-building-2" class="h-4 w-4 text-(--ui-text-muted)" />
+              <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Team') }}</h2>
+            </div>
+          </template>
           <div class="flex items-center justify-between gap-4">
             <div class="min-w-0 flex-1">
               <p class="text-xs font-medium uppercase tracking-wide text-(--ui-text-dimmed)">{{ t('Team name') }}</p>
               <UInput
                 v-if="editingName"
                 v-model="teamNameInput"
-                size="sm"
+                size="lg"
                 class="mt-1 max-w-xs"
                 @keyup.enter="handleSaveName"
                 @keyup.escape="editingName = false"
@@ -57,10 +64,10 @@
             </div>
             <div class="flex gap-2">
               <template v-if="editingName">
-                <UButton size="xs" :loading="savingName" @click="handleSaveName">{{ t('Save') }}</UButton>
-                <UButton size="xs" variant="ghost" color="neutral" @click="editingName = false">{{ t('Cancel') }}</UButton>
+                <UButton size="sm" :loading="savingName" @click="handleSaveName">{{ t('Save') }}</UButton>
+                <UButton size="sm" variant="ghost" color="neutral" @click="editingName = false">{{ t('Cancel') }}</UButton>
               </template>
-              <UButton v-else size="xs" variant="ghost" color="neutral" icon="i-lucide-pencil" @click="startEditName">
+              <UButton v-else size="sm" variant="ghost" color="neutral" icon="i-lucide-pencil" @click="startEditName">
                 {{ t('Edit') }}
               </UButton>
             </div>
@@ -68,13 +75,18 @@
         </UCard>
 
         <!-- Members -->
-        <UCard class="mb-4">
-          <h3 class="mb-4 text-sm font-semibold text-(--ui-text-highlighted)">
-            {{ t('Members') }}
-            <span class="ml-1 text-(--ui-text-dimmed)">({{ team.all_members?.length ?? 0 }}/{{ totalSeats }} {{ t('seats used') }})</span>
-          </h3>
+        <UCard>
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-users" class="h-4 w-4 text-(--ui-text-muted)" />
+              <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">
+                {{ t('Members') }}
+                <span class="ml-1 font-normal text-(--ui-text-dimmed)">({{ team.all_members?.length ?? 0 }}/{{ totalSeats }} {{ t('seats used') }})</span>
+              </h2>
+            </div>
+          </template>
 
-          <div v-if="team.all_members && team.all_members.length > 0" class="space-y-2">
+          <div v-if="team.all_members && team.all_members.length > 0" class="space-y-3">
             <div
               v-for="member in team.all_members"
               :key="member.id"
@@ -94,7 +106,7 @@
               </div>
               <UButton
                 v-if="member.role !== 'owner'"
-                size="xs"
+                size="sm"
                 variant="ghost"
                 color="error"
                 icon="i-lucide-user-minus"
@@ -109,9 +121,14 @@
         </UCard>
 
         <!-- Pending invitations -->
-        <UCard v-if="pendingInvitations.length > 0" class="mb-4">
-          <h3 class="mb-3 text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Pending invitations') }}</h3>
-          <div class="space-y-2">
+        <UCard v-if="pendingInvitations.length > 0">
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-mail" class="h-4 w-4 text-(--ui-text-muted)" />
+              <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Pending invitations') }}</h2>
+            </div>
+          </template>
+          <div class="space-y-3">
             <div
               v-for="inv in pendingInvitations"
               :key="inv.id"
@@ -122,7 +139,7 @@
                 <p class="text-xs text-(--ui-text-muted)">{{ t('Expires') }} {{ formatDate(inv.expires_at) }}</p>
               </div>
               <UButton
-                size="xs"
+                size="sm"
                 variant="ghost"
                 color="neutral"
                 icon="i-lucide-x"
@@ -135,84 +152,96 @@
           </div>
         </UCard>
 
-        <!-- Seat management -->
-        <UCard class="mb-4">
-          <div class="mb-4 flex items-center justify-between">
-            <div>
-              <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Team seats') }}</h3>
-              <p class="mt-0.5 text-xs text-(--ui-text-muted)">
-                {{ t('{used} of {total} seats used', { used: team.all_members?.length ?? 0, total: totalSeats }) }}
-                <span v-if="billingStatus?.included_seats" class="text-(--ui-text-dimmed)"> · {{ billingStatus.included_seats }} {{ t('included') }}</span>
-                <span v-if="billingStatus?.extra_seats" class="text-(--ui-text-dimmed)">, {{ billingStatus.extra_seats }} {{ t('purchased') }}</span>
-              </p>
-            </div>
-            <UButton size="xs" variant="outline" color="neutral" icon="i-lucide-plus" @click="showBuySeats = !showBuySeats">
-              {{ t('Buy seats') }}
-            </UButton>
-          </div>
-
-          <!-- Buy seats inline form -->
-          <div v-if="showBuySeats" class="mb-4 rounded-lg border border-(--ui-border) bg-(--ui-bg-elevated) p-3">
-            <p class="mb-2 text-xs text-(--ui-text-muted)">{{ t('Each extra seat costs €10/month and is added to your subscription.') }}</p>
-            <div class="flex items-center gap-2">
-              <UButton size="xs" variant="outline" color="neutral" icon="i-lucide-minus" :disabled="seatsToBuy <= 1" @click="seatsToBuy = Math.max(1, seatsToBuy - 1)" />
-              <span class="w-8 text-center text-sm font-semibold">{{ seatsToBuy }}</span>
-              <UButton size="xs" variant="outline" color="neutral" icon="i-lucide-plus" @click="seatsToBuy++" />
-              <span class="ml-1 text-xs text-(--ui-text-muted)">× €10/mo = <strong>€{{ seatsToBuy * 10 }}/mo</strong></span>
-              <UButton size="sm" class="ml-auto" :loading="buyingSeats" @click="handleBuySeats">
-                {{ t('Purchase') }}
+        <!-- Seat management + invite -->
+        <UCard>
+          <template #header>
+            <div class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-armchair" class="h-4 w-4 text-(--ui-text-muted)" />
+                <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Team seats') }}</h2>
+              </div>
+              <UButton size="sm" variant="outline" color="neutral" icon="i-lucide-plus" @click="showBuySeats = !showBuySeats">
+                {{ t('Buy seats') }}
               </UButton>
             </div>
-          </div>
+          </template>
 
-          <!-- Invite form -->
-          <h3 class="mb-2 text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Invite a member') }}</h3>
+          <div class="space-y-5">
+            <p class="text-sm text-(--ui-text-muted)">
+              {{ t('{used} of {total} seats used', { used: team.all_members?.length ?? 0, total: totalSeats }) }}<span v-if="billingStatus?.included_seats"> · {{ billingStatus.included_seats }} {{ t('included') }}</span><span v-if="billingStatus?.extra_seats">, {{ billingStatus.extra_seats }} {{ t('purchased') }}</span>
+            </p>
 
-          <UAlert
-            v-if="seatLimitReached"
-            class="mb-3"
-            color="warning"
-            variant="subtle"
-            icon="i-lucide-alert-triangle"
-            :title="t('No seats available')"
-            :description="t('Purchase additional seats to invite more members.')"
-          />
+            <!-- Buy seats inline form -->
+            <div v-if="showBuySeats" class="rounded-lg border border-(--ui-border) bg-(--ui-bg-elevated) p-3">
+              <p class="mb-2 text-xs text-(--ui-text-muted)">{{ t('Each extra seat costs €10/month and is added to your subscription.') }}</p>
+              <div class="flex items-center gap-2">
+                <UButton size="sm" variant="outline" color="neutral" icon="i-lucide-minus" :disabled="seatsToBuy <= 1" @click="seatsToBuy = Math.max(1, seatsToBuy - 1)" />
+                <span class="w-8 text-center text-sm font-semibold">{{ seatsToBuy }}</span>
+                <UButton size="sm" variant="outline" color="neutral" icon="i-lucide-plus" @click="seatsToBuy++" />
+                <span class="ml-1 text-xs text-(--ui-text-muted)">× €10/mo = <strong>€{{ seatsToBuy * 10 }}/mo</strong></span>
+                <UButton class="ml-auto" :loading="buyingSeats" @click="handleBuySeats">
+                  {{ t('Purchase') }}
+                </UButton>
+              </div>
+            </div>
 
-          <div class="flex gap-2">
-            <UInput
-              v-model="inviteEmail"
-              type="email"
-              placeholder="colleague@example.com"
-              class="flex-1"
-              :disabled="seatLimitReached || inviteLoading"
-              @keyup.enter="handleInvite"
-            />
-            <UButton
-              :loading="inviteLoading"
-              :disabled="seatLimitReached || !inviteEmail"
-              icon="i-lucide-send"
-              @click="handleInvite"
-            >
-              {{ t('Invite') }}
-            </UButton>
+            <USeparator />
+
+            <!-- Invite form -->
+            <div>
+              <h3 class="mb-3 text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Invite a member') }}</h3>
+
+              <UAlert
+                v-if="seatLimitReached"
+                class="mb-3"
+                color="warning"
+                variant="subtle"
+                icon="i-lucide-alert-triangle"
+                :title="t('No seats available')"
+                :description="t('Purchase additional seats to invite more members.')"
+              />
+
+              <div class="flex gap-2">
+                <UInput
+                  v-model="inviteEmail"
+                  type="email"
+                  size="lg"
+                  placeholder="colleague@example.com"
+                  class="flex-1"
+                  :disabled="seatLimitReached || inviteLoading"
+                  @keyup.enter="handleInvite"
+                />
+                <UButton
+                  :loading="inviteLoading"
+                  :disabled="seatLimitReached || !inviteEmail"
+                  icon="i-lucide-send"
+                  @click="handleInvite"
+                >
+                  {{ t('Invite') }}
+                </UButton>
+              </div>
+            </div>
           </div>
         </UCard>
 
         <!-- Delete team -->
         <UCard>
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <p class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Delete team') }}</p>
-              <p class="mt-0.5 text-xs text-(--ui-text-muted)">{{ t('All members will lose access. This cannot be undone.') }}</p>
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-triangle-alert" class="h-4 w-4 text-red-500" />
+              <h2 class="text-sm font-semibold text-red-500">{{ t('Danger zone') }}</h2>
             </div>
+          </template>
+          <p class="text-sm text-(--ui-text-muted)">{{ t('All members will lose access. This cannot be undone.') }}</p>
+          <div class="mt-3 flex justify-end">
             <UButton
               color="error"
               variant="outline"
-              size="sm"
+              icon="i-lucide-trash-2"
               :loading="deletingTeam"
               @click="handleDeleteTeam"
             >
-              {{ t('Delete') }}
+              {{ t('Delete team') }}
             </UButton>
           </div>
         </UCard>
@@ -231,24 +260,23 @@
                 {{ t('Upgrade to Pro or Max to invite team members and collaborate on audit pages.') }}
               </p>
             </div>
-            <UButton size="sm" to="/pricing">{{ t('Upgrade') }}</UButton>
+            <UButton to="/pricing">{{ t('Upgrade plan') }}</UButton>
           </div>
         </UCard>
 
         <UCard v-else>
-          <div class="py-6 text-center">
-            <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-(--ui-primary)/10">
-              <UIcon name="i-lucide-users" class="h-6 w-6 text-(--ui-primary)" />
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-users" class="h-4 w-4 text-(--ui-primary)" />
+              <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Create your team') }}</h2>
             </div>
-            <p class="mb-1 font-semibold text-(--ui-text-highlighted)">{{ t('Create your team') }}</p>
-            <p class="mb-4 text-sm text-(--ui-text-muted)">{{ t('Invite teammates to collaborate on your audit pages.') }}</p>
-
-            <div class="mx-auto flex max-w-xs flex-col gap-2">
-              <UInput v-model="newTeamName" :placeholder="t('Team name')" size="lg" />
-              <UButton block :loading="creatingTeam" :disabled="!newTeamName.trim()" @click="handleCreateTeam">
-                {{ t('Create team') }}
-              </UButton>
-            </div>
+          </template>
+          <div class="space-y-4">
+            <p class="text-sm text-(--ui-text-muted)">{{ t('Invite teammates to collaborate on your audit pages.') }}</p>
+            <UInput v-model="newTeamName" :placeholder="t('Team name')" size="lg" />
+            <UButton block :loading="creatingTeam" :disabled="!newTeamName.trim()" @click="handleCreateTeam">
+              {{ t('Create team') }}
+            </UButton>
           </div>
         </UCard>
       </template>
