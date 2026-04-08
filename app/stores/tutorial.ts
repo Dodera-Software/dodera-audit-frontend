@@ -27,6 +27,7 @@ export const useTutorialStore = defineStore('tutorial', () => {
         if (!import.meta.client) return
         if (isCompleted()) return
         showWelcome.value = true
+        markCompleted()
     }
 
     function dismiss(): void {

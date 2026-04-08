@@ -14,7 +14,7 @@
           </div>
         </div>
 
-        <UForm :schema="schema" :state="form" class="mt-5 space-y-4" @submit="handleCreate">
+        <UForm :schema="tutorialActive ? undefined : schema" :state="form" class="mt-5 space-y-4" @submit="handleCreate">
           <UAlert
             v-if="apiError.hasErrors.value"
             color="error"
@@ -168,6 +168,7 @@
 
 <script setup lang="ts">
 import { createPageSchema } from '~/schemas/project'
+import { useTutorialStore } from '~/stores/tutorial'
 
 const props = defineProps<{
   projectId?: string
@@ -182,6 +183,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { $api } = useApi()
+const { tutorialActive } = storeToRefs(useTutorialStore())
 const apiError = useApiError()
 const { siteTypes, pageTypes, conversionGoals } = useProjectOptions()
 const { showOverlay } = useSuccessOverlay()

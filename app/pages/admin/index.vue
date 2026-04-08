@@ -154,7 +154,8 @@
               <div class="min-w-0 flex-1">
                 <p class="text-sm text-(--ui-text-highlighted)">
                   <span class="font-medium">{{ item.actor?.name || item.actor_email || 'System' }}</span>
-                  <span class="text-(--ui-text-muted)"> {{ item.action.replace(/_/g, ' ') }}</span>
+                  {{ ' ' }}
+                  <span class="text-(--ui-text-muted)">{{ item.action.replace(/_/g, ' ') }}</span>
                 </p>
                 <p class="text-xs text-(--ui-text-dimmed)">{{ timeAgo(item.created_at) }}</p>
               </div>
@@ -196,15 +197,28 @@ const dayOptions = [
   { label: '90d', value: '90' },
 ]
 
-const activitySeries = computed(() => [
-  { name: 'Signups', data: (charts.value.signups_per_day || []).map((d: any) => d.count) },
-  { name: 'Audits', data: (charts.value.audits_per_day || []).map((d: any) => d.count) },
-])
+const unifiedDates = computed(() => {
+  const signups = charts.value.signups_per_day || []
+  const audits = charts.value.audits_per_day || []
+  const dateSet = new Set<string>()
+  signups.forEach((d: any) => dateSet.add(d.date))
+  audits.forEach((d: any) => dateSet.add(d.date))
+  return [...dateSet].sort()
+})
+
+const activitySeries = computed(() => {
+  const dates = unifiedDates.value
+  const signupMap = Object.fromEntries((charts.value.signups_per_day || []).map((d: any) => [d.date, d.count]))
+  const auditMap = Object.fromEntries((charts.value.audits_per_day || []).map((d: any) => [d.date, d.count]))
+  return [
+    { name: 'Signups', data: dates.map(d => signupMap[d] || 0) },
+    { name: 'Audits', data: dates.map(d => auditMap[d] || 0) },
+  ]
+})
 
 const activityCategories = computed(() => {
-  const days = charts.value.signups_per_day || charts.value.audits_per_day || []
-  return days.map((d: any) => {
-    const date = new Date(d.date)
+  return unifiedDates.value.map((d: string) => {
+    const date = new Date(d)
     return `${date.getMonth() + 1}/${date.getDate()}`
   })
 })

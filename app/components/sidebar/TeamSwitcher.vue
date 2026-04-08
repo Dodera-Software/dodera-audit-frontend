@@ -40,26 +40,42 @@
             class="group flex items-center gap-1 rounded-md px-1"
             :class="ws.is_active ? 'bg-(--ui-bg-elevated)' : ''"
           >
+            <!-- Active team: non-interactive, normal cursor -->
+            <div
+              v-if="ws.is_active"
+              class="flex flex-1 items-center gap-2 rounded-md px-2 py-1.5"
+            >
+              <UIcon
+                :name="ws.type === 'team' ? 'i-lucide-users' : 'i-lucide-building-2'"
+                class="h-3.5 w-3.5 shrink-0 text-(--ui-primary)"
+              />
+              <div class="flex min-w-0 flex-1 flex-col items-start">
+                <span class="truncate text-xs font-medium leading-tight text-(--ui-text-highlighted)">{{ ws.name }}</span>
+                <span v-if="ws.type === 'team'" class="truncate text-[10px] leading-tight text-(--ui-text-dimmed)">{{ ws.owner_name }}</span>
+              </div>
+              <UIcon name="i-lucide-check" class="h-3.5 w-3.5 shrink-0 text-(--ui-primary)" />
+            </div>
+
+            <!-- Other teams: clickable to switch -->
             <UButton
+              v-else
               variant="ghost"
               color="neutral"
               size="sm"
               class="flex-1 justify-start"
-              :disabled="ws.is_active || switching"
+              :disabled="switching"
               @click="onSwitchTeam(ws.id)"
             >
               <template #leading>
                 <UIcon
                   :name="ws.type === 'team' ? 'i-lucide-users' : 'i-lucide-building-2'"
-                  class="h-3.5 w-3.5 shrink-0"
-                  :class="ws.is_active ? 'text-(--ui-primary)' : 'text-(--ui-text-muted)'"
+                  class="h-3.5 w-3.5 shrink-0 text-(--ui-text-muted)"
                 />
               </template>
               <div class="flex min-w-0 flex-1 flex-col items-start">
                 <span class="truncate text-xs font-medium leading-tight">{{ ws.name }}</span>
                 <span v-if="ws.type === 'team'" class="truncate text-[10px] leading-tight text-(--ui-text-dimmed)">{{ ws.owner_name }}</span>
               </div>
-              <UIcon v-if="ws.is_active" name="i-lucide-check" class="h-3.5 w-3.5 shrink-0 text-(--ui-primary)" />
             </UButton>
 
             <UButton
@@ -115,14 +131,15 @@
             size="sm"
             block
             class="justify-start"
-            to="/account/team"
-            @click="teamPopoverOpen = false; $emit('navigate')"
+            @click="teamPopoverOpen = false; showInviteDialog = true"
           >
             {{ t('Invite members') }}
           </UButton>
         </div>
       </template>
     </UPopover>
+
+    <SidebarInviteMemberDialog v-model:open="showInviteDialog" />
   </div>
 </template>
 
@@ -138,6 +155,7 @@ const { workspaces, activeWorkspace, switching, leaving, fetchWorkspaces, switch
 
 const user = computed(() => authStore.user)
 const teamPopoverOpen = ref(false)
+const showInviteDialog = ref(false)
 
 async function onSwitchTeam(id: string) {
   teamPopoverOpen.value = false
