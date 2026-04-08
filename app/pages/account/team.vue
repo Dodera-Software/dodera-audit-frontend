@@ -160,7 +160,7 @@
                 <UIcon name="i-lucide-armchair" class="h-4 w-4 text-(--ui-text-muted)" />
                 <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Team seats') }}</h2>
               </div>
-              <UButton size="sm" variant="outline" color="neutral" icon="i-lucide-plus" @click="showBuySeats = !showBuySeats">
+              <UButton size="sm" variant="outline" color="neutral" icon="i-lucide-plus" @click="handleBuySeatsClick">
                 {{ t('Buy seats') }}
               </UButton>
             </div>
@@ -223,6 +223,8 @@
             </div>
           </div>
         </UCard>
+
+        <TeamSeatsUpgradeModal v-model:open="showUpgradePrompt" @close="showUpgradePrompt = false" />
 
         <!-- Delete team -->
         <UCard>
@@ -297,6 +299,7 @@ const { formatDate } = useFormatters()
 const authStore = useAuthStore()
 const { $api } = useApi()
 const { setNavbar } = usePageNavbar()
+const { confirm } = useConfirm()
 const {
   fetchOwnedTeam,
   fetchMembership,
@@ -328,6 +331,7 @@ const creatingTeam = ref(false)
 const deletingTeam = ref(false)
 const leaveLoading = ref(false)
 const showBuySeats = ref(false)
+const showUpgradePrompt = ref(false)
 const seatsToBuy = ref(1)
 const buyingSeats = ref(false)
 
@@ -445,7 +449,14 @@ async function handleRevokeInvitation(id: string) {
 
 async function handleRemoveMember(member: TeamMember) {
   const name = member.user?.name ?? t('this member')
-  if (!confirm(t('Remove {name} from the team?', { name }))) return
+  const confirmed = await confirm({
+    title: t('Remove {name}?', { name }),
+    description: t('This member will lose access to all shared projects immediately.'),
+    confirmLabel: t('Remove'),
+    color: 'error',
+    icon: 'i-lucide-user-minus',
+  })
+  if (!confirmed) return
   removingMemberId.value = member.id
   try {
     await removeMember(member.id)
@@ -464,7 +475,14 @@ async function handleRemoveMember(member: TeamMember) {
 }
 
 async function handleDeleteTeam() {
-  if (!confirm(t('Delete your team? All members will lose access.'))) return
+  const confirmed = await confirm({
+    title: t('Delete this team?'),
+    description: t('All members will immediately lose access to shared projects. This action cannot be undone.'),
+    confirmLabel: t('Delete team'),
+    color: 'error',
+    icon: 'i-lucide-trash-2',
+  })
+  if (!confirmed) return
   deletingTeam.value = true
   try {
     await deleteTeam()
@@ -481,6 +499,11 @@ async function handleDeleteTeam() {
   }
 }
 
+function handleBuySeatsClick() {
+  showBuySeats.value = !showBuySeats.value
+  showUpgradePrompt.value = false
+}
+
 async function handleBuySeats() {
   buyingSeats.value = true
   try {
@@ -488,10 +511,11 @@ async function handleBuySeats() {
     toast.add({ title: t('Seats updated successfully.'), color: 'success' })
     await fetchBillingStatus()
     await loadTeamState()
+    showBuySeats.value = false
   }
-  catch (e: unknown) {
-    const err = e as { data?: { message?: string } }
-    toast.add({ title: err?.data?.message ?? t('Failed to purchase seats.'), color: 'error' })
+  catch {
+    showBuySeats.value = false
+    showUpgradePrompt.value = true
   }
   finally {
     buyingSeats.value = false
@@ -499,7 +523,14 @@ async function handleBuySeats() {
 }
 
 async function handleLeave() {
-  if (!confirm(t('Leave this team? You will lose access to all shared projects.'))) return
+  const confirmed = await confirm({
+    title: t('Leave this team?'),
+    description: t('You will lose access to all shared projects. This action cannot be undone.'),
+    confirmLabel: t('Leave team'),
+    color: 'error',
+    icon: 'i-lucide-log-out',
+  })
+  if (!confirmed) return
   leaveLoading.value = true
   try {
     await leaveTeam(membership.value?.team_id)
