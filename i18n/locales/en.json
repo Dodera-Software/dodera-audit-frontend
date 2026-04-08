@@ -1072,5 +1072,11 @@
   "Personas are visiting your page": "Personas are visiting your page",
   "Evaluating clarity, trust, conversion, and SEO": "Evaluating clarity, trust, conversion, and SEO",
   "Three visitor personas are inspecting your website right now": "Three visitor personas are inspecting your website right now",
-  "Failed to save conversion goal.": "Failed to save conversion goal."
+  "Failed to save conversion goal.": "Failed to save conversion goal.",
+  "Invite a team member": "Invite a team member",
+  "They\\'ll receive an email with a link to join your team.": "They\\'ll receive an email with a link to join your team.",
+  "colleague@example.com": "colleague@example.com",
+  "Invitation sent to {email}": "Invitation sent to {email}",
+  "Team members share your plan. Manage seats in": "Team members share your plan. Manage seats in",
+  "team settings": "team settings"
 }
