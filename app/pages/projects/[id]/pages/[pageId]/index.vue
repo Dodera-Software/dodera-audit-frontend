@@ -73,8 +73,7 @@
                 </div>
                 <UButton
                   v-if="page.latest_audit_id"
-                  variant="soft"
-                  size="sm"
+                  size="lg"
                   trailing-icon="i-lucide-arrow-right"
                   :to="`/projects/${projectId}/pages/${pageId}/audits/${page.latest_audit_id}`"
                 >
@@ -155,6 +154,26 @@
                 </p>
               </UCard>
             </PlanGate>
+
+            <!-- Priority recommendations (moved from sidebar) -->
+            <UCard v-if="brain?.priority_recommendations?.length">
+              <h3 class="text-xs font-semibold uppercase tracking-wide text-(--ui-text-dimmed)">{{ t('Priority recommendations') }}</h3>
+              <div class="mt-3 space-y-3">
+                <div
+                  v-for="(rec, i) in brain.priority_recommendations.slice(0, 3)"
+                  :key="i"
+                  class="flex items-start gap-3"
+                >
+                  <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-(--ui-primary)/10 text-xs font-bold text-(--ui-primary)">
+                    {{ i + 1 }}
+                  </span>
+                  <div>
+                    <p class="text-sm font-medium text-(--ui-text-highlighted)">{{ rec.title }}</p>
+                    <p class="mt-0.5 text-xs leading-relaxed text-(--ui-text-dimmed)">{{ rec.reason }}</p>
+                  </div>
+                </div>
+              </div>
+            </UCard>
           </div>
 
           <!-- Right (1/3) -->
@@ -245,25 +264,7 @@
               </div>
             </UCard>
 
-            <!-- Priority recommendations -->
-            <UCard v-if="brain?.priority_recommendations?.length">
-              <h3 class="text-xs font-semibold uppercase tracking-wide text-(--ui-text-dimmed)">{{ t('Priority recommendations') }}</h3>
-              <div class="mt-3 space-y-3">
-                <div
-                  v-for="(rec, i) in brain.priority_recommendations.slice(0, 3)"
-                  :key="i"
-                  class="flex items-start gap-2"
-                >
-                  <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-(--ui-primary)/10 text-[10px] font-bold text-(--ui-primary)">
-                    {{ i + 1 }}
-                  </span>
-                  <div>
-                    <p class="text-xs font-medium text-(--ui-text-highlighted)">{{ rec.title }}</p>
-                    <p class="mt-0.5 text-[11px] leading-relaxed text-(--ui-text-dimmed)">{{ rec.reason }}</p>
-                  </div>
-                </div>
-              </div>
-            </UCard>
+
           </div>
         </div>
       </template>
