@@ -240,8 +240,11 @@ function actionLabel(action: string): string {
     done: t('Exploration complete'),
     initial_load: t('Page loaded'),
     observation: t('Observing'),
+    error: t('Step failed'),
+    fixed_verification: t('Verifying fix'),
   }
-  return labels[action] || action
+  // Convert any unknown snake_case keys to readable labels
+  return labels[action] || action.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
 }
 
 // Auto-scroll log to bottom

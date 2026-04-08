@@ -119,7 +119,11 @@ async function handleCreate() {
 const isSuperAdmin = computed(() => checkSuperAdmin(authStore.user?.role))
 
 function canModifyUser(row: any): boolean {
+  // Super admin can edit themselves
+  if (row.role === UserRole.SuperAdmin && row.id === authStore.user?.id) return true
+  // Nobody else can edit super admins
   if (row.role === UserRole.SuperAdmin) return false
+  // Only super admin can edit other admins
   if (row.role === UserRole.Admin && !isSuperAdmin.value) return false
   return true
 }
@@ -129,7 +133,8 @@ function getRowActions(row: any): RowAction[] {
   if (!row.email_verified_at && canModifyUser(row)) {
     actions.push({ label: t('Verify email'), icon: 'i-lucide-mail-check', color: 'success', onSelect: () => handleVerifyEmail(row) })
   }
-  if (canModifyUser(row)) {
+  // Cannot delete yourself
+  if (canModifyUser(row) && row.id !== authStore.user?.id) {
     actions.push({ label: t('Delete user'), icon: 'i-lucide-trash-2', color: 'error', onSelect: () => handleDelete(row) })
   }
   return actions
