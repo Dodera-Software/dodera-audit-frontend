@@ -87,7 +87,7 @@ export function useTutorial() {
                 description: t('Fill in the URL above and click "Add page". PawByTech will spin up our AI agents to analyze your page — your full report arrives in under 3 minutes.'),
                 side: 'top',
                 align: 'end',
-                showButtons: ['previous', 'close'],
+                showButtons: ['previous', 'next'],
             },
         },
     ])
@@ -147,14 +147,14 @@ export function useTutorial() {
             ...DRIVER_BASE_CONFIG,
             nextBtnText: t('Next →'),
             prevBtnText: t('← Back'),
-            doneBtnText: t('Got it ✓'),
+            doneBtnText: t('Finish ✓'),
             steps: filterPresentSteps(formTourSteps.value),
             onDestroyed: () => {
                 tutorialStore.tutorialActive = false
                 tutorialStore.markCompleted()
                 toast.add({
                     title: t("You're all set!"),
-                    description: t('Fill in the URL and click "Add page" to launch your first audit.'),
+                    description: t('Add your page and launch your first audit!'),
                     color: 'success',
                     icon: 'i-lucide-rocket',
                 })
