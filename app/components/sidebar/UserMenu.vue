@@ -83,8 +83,6 @@
             </div>
           </div>
 
-          <UiTutorialTriggerButton block @click="popoverOpen = false" />
-
           <USeparator class="my-1" />
 
           <UButton

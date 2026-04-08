@@ -7,11 +7,13 @@
         aria-modal="true"
         role="dialog"
         :aria-label="t('Welcome tour')"
+        @click="tutorialStore.dismiss()"
       >
         <Transition name="tutorial-card" appear>
           <div
             v-if="showWelcome"
             class="w-full max-w-xl overflow-hidden rounded-2xl border border-(--ui-border) bg-(--ui-bg) shadow-2xl"
+            @click.stop
           >
             <!-- Emerald accent stripe -->
             <div class="pbt-welcome-stripe h-[3px] w-full" />
