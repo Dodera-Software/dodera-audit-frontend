@@ -16,7 +16,7 @@
             v-model="email"
             type="email"
             size="lg"
-            :placeholder="t('colleague@example.com')"
+            placeholder="colleague@example.com"
             :disabled="loading"
             class="flex-1"
             @keyup.enter="handleInvite"
