@@ -224,27 +224,6 @@
           </div>
         </UCard>
 
-        <!-- Delete team -->
-        <UCard>
-          <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-triangle-alert" class="h-4 w-4 text-red-500" />
-              <h2 class="text-sm font-semibold text-red-500">{{ t('Danger zone') }}</h2>
-            </div>
-          </template>
-          <p class="text-sm text-(--ui-text-muted)">{{ t('All members will lose access. This cannot be undone.') }}</p>
-          <div class="mt-3 flex justify-end">
-            <UButton
-              color="error"
-              variant="outline"
-              icon="i-lucide-trash-2"
-              :loading="deletingTeam"
-              @click="handleDeleteTeam"
-            >
-              {{ t('Delete team') }}
-            </UButton>
-          </div>
-        </UCard>
       </template>
 
       <!-- No team yet -->
@@ -302,7 +281,6 @@ const {
   fetchMembership,
   createTeam,
   updateTeamName,
-  deleteTeam,
   leaveTeam,
   inviteMember,
   revokeInvitation,
@@ -325,7 +303,6 @@ const savingName = ref(false)
 
 const newTeamName = ref('')
 const creatingTeam = ref(false)
-const deletingTeam = ref(false)
 const leaveLoading = ref(false)
 const showBuySeats = ref(false)
 const seatsToBuy = ref(1)
@@ -460,24 +437,6 @@ async function handleRemoveMember(member: TeamMember) {
   }
   finally {
     removingMemberId.value = null
-  }
-}
-
-async function handleDeleteTeam() {
-  if (!confirm(t('Delete your team? All members will lose access.'))) return
-  deletingTeam.value = true
-  try {
-    await deleteTeam()
-    team.value = null
-    const userData = await $api<{ data: User }>('/auth/me')
-    if (userData.data) authStore.setUser(userData.data)
-    toast.add({ title: t('Team deleted.'), color: 'success' })
-  }
-  catch {
-    toast.add({ title: t('Failed to delete team.'), color: 'error' })
-  }
-  finally {
-    deletingTeam.value = false
   }
 }
 
