@@ -3,106 +3,88 @@
     <AuditHistorySkeleton v-if="loading" />
 
     <UiPageShell v-else>
-
-      <!-- Empty -->
+      <!-- Empty state -->
       <UCard v-if="audits.length === 0" class="py-16 text-center">
-        <Vue3Lottie animation-link="/animations/animation-bot.json" :height="140" :width="140" :loop="true" :auto-play="true" class="mx-auto" />
-        <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No audits yet') }}</h3>
-        <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Run your first audit to see history.') }}</p>
+        <Vue3Lottie
+          animation-link="/animations/animation-bot.json"
+          :height="160"
+          :width="160"
+          :loop="true"
+          :auto-play="true"
+          class="mx-auto"
+        />
+        <h3 class="mt-4 text-xl font-bold text-(--ui-text-highlighted)">
+          {{ t('No audits yet') }}
+        </h3>
+        <p class="mt-2 text-sm text-(--ui-text-muted)">
+          {{ t('Run your first audit to start tracking your improvement journey.') }}
+        </p>
+        <UButton
+          class="mt-6"
+          size="lg"
+          icon="i-lucide-scan"
+          :to="`/projects/${projectId}/pages/${pageId}`"
+        >
+          {{ t('Audit this page') }}
+        </UButton>
       </UCard>
 
       <template v-else>
-        <!-- Hero stats -->
-        <div class="grid gap-4 sm:grid-cols-2">
-          <UCard class="border-green-500/20 bg-green-500/5">
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-trophy" class="h-4 w-4 text-green-500" />
-              <p class="text-xs font-medium text-green-600">{{ t('Best score achieved') }}</p>
-            </div>
-            <p class="mt-2 text-4xl font-bold text-green-500">{{ bestScore ?? '--' }}</p>
-            <p class="mt-1 text-xs text-(--ui-text-dimmed)">{{ t('out of 100') }}</p>
-          </UCard>
+        <!-- ─── HERO CARD ──────────────────────────────────────────── -->
+        <AuditHistoryHero
+          :latest-score="latestScore"
+          :best-score="bestScore"
+          :total-improvement="totalImprovement"
+          :completed-audits-count="completedAudits.length"
+          :latest-audit-id="latestAuditId"
+          :page-url="pageUrl"
+          :chart-audits="chartAudits"
+          :velocity="velocity"
+          :project-id="projectId"
+          :page-id="pageId"
+          @new-audit="showRescanModal = true"
+          @chart-click="onChartClick"
+        />
 
-          <UCard>
-            <div class="flex items-center gap-2">
-              <UIcon
-                :name="totalImprovement >= 0 ? 'i-lucide-trending-up' : 'i-lucide-trending-down'"
-                class="h-4 w-4"
-                :class="totalImprovement >= 0 ? 'text-green-500' : 'text-red-500'"
-              />
-              <p class="text-xs font-medium text-(--ui-text-muted)">{{ t('Journey so far') }}</p>
-            </div>
-            <div class="mt-2 flex items-baseline gap-3">
-              <span class="text-sm text-(--ui-text-dimmed)">{{ firstScore ?? '--' }}</span>
-              <UIcon name="i-lucide-arrow-right" class="h-3.5 w-3.5 text-(--ui-text-dimmed)" />
-              <span class="text-3xl font-bold" :class="latestScore != null ? scoreColorClass(latestScore) : ''">{{ latestScore ?? '--' }}</span>
-              <span
-                v-if="totalImprovement !== 0"
-                class="rounded-full px-2 py-0.5 text-xs font-bold"
-                :class="totalImprovement > 0 ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'"
-              >
-                {{ totalImprovement > 0 ? '+' : '' }}{{ totalImprovement }} {{ t('points') }}
-              </span>
-            </div>
-            <p class="mt-1 text-xs text-(--ui-text-dimmed)">
-              {{ t('{count} audits completed', { count: completedAudits.length }) }}
-            </p>
-          </UCard>
-        </div>
+        <!-- ─── AUDIT LIST ──────────────────────────────────────────── -->
+        <div>
+          <div class="mb-3 flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-(--ui-text-highlighted)">
+              {{ t('Audit runs') }}
+              <span class="ml-1.5 text-xs font-normal text-(--ui-text-dimmed)">({{ audits.length }})</span>
+            </h3>
+            <USelect
+              v-model="sortBy"
+              size="xs"
+              :items="sortOptions"
+              class="w-36"
+            />
+          </div>
 
-        <!-- Chart -->
-        <UCard v-if="chartAudits.length >= 2">
-          <h3 class="mb-4 text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Score trend') }}</h3>
-          <ScoreTrendChart :data="chartAudits" :height="200" clickable @point-click="onChartClick" />
-        </UCard>
-
-        <!-- Rocket motivation -->
-        <div class="flex flex-col items-center">
-          <Vue3Lottie animation-link="/animations/RocketLP.json" :height="100" :width="100" :loop="true" :auto-play="true" />
-          <p class="mt-2 text-sm font-medium text-(--ui-text-muted)">{{ t('Keep auditing to track your improvement journey!') }}</p>
-        </div>
-
-        <!-- Audit list -->
-        <div class="space-y-3">
-          <UCard
-            v-for="audit in audits"
-            :key="audit.id"
-            class="group cursor-pointer transition-all hover:shadow-md"
-            @click="router.push(`/projects/${projectId}/pages/${pageId}/audits/${audit.id}`)"
-          >
-            <div class="flex items-center gap-4">
-              <div
-                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2"
-                :class="audit.overall_score != null ? scoreCircleClass(audit.overall_score) : 'border-(--ui-border) text-(--ui-text-dimmed)'"
-              >
-                <span class="text-sm font-bold">{{ audit.overall_score ?? '--' }}</span>
-              </div>
-
-              <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-2">
-                  <span class="text-sm font-medium text-(--ui-text-highlighted)">{{ formatDateTime(audit.created_at) }}</span>
-                  <UBadge v-if="audit.is_latest" color="success" variant="subtle" size="xs">{{ t('Latest') }}</UBadge>
-                  <UBadge v-if="audit.status === 'failed'" color="error" variant="subtle" size="xs">{{ t('Failed') }}</UBadge>
-                </div>
-                <div class="mt-0.5 flex items-center gap-3 text-xs text-(--ui-text-dimmed)">
-                  <span v-if="audit.issues_count != null">{{ audit.issues_count }} {{ audit.issues_count === 1 ? 'issue' : 'issues' }}</span>
-                  <span v-if="audit.delta != null" class="font-medium" :class="audit.delta > 0 ? 'text-green-500' : audit.delta < 0 ? 'text-red-500' : ''">
-                    {{ audit.delta > 0 ? '+' : '' }}{{ audit.delta }} {{ t('vs previous') }}
-                  </span>
-                </div>
-              </div>
-
-              <UIcon name="i-lucide-chevron-right" class="h-4 w-4 shrink-0 text-(--ui-text-dimmed) transition group-hover:translate-x-0.5" />
-            </div>
-          </UCard>
+          <div class="space-y-1.5">
+            <AuditHistoryCard
+              v-for="audit in sortedAudits"
+              :key="audit.id"
+              :audit="audit"
+              :project-id="projectId"
+              :page-id="pageId"
+              @open="navigateToAudit"
+            />
+          </div>
         </div>
       </template>
     </UiPageShell>
+
+    <QuickRescanModal
+      v-model="showRescanModal"
+      :page-id="pageId"
+      @started="handleRescanStarted"
+    />
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
-import { Vue3Lottie } from 'vue3-lottie'
+import type { VelocityData } from '~/components/audit/AuditVelocity.vue'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -112,18 +94,10 @@ const route = useRoute()
 const { $api } = useApi()
 const apiError = useApiError()
 const { setNavbar } = usePageNavbar()
-const { formatDateTime } = useFormatters()
+const { formatDateTime, formatRelativeDate } = useFormatters()
 
 const projectId = route.params.id as string
 const pageId = route.params.pageId as string
-
-onMounted(() => {
-  setNavbar({
-    title: t('Audit History'),
-    showBack: true,
-    backTo: `/projects/${projectId}/pages/${pageId}`,
-  })
-})
 
 interface AuditRow {
   id: string
@@ -139,32 +113,40 @@ interface AuditRow {
 
 const audits = ref<AuditRow[]>([])
 const loading = ref(true)
+const pageUrl = ref<string | null>(null)
+const showRescanModal = ref(false)
 
-function scoreColorClass(score: number): string {
-  if (score >= 80) return 'text-green-500'
-  if (score >= 50) return 'text-yellow-500'
-  return 'text-red-500'
-}
+type SortKey = 'date_desc' | 'date_asc' | 'score_desc' | 'score_asc'
+const sortBy = ref<SortKey>('date_desc')
 
-function scoreCircleClass(score: number): string {
-  if (score >= 80) return 'border-green-500 text-green-500'
-  if (score >= 50) return 'border-yellow-500 text-yellow-500'
-  return 'border-red-500 text-red-500'
-}
+const sortOptions = computed(() => [
+  { label: t('Newest first'), value: 'date_desc' as SortKey },
+  { label: t('Oldest first'), value: 'date_asc' as SortKey },
+  { label: t('Highest score'), value: 'score_desc' as SortKey },
+  { label: t('Lowest score'), value: 'score_asc' as SortKey },
+])
 
-const completedAudits = computed(() => audits.value.filter(a => a.status === 'complete' && a.overall_score != null))
-const scores = computed(() => completedAudits.value.map(a => a.overall_score!))
-const bestScore = computed(() => scores.value.length > 0 ? Math.max(...scores.value) : null)
-const latestScore = computed(() => completedAudits.value[0]?.overall_score ?? null)
-const firstScore = computed(() => completedAudits.value.length > 0 ? (completedAudits.value[completedAudits.value.length - 1]?.overall_score ?? null) : null)
-const totalImprovement = computed(() => {
-  if (firstScore.value == null || latestScore.value == null) return 0
-  return latestScore.value - firstScore.value
+onMounted(() => {
+  setNavbar({
+    title: t('Audit History'),
+    showBack: true,
+    backTo: `/projects/${projectId}/pages/${pageId}`,
+  })
 })
 
 onMounted(async () => {
-  await loadAudits()
+  await Promise.all([loadPage(), loadAudits()])
 })
+
+async function loadPage() {
+  try {
+    const data = await $api<{ data: { url: string } }>(`/pages/${pageId}`)
+    pageUrl.value = data.data.url
+  }
+  catch {
+    // non-critical — page preview is optional
+  }
+}
 
 async function loadAudits() {
   try {
@@ -197,6 +179,23 @@ async function loadAudits() {
   }
 }
 
+const completedAudits = computed(() =>
+  audits.value.filter(a => a.status === 'complete' && a.overall_score != null),
+)
+const scores = computed(() => completedAudits.value.map(a => a.overall_score!))
+const bestScore = computed(() => scores.value.length > 0 ? Math.max(...scores.value) : null)
+const latestScore = computed(() => completedAudits.value[0]?.overall_score ?? null)
+const latestAuditId = computed(() => completedAudits.value[0]?.id ?? null)
+const firstScore = computed(() =>
+  completedAudits.value.length > 0
+    ? (completedAudits.value[completedAudits.value.length - 1]?.overall_score ?? null)
+    : null,
+)
+const totalImprovement = computed(() => {
+  if (firstScore.value == null || latestScore.value == null) return 0
+  return latestScore.value - firstScore.value
+})
+
 const chartAudits = computed(() =>
   audits.value
     .filter(a => a.status === 'complete' && a.overall_score != null)
@@ -204,10 +203,58 @@ const chartAudits = computed(() =>
     .reverse(),
 )
 
+const heroGradient = computed(() => {
+  if (latestScore.value == null) return ''
+  if (latestScore.value >= 80) return 'bg-gradient-to-br from-green-500/5 via-transparent to-transparent'
+  if (latestScore.value >= 50) return 'bg-gradient-to-br from-yellow-500/5 via-transparent to-transparent'
+  return 'bg-gradient-to-br from-red-500/5 via-transparent to-transparent'
+})
+
+const velocity = computed((): VelocityData | null => {
+  const pts = chartAudits.value
+  if (pts.length < 3) return null
+
+  const perAudit = totalImprovement.value / Math.max(pts.length - 1, 1)
+  const rounded = Math.round(perAudit * 10) / 10
+
+  let trend: 'improving' | 'stable' | 'declining'
+  if (rounded > 0.5) trend = 'improving'
+  else if (rounded < -0.5) trend = 'declining'
+  else trend = 'stable'
+
+  const auditsTo85 =
+    trend === 'improving' && latestScore.value != null && latestScore.value < 85 && perAudit > 0
+      ? Math.ceil((85 - latestScore.value) / perAudit)
+      : null
+
+  return {
+    score_per_audit: rounded,
+    audits_to_85: auditsTo85,
+    trend,
+    data_points: pts.length,
+  }
+})
+
+const sortedAudits = computed(() => {
+  const copy = [...audits.value]
+  if (sortBy.value === 'date_asc') return copy.reverse()
+  if (sortBy.value === 'score_desc') return copy.sort((a, b) => (b.overall_score ?? -1) - (a.overall_score ?? -1))
+  if (sortBy.value === 'score_asc') return copy.sort((a, b) => (a.overall_score ?? 101) - (b.overall_score ?? 101))
+  return copy // date_desc is default from API
+})
+
+function navigateToAudit(auditId: string) {
+  router.push(`/projects/${projectId}/pages/${pageId}/audits/${auditId}`)
+}
+
 function onChartClick(index: number) {
   const audit = chartAudits.value[index]
   if (audit?.id) {
-    router.push(`/projects/${projectId}/pages/${pageId}/audits/${audit.id}`)
+    navigateToAudit(audit.id)
   }
+}
+
+function handleRescanStarted(auditId: string) {
+  router.push(`/projects/${projectId}/pages/${pageId}?audit=${auditId}`)
 }
 </script>
