@@ -23,10 +23,17 @@
     <!-- Report -->
     <div v-else-if="audit">
       <Teleport to="#navbar-actions">
-        <UButton variant="outline" size="lg" icon="i-lucide-refresh-cw" @click="showRescanModal = true">
-          {{ t('Re-scan') }}
-        </UButton>
+        <div class="flex items-center gap-2">
+          <UButton v-if="isPaid" variant="outline" size="lg" icon="i-lucide-share-2" @click="showShareDialog = true">
+            {{ t('Share') }}
+          </UButton>
+          <UButton variant="outline" size="lg" icon="i-lucide-refresh-cw" @click="showRescanModal = true">
+            {{ t('Re-scan') }}
+          </UButton>
+        </div>
       </Teleport>
+
+      <AuditShareAuditDialog v-if="isPaid" v-model:open="showShareDialog" :audit-id="auditId" />
 
       <!-- Audit metadata chips -->
       <div class="mb-8 flex flex-wrap items-center gap-2">
@@ -216,7 +223,7 @@ const route = useRoute()
 const { $api } = useApi()
 const apiError = useApiError()
 const { formatDateTime, formatMs } = useFormatters()
-const { isFree } = usePlan()
+const { isFree, isPaid } = usePlan()
 const { setNavbar } = usePageNavbar()
 
 const projectId = route.params.id as string
@@ -297,6 +304,7 @@ const velocity = ref<VelocityData | null>(null)
 const loading = ref(true)
 const showSuccess = ref(false)
 const showRescanModal = ref(false)
+const showShareDialog = ref(false)
 
 const activeScan = computed(() => scanStore.scanForAudit(auditId))
 
