@@ -25,7 +25,7 @@
           class="text-xs font-semibold"
           :class="audit.delta > 0 ? 'text-green-500' : 'text-red-500'"
         >
-          {{ audit.delta > 0 ? '+' : '' }}{{ audit.delta }} pts
+          {{ audit.delta > 0 ? '+' : '' }}{{ audit.delta }} {{ t('pts') }}
         </span>
       </div>
       <div class="mt-0.5 flex flex-wrap items-center gap-x-3 text-xs text-(--ui-text-dimmed)">
@@ -71,13 +71,15 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { formatDateTime, formatRelativeDate } = useFormatters()
+
+const triggerLabels = computed((): Record<string, string> => ({
+  manual: t('Manual'),
+  scheduled: t('Scheduled'),
+  api: t('API'),
+}))
+
 function triggerLabel(trigger: string): string {
-  const labels: Record<string, () => string> = {
-    manual: () => t('Manual'),
-    scheduled: () => t('Scheduled'),
-    api: () => t('API'),
-  }
-  return labels[trigger]?.() ?? trigger
+  return triggerLabels.value[trigger] ?? trigger
 }
 
 

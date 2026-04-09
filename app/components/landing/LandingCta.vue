@@ -10,9 +10,7 @@
 
     <div class="relative z-10 mx-auto max-w-4xl text-center">
       <div class="mb-8 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-5 py-2 shadow-[0_0_30px_rgba(16,185,129,0.15)]">
-        <ClientOnly>
-          <Vue3Lottie animationLink="/animations/success.json" :height="22" :width="22" />
-        </ClientOnly>
+        <UiLottie src="/animations/success.json" :height="22" :width="22" />
         <span class="text-sm font-semibold text-emerald-400">{{ t('Free during beta — no card required') }}</span>
       </div>
 
@@ -43,8 +41,6 @@
 </template>
 
 <script setup lang="ts">
-import { Vue3Lottie } from 'vue3-lottie'
-
 const { t } = useI18n()
 
 const auditButtonLabel = computed(() => t("Audit my page — it's free"))

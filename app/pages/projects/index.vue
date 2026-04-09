@@ -30,7 +30,7 @@
 
       <!-- Empty state -->
       <div v-else-if="projects.length === 0" class="rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
-        <Vue3Lottie animation-link="/animations/animation-bot.json" :height="140" :width="140" :loop="true" :auto-play="true" class="mx-auto" />
+        <UiLottie src="/animations/animation-bot.json" class="mx-auto" />
         <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No projects yet') }}</h3>
         <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Create a project folder to group pages you want to audit.') }}</p>
         <UButton class="mt-6" size="lg" icon="i-lucide-plus" @click="showCreateDialog = true">
@@ -165,7 +165,6 @@
 </template>
 
 <script setup lang="ts">
-import { Vue3Lottie } from 'vue3-lottie'
 import { scoreColor } from '~/constants/audit'
 
 definePageMeta({ middleware: 'auth' })

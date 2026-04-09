@@ -5,14 +5,7 @@
     <UiPageShell v-else>
       <!-- Empty state -->
       <UCard v-if="audits.length === 0" class="py-16 text-center">
-        <Vue3Lottie
-          animation-link="/animations/animation-bot.json"
-          :height="160"
-          :width="160"
-          :loop="true"
-          :auto-play="true"
-          class="mx-auto"
-        />
+        <UiLottie src="/animations/animation-bot.json" :height="160" :width="160" class="mx-auto" />
         <h3 class="mt-4 text-xl font-bold text-(--ui-text-highlighted)">
           {{ t('No audits yet') }}
         </h3>

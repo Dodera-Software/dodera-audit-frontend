@@ -20,19 +20,12 @@
       <div class="flex flex-1 flex-col items-center justify-center">
         <div class="relative">
           <div class="absolute inset-0 m-auto h-40 w-40 rounded-full bg-emerald-500/15 blur-2xl" />
-          <ClientOnly>
-            <Vue3Lottie
-              animation-link="/animations/animation-bot.json"
-              :height="190"
-              :width="190"
-              :loop="true"
-              :auto-play="true"
-              class="relative drop-shadow-2xl"
-            />
-            <template #fallback>
-              <div class="h-[190px] w-[190px]" />
-            </template>
-          </ClientOnly>
+          <UiLottie
+            src="/animations/animation-bot.json"
+            :height="190"
+            :width="190"
+            class="relative drop-shadow-2xl"
+          />
         </div>
 
         <h1 class="mt-3 text-center text-4xl font-bold leading-tight tracking-tight text-white">
@@ -70,7 +63,6 @@
 </template>
 
 <script setup lang="ts">
-import { Vue3Lottie } from 'vue3-lottie'
 
 const { t } = useI18n()
 const currentYear = new Date().getFullYear()

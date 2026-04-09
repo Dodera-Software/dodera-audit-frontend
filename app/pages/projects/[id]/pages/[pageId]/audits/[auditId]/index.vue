@@ -7,13 +7,7 @@
 
     <!-- Success celebration -->
     <div v-else-if="showSuccess" class="flex flex-col items-center justify-center py-20">
-      <Vue3Lottie
-        animation-link="/animations/success.json"
-        :height="280"
-        :width="280"
-        :loop="false"
-        :auto-play="true"
-      />
+      <UiLottie src="/animations/success.json" :height="280" :width="280" :loop="false" />
       <h1 class="mt-6 text-3xl font-bold text-(--ui-text-highlighted)">{{ t('Your page audit is ready!') }}</h1>
       <p class="mt-2 text-(--ui-text-muted)">{{ t('Taking you to your results...') }}</p>
     </div>
@@ -192,7 +186,6 @@
 </template>
 
 <script setup lang="ts">
-import { Vue3Lottie } from 'vue3-lottie'
 import ScanProgress from '~/components/audit/ScanProgress.vue'
 import ScoreDashboard from '~/components/audit/ScoreDashboard.vue'
 import FiveSecondTest from '~/components/audit/FiveSecondTest.vue'

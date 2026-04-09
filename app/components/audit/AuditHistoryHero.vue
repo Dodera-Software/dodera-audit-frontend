@@ -39,7 +39,7 @@
                 class="text-base font-bold"
                 :class="props.totalImprovement > 0 ? 'text-green-500' : 'text-red-500'"
               >
-                {{ props.totalImprovement > 0 ? '+' : '' }}{{ props.totalImprovement }} pts
+                {{ props.totalImprovement > 0 ? '+' : '' }}{{ props.totalImprovement }} {{ t('pts') }}
               </p>
             </div>
             <div>
@@ -60,13 +60,7 @@
             @point-click="(i) => emit('chart-click', i)"
           />
           <template v-else>
-            <Vue3Lottie
-              animation-link="/animations/RocketLP.json"
-              :height="100"
-              :width="100"
-              :loop="true"
-              :auto-play="true"
-            />
+            <UiLottie src="/animations/RocketLP.json" :height="100" :width="100" />
             <p class="mt-2 text-center text-sm font-medium text-(--ui-text-muted)">
               {{ t('Run more audits to see your trend') }}
             </p>
@@ -122,7 +116,6 @@
 </template>
 
 <script setup lang="ts">
-import { Vue3Lottie } from 'vue3-lottie'
 import { scoreColor } from '~/constants/audit'
 import type { VelocityData } from '~/components/audit/AuditVelocity.vue'
 
@@ -148,10 +141,14 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { scoreLabel } = useScoreLabel()
 
+const gradientMap = [
+  { threshold: 80, class: 'bg-gradient-to-br from-green-500/5 via-transparent to-transparent' },
+  { threshold: 50, class: 'bg-gradient-to-br from-yellow-500/5 via-transparent to-transparent' },
+  { threshold: 0,  class: 'bg-gradient-to-br from-red-500/5 via-transparent to-transparent' },
+]
+
 const heroGradient = computed(() => {
   if (props.latestScore == null) return ''
-  if (props.latestScore >= 80) return 'bg-gradient-to-br from-green-500/5 via-transparent to-transparent'
-  if (props.latestScore >= 50) return 'bg-gradient-to-br from-yellow-500/5 via-transparent to-transparent'
-  return 'bg-gradient-to-br from-red-500/5 via-transparent to-transparent'
+  return gradientMap.find(({ threshold }) => props.latestScore! >= threshold)?.class ?? ''
 })
 </script>

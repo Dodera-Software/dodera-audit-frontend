@@ -50,9 +50,7 @@
               </span>
             </div>
             <div class="mt-8 flex justify-center opacity-75 md:justify-start">
-                <ClientOnly>
-                  <Vue3Lottie animationLink="/animations/searching.json" :height="150" :width="240" />
-                </ClientOnly>
+                <UiLottie src="/animations/searching.json" :height="150" :width="240" />
             </div>
           </div>
 
@@ -108,8 +106,6 @@
 </template>
 
 <script setup lang="ts">
-import { Vue3Lottie } from 'vue3-lottie'
-
 const { t } = useI18n()
 
 const tickerItems = computed(() => [

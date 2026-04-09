@@ -24,7 +24,7 @@
     <div v-else-if="project">
       <!-- Pages list -->
       <div v-if="project.pages.length === 0" class="rounded-xl border border-dashed border-(--ui-border) py-16 text-center">
-        <Vue3Lottie animation-link="/animations/animation-bot.json" :height="140" :width="140" :loop="true" :auto-play="true" class="mx-auto" />
+        <UiLottie src="/animations/animation-bot.json" class="mx-auto" />
         <h3 class="mt-4 text-lg font-semibold text-(--ui-text-highlighted)">{{ t('No pages yet') }}</h3>
         <p class="mt-2 text-sm text-(--ui-text-muted)">{{ t('Add a page URL to start auditing. Each page tracks its own audit history and issues.') }}</p>
         <UButton class="mt-6" size="xl" icon="i-lucide-plus" @click="showAddPageDialog = true">
@@ -187,8 +187,6 @@
 </template>
 
 <script setup lang="ts">
-import { Vue3Lottie } from 'vue3-lottie'
-
 import { scoreCircleClass } from '~/constants/audit'
 
 definePageMeta({ middleware: 'auth' })

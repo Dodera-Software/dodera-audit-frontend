@@ -11,12 +11,10 @@
       v-if="show"
       class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-(--ui-bg)"
     >
-      <Vue3Lottie
+      <UiLottie
         :animation-data="bellAnimation"
         :height="260"
         :width="260"
-        :loop="true"
-        :auto-play="true"
       />
       <h1 class="mt-6 text-3xl font-bold text-(--ui-text-highlighted)">{{ title }}</h1>
       <p class="mt-2 text-(--ui-text-muted)">{{ subtitle }}</p>
@@ -25,7 +23,6 @@
 </template>
 
 <script setup lang="ts">
-import { Vue3Lottie } from 'vue3-lottie'
 import bellAnimation from '~/assets/animations/bell.json'
 
 interface Props {
