@@ -109,6 +109,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
 const toast = useToast()
+const { confirm } = useConfirm()
 const { isMax } = usePlan()
 const { keyStatus, loading: keyLoading, saving: keySaving, fetchStatus, saveKey, removeKey } = useOpenAiKey()
 
@@ -151,6 +152,14 @@ async function handleSaveKey() {
 }
 
 async function handleRemoveKey() {
+  const confirmed = await confirm({
+    title: t('Remove API key?'),
+    description: t('Your OpenAI API key will be disconnected. Unlimited audits will no longer be available.'),
+    confirmLabel: t('Remove key'),
+    color: 'error',
+    icon: 'i-lucide-trash-2',
+  })
+  if (!confirmed) return
   try {
     await removeKey()
     toast.add({ title: t('API key removed.'), color: 'success' })
