@@ -107,6 +107,9 @@ const googleLoading = ref(false)
 async function handleGoogleRegister() {
   googleLoading.value = true
   try {
+    if (invitationToken) {
+      sessionStorage.setItem('invitation_redirect', `/invitation/${invitationToken}`)
+    }
     await googleRedirect()
   }
   catch {

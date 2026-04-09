@@ -30,7 +30,10 @@ onMounted(async () => {
       headers: { Authorization: `Bearer ${queryToken}`, Accept: 'application/json' },
     })
     authStore.setUser(data.data)
-    navigateTo('/dashboard')
+
+    const pendingRedirect = sessionStorage.getItem('invitation_redirect')
+    sessionStorage.removeItem('invitation_redirect')
+    navigateTo(pendingRedirect || '/dashboard')
   }
   catch {
     token.value = null

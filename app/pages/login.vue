@@ -81,6 +81,10 @@ onMounted(() => {
 async function handleGoogleLogin() {
   googleLoading.value = true
   try {
+    const redirect = route.query.redirect as string | undefined
+    if (redirect) {
+      sessionStorage.setItem('invitation_redirect', redirect)
+    }
     await googleRedirect()
   }
   catch {
