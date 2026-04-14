@@ -124,7 +124,7 @@
           </UButton>
 
           <UButton
-            v-if="user?.team_role === 'owner'"
+            v-if="user?.team_role === 'owner' && isPaid"
             icon="i-lucide-user-plus"
             variant="ghost"
             color="neutral"
@@ -152,6 +152,7 @@ const { t } = useI18n()
 const authStore = useAuthStore()
 const { confirm } = useConfirm()
 const { workspaces, activeWorkspace, switching, leaving, fetchWorkspaces, switchWorkspace, leaveWorkspace } = useWorkspace()
+const { isPaid } = usePlan()
 
 const user = computed(() => authStore.user)
 const teamPopoverOpen = ref(false)

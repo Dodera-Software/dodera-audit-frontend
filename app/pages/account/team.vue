@@ -64,6 +64,7 @@ const authStore = useAuthStore()
 const { $api } = useApi()
 const { setNavbar } = usePageNavbar()
 const { confirm } = useConfirm()
+const { fetchWorkspaces } = useWorkspace()
 const {
   fetchOwnedTeam,
   fetchMembership,
@@ -149,6 +150,12 @@ async function handleCreateTeam(name: string) {
   creatingTeam.value = true
   try {
     team.value = await createTeam(name)
+
+    // Refresh user (team_role changes) and workspace list in sidebar
+    const userData = await $api<{ data: User }>('/auth/me')
+    if (userData.data) authStore.setUser(userData.data)
+    await fetchWorkspaces()
+
     toast.add({ title: t('Team created!'), color: 'success' })
   }
   catch {
@@ -234,6 +241,7 @@ async function handleDeleteTeam() {
     team.value = null
     const userData = await $api<{ data: User }>('/auth/me')
     if (userData.data) authStore.setUser(userData.data)
+    await fetchWorkspaces()
     toast.add({ title: t('Team deleted.'), color: 'success' })
   }
   catch {

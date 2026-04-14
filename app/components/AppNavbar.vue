@@ -81,10 +81,10 @@
       <!-- Page-specific action buttons injected by each page -->
       <div id="navbar-actions" class="flex items-center gap-2" />
 
-      <!-- Upgrade (free plan only) -->
+      <!-- Upgrade (free plan only, hidden for team members) -->
       <ClientOnly>
         <UButton
-          v-if="isFree"
+          v-if="isFree && activeWorkspace?.role !== 'member'"
           size="md"
           variant="soft"
           icon="i-lucide-zap"
@@ -161,6 +161,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 const { navbarState } = usePageNavbar()
 const { isFree } = usePlan()
+const { activeWorkspace } = useWorkspace()
 const { t } = useI18n()
 const { isCollapsed: isSidebarCollapsed, toggle: toggleSidebar } = useSidebarState()
 
