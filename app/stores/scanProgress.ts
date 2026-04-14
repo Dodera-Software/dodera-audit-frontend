@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import type { ScanStepStatus } from '~/constants/scan'
 import { SCAN_STEP_KEYS } from '~/constants/scan'
+import { AuditStatus } from '~/types'
 
 export interface ExplorationStep {
   stepNumber: number
@@ -16,7 +17,7 @@ interface ActiveScan {
   auditId: string
   projectId: string
   url: string
-  status: 'scanning' | 'complete' | 'failed'
+  status: AuditStatus.Scanning | AuditStatus.Complete | AuditStatus.Failed
   currentStep: string
   stepStatuses: Record<string, ScanStepStatus>
   // Exploration tracking
@@ -52,7 +53,7 @@ export const useScanProgressStore = defineStore('scanProgress', {
   }),
 
   getters: {
-    isScanning: (state) => state.activeScan?.status === 'scanning',
+    isScanning: (state) => state.activeScan?.status === AuditStatus.Scanning,
 
     scanForAudit: (state) => (auditId: string) => {
       return state.activeScan?.auditId === auditId ? state.activeScan : null
@@ -69,7 +70,7 @@ export const useScanProgressStore = defineStore('scanProgress', {
         auditId,
         projectId,
         url,
-        status: 'scanning',
+        status: AuditStatus.Scanning,
         currentStep: 'validating',
         stepStatuses: buildStepStatuses('validating'),
         explorationSteps: [],
@@ -133,7 +134,7 @@ export const useScanProgressStore = defineStore('scanProgress', {
 
     handleScanComplete(auditId: string) {
       if (this.activeScan?.auditId !== auditId) return
-      this.activeScan.status = 'complete'
+      this.activeScan.status = AuditStatus.Complete
       this.activeScan.currentStep = 'assembling'
       this.activeScan.stepStatuses = Object.fromEntries(
         SCAN_STEP_KEYS.map(k => [k, 'done' as ScanStepStatus]),
@@ -142,7 +143,7 @@ export const useScanProgressStore = defineStore('scanProgress', {
 
     handleScanFailed(auditId: string, error: string) {
       if (this.activeScan?.auditId !== auditId) return
-      this.activeScan.status = 'failed'
+      this.activeScan.status = AuditStatus.Failed
       this.activeScan.error = error
       if (this.activeScan.currentStep) {
         this.activeScan.stepStatuses[this.activeScan.currentStep] = 'failed'

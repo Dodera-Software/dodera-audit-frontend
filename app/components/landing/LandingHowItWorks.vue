@@ -31,17 +31,13 @@
       </div>
 
       <div class="mt-24 flex justify-center">
-        <ClientOnly>
-          <Vue3Lottie animationLink="/animations/RocketLP.json" :height="180" :width="180" />
-        </ClientOnly>
+        <UiLottie src="/animations/RocketLP.json" :height="180" :width="180" />
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { Vue3Lottie } from 'vue3-lottie'
-
 const { t } = useI18n()
 
 const steps = computed(() => [

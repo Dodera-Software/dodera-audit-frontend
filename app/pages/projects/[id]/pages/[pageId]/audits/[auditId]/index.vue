@@ -7,13 +7,7 @@
 
     <!-- Success celebration -->
     <div v-else-if="showSuccess" class="flex flex-col items-center justify-center py-20">
-      <Vue3Lottie
-        animation-link="/animations/success.json"
-        :height="280"
-        :width="280"
-        :loop="false"
-        :auto-play="true"
-      />
+      <UiLottie src="/animations/success.json" :height="280" :width="280" :loop="false" />
       <h1 class="mt-6 text-3xl font-bold text-(--ui-text-highlighted)">{{ t('Your page audit is ready!') }}</h1>
       <p class="mt-2 text-(--ui-text-muted)">{{ t('Taking you to your results...') }}</p>
     </div>
@@ -199,7 +193,6 @@
 </template>
 
 <script setup lang="ts">
-import { Vue3Lottie } from 'vue3-lottie'
 import ScanProgress from '~/components/audit/ScanProgress.vue'
 import ScoreDashboard from '~/components/audit/ScoreDashboard.vue'
 import FiveSecondTest from '~/components/audit/FiveSecondTest.vue'
@@ -213,6 +206,7 @@ import type { DeltaSummary } from '~/components/audit/AuditDeltaSummary.vue'
 import AuditVelocity from '~/components/audit/AuditVelocity.vue'
 import type { VelocityData } from '~/components/audit/AuditVelocity.vue'
 import QuickRescanModal from '~/components/audit/QuickRescanModal.vue'
+import { AuditStatus } from '~/types'
 import PlanGate from '~/components/billing/PlanGate.vue'
 import UpgradeModal from '~/components/billing/UpgradeModal.vue'
 
@@ -318,12 +312,12 @@ watchEffect(() => {
 })
 
 onMounted(async () => {
-  if (activeScan.value && activeScan.value.status === 'scanning') {
+  if (activeScan.value && activeScan.value.status === AuditStatus.Scanning) {
     loading.value = false
     return
   }
 
-  if (activeScan.value && activeScan.value.status === 'complete') {
+  if (activeScan.value && activeScan.value.status === AuditStatus.Complete) {
     scanStore.clearScan()
   }
 
@@ -331,7 +325,7 @@ onMounted(async () => {
 
   // If the audit is still in progress (e.g. navigated here from re-scan or page refresh),
   // start tracking it in the scan store so the progress UI shows
-  if (audit.value && ['pending', 'scanning', 'analyzing'].includes(audit.value.status)) {
+  if (audit.value && [AuditStatus.Pending, AuditStatus.Scanning, AuditStatus.Analyzing].includes(audit.value.status as AuditStatus)) {
     scanStore.startScan(auditId, pageId)
   }
 
@@ -366,7 +360,7 @@ function handleRescanStarted(newAuditId: string) {
 }
 
 watch(() => activeScan.value?.status, async (status) => {
-  if (status !== 'complete') return
+  if (status !== AuditStatus.Complete) return
 
   showSuccess.value = true
   await fetchAuditData()

@@ -7,7 +7,7 @@
       <USelect v-model="filters.effort" :items="effortOptions" class="w-36" />
       <UButton
         :variant="filters.quickWins ? 'solid' : 'outline'"
-        size="sm"
+        size="md"
         icon="i-lucide-zap"
         @click="filters.quickWins = !filters.quickWins"
       >
