@@ -16,7 +16,7 @@ export function useWorkspace() {
   const toast = useToast()
   const { t } = useI18n()
 
-  const workspaces = ref<Workspace[]>([])
+  const workspaces = useState<Workspace[]>('workspaces', () => [])
   const loading = ref(false)
   const switching = ref(false)
   const leaving = ref<string | null>(null)
