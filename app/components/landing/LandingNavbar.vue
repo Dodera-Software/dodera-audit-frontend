@@ -38,6 +38,6 @@ const { t } = useI18n()
 const navLinks = computed(() => [
   { label: t('How it works'), href: '#how-it-works' },
   { label: t('Features'), href: '#features' },
-  { label: t('Pricing'), href: '/pricing' },
+  { label: t('Pricing'), href: '#pricing' },
 ])
 </script>

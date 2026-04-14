@@ -11,28 +11,28 @@
     <div class="relative z-10 mx-auto max-w-4xl text-center">
       <div class="mb-8 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-5 py-2 shadow-[0_0_30px_rgba(16,185,129,0.15)]">
         <UiLottie src="/animations/success.json" :height="22" :width="22" />
-        <span class="text-sm font-semibold text-emerald-400">{{ t('Free during beta — no card required') }}</span>
+        <span class="text-sm font-semibold text-emerald-400">{{ t('Sign up for free — no card required') }}</span>
       </div>
 
       <h2 class="text-5xl font-black leading-[1.0] tracking-tight text-white sm:text-6xl md:text-7xl">
-        {{ t('Stop guessing.') }}<br />
+        {{ t('Your next audit is') }}<br />
         <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
-          {{ t('Start converting.') }}
+          {{ t('one URL away.') }}
         </span>
       </h2>
 
       <p class="mx-auto mt-7 max-w-xl text-xl text-zinc-400">
-        {{ t('Paste your URL and get a full AI audit in under 3 minutes. No setup. No code. No credit card.') }}
+        {{ t('Paste your URL and get a full AI audit in under 3 minutes.') }}
       </p>
 
       <div class="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
         <LandingAuditButton :label="auditButtonLabel" />
-        <NuxtLink
-          to="/pricing"
+        <a
+          href="#pricing"
           class="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/8 px-8 py-5 text-base font-medium text-zinc-200 backdrop-blur transition-all duration-300 hover:border-white/20 hover:bg-white/15 hover:text-white"
         >
           {{ t('View pricing') }}
-        </NuxtLink>
+        </a>
       </div>
 
       <p class="mt-6 text-sm text-zinc-600">{{ t('Results in under 3 minutes. Cancel anytime.') }}</p>
@@ -43,5 +43,5 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
-const auditButtonLabel = computed(() => t("Audit my page — it's free"))
+const auditButtonLabel = computed(() => t('Audit for free'))
 </script>

@@ -38,11 +38,37 @@
             </li>
           </ul>
         </div>
+
+        <!-- Newsletter -->
+        <div>
+          <h4 class="mb-4 text-sm font-semibold text-zinc-300">{{ t('Newsletter') }}</h4>
+          <p class="mb-4 text-sm leading-relaxed text-zinc-500">
+            {{ t('Get audit tips & product updates straight to your inbox.') }}
+          </p>
+          <form class="flex gap-2" @submit.prevent="handleSubscribe">
+            <input
+              v-model="email"
+              type="email"
+              :placeholder="t('Your email')"
+              required
+              class="w-full rounded-xl border border-white/12 bg-black/20 px-3.5 py-2 text-sm text-white placeholder-zinc-500 outline-none backdrop-blur-sm transition-all focus:border-white/25 focus:bg-white/10"
+            />
+            <button
+              type="submit"
+              class="shrink-0 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-400"
+            >
+              {{ t('Subscribe') }}
+            </button>
+          </form>
+        </div>
       </div>
 
       <div class="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row">
         <p class="text-sm text-zinc-400">© {{ currentYear }} {{ t('Dodera Software. All rights reserved.') }}</p>
-        <p class="text-xs text-zinc-500">{{ t('Built with AI. Powered by curiosity.') }}</p>
+        <p class="text-xs text-zinc-500">
+          {{ t('Made with') }} <span class="inline-block animate-pulse">❤️</span> {{ t('by') }}
+          <a href="https://www.doderasoft.com/" target="_blank" rel="noopener" class="text-zinc-400 transition-colors hover:text-white">Dodera Software</a>
+        </p>
       </div>
     </div>
   </footer>
@@ -52,6 +78,13 @@
 const { t } = useI18n()
 
 const currentYear = computed(() => new Date().getFullYear())
+
+const email = ref('')
+
+function handleSubscribe() {
+  // TODO: PBT-XX — wire newsletter subscription endpoint
+  email.value = ''
+}
 
 interface SocialLink {
   label: string
@@ -80,16 +113,7 @@ const footerLinks = computed<FooterColumn[]>(() => [
     heading: t('Product'),
     links: [
       { label: t('Features'), to: '#features' },
-      { label: t('Pricing'), to: '/pricing' },
-      { label: t('Dashboard'), to: '/dashboard' },
-    ],
-  },
-  {
-    heading: t('Company'),
-    links: [
-      { label: t('About'), to: '#' },
-      { label: t('Blog'), to: '#' },
-      { label: t('Careers'), to: '#' },
+      { label: t('Pricing'), to: '#pricing' },
     ],
   },
   {

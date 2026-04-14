@@ -1,5 +1,5 @@
 <template>
-  <section class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pt-28 pb-28">
+  <section class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pt-28 pb-20">
 
     <!-- Background orbs -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
@@ -17,22 +17,23 @@
           <span class="absolute h-2 w-2 animate-ping rounded-full bg-emerald-400/60" />
           <span class="h-2 w-2 rounded-full bg-emerald-400" />
         </span>
-        <span class="text-sm font-semibold text-emerald-400">{{ t('AI-Powered · 7 Persona Agents · Results in <3 min') }}</span>
+        <span class="text-sm font-semibold text-emerald-400">{{ t('AI-Powered · AI Persona Agents · Fast results') }}</span>
       </div>
 
       <!-- Headline -->
       <h1 class="text-5xl font-black leading-[1.0] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-[88px]">
-        {{ t('Your page is') }} <br class="hidden sm:block" />
+        {{ t('Get a full') }}
         <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
-          {{ t('losing visitors.') }}
-        </span><br />
-        {{ t('We show you why.') }}
+          {{ t('AI audit') }}
+        </span><br class="hidden sm:block" />
+        {{ t('of your website.') }}
       </h1>
 
       <!-- Subtitle -->
-      <p class="mx-auto mt-7 max-w-xl text-lg leading-relaxed text-zinc-400 sm:text-xl">
-        {{ t('Drop any URL. Seven AI personas audit your page for clarity, trust, and conversion —') }}
-        {{ t('and hand you a') }} <span class="font-semibold text-zinc-200">{{ t('ranked fix list with exact steps') }}</span>.
+      <p class="mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-zinc-400 sm:text-xl">
+        {{ t('Paste any URL. Our AI personas browse your page') }}
+        <span class="italic text-zinc-300">{{ t('like real visitors would') }}</span>
+        {{ t('and tell you exactly why people leave and what to fix. Score your page with confidence for clarity, trust and conversion.') }}
       </p>
 
       <!-- CTA button -->
@@ -49,12 +50,12 @@
         <span class="hidden h-3 w-px bg-white/15 sm:block" />
           <span class="flex items-center gap-1.5">
             <UIcon name="i-lucide-check-circle" class="h-4 w-4 shrink-0 text-emerald-500" />
-            {{ t('No code changes needed') }}
+            {{ t('No code changes') }}
           </span>
           <span class="hidden h-3 w-px bg-white/15 sm:block" />
         <span class="flex items-center gap-1.5">
           <UIcon name="i-lucide-check-circle" class="h-4 w-4 shrink-0 text-emerald-500" />
-          {{ t('Free during beta') }}
+          {{ t('Free plan') }}
         </span>
       </div>
     </div>
