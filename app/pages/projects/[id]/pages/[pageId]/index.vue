@@ -12,7 +12,7 @@
           :icon="!canAudit ? 'i-lucide-lock' : 'i-lucide-scan'"
           :loading="triggeringAudit"
           :disabled="!!activeScan"
-          @click="!canAudit ? showUpgradeModal = true : triggerAudit()"
+          @click="!canAudit ? showUpgradeModal = true : handleAuditClick()"
         >
           {{ !canAudit ? t('Limit reached') : t('Audit this page') }}
         </UButton>
@@ -67,8 +67,7 @@
                 </div>
                 <UButton
                   v-if="page.latest_audit_id"
-                  variant="soft"
-                  size="sm"
+                  size="lg"
                   trailing-icon="i-lucide-arrow-right"
                   :to="`/projects/${projectId}/pages/${pageId}/audits/${page.latest_audit_id}`"
                 >
@@ -149,6 +148,26 @@
                 </p>
               </UCard>
             </PlanGate>
+
+            <!-- Priority recommendations (moved from sidebar) -->
+            <UCard v-if="brain?.priority_recommendations?.length">
+              <h3 class="text-xs font-semibold uppercase tracking-wide text-(--ui-text-dimmed)">{{ t('Priority recommendations') }}</h3>
+              <div class="mt-3 space-y-3">
+                <div
+                  v-for="(rec, i) in brain.priority_recommendations.slice(0, 3)"
+                  :key="i"
+                  class="flex items-start gap-3"
+                >
+                  <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-(--ui-primary)/10 text-xs font-bold text-(--ui-primary)">
+                    {{ i + 1 }}
+                  </span>
+                  <div>
+                    <p class="text-sm font-medium text-(--ui-text-highlighted)">{{ rec.title }}</p>
+                    <p class="mt-0.5 text-xs leading-relaxed text-(--ui-text-dimmed)">{{ rec.reason }}</p>
+                  </div>
+                </div>
+              </div>
+            </UCard>
           </div>
 
           <!-- Right (1/3) -->
@@ -159,7 +178,23 @@
               <dl class="mt-3 space-y-3">
                 <div>
                   <dt class="text-xs text-(--ui-text-muted)">{{ t('Conversion goal') }}</dt>
-                  <dd class="mt-0.5 text-sm font-medium text-(--ui-text-highlighted)">{{ page.conversion_goal }}</dd>
+                  <dd v-if="!editingConversionGoal" class="mt-0.5 flex items-center justify-between">
+                    <span class="text-sm font-medium text-(--ui-text-highlighted)">{{ page.conversion_goal }}</span>
+                    <UButton variant="ghost" size="xs" icon="i-lucide-pencil" @click="startEditConversionGoal" />
+                  </dd>
+                  <div v-else class="mt-1.5">
+                    <USelect
+                      v-model="conversionGoalValue"
+                      :items="conversionGoalOptions"
+                      :placeholder="t('Select a conversion goal')"
+                      size="sm"
+                      class="w-full"
+                    />
+                    <div class="mt-2 flex justify-end gap-2">
+                      <UButton variant="ghost" size="xs" @click="editingConversionGoal = false">{{ t('Cancel') }}</UButton>
+                      <UButton size="xs" :loading="savingConversionGoal" @click="saveConversionGoal">{{ t('Save') }}</UButton>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <dt class="text-xs text-(--ui-text-muted)">{{ t('Total audits') }}</dt>
@@ -223,29 +258,13 @@
               </div>
             </UCard>
 
-            <!-- Priority recommendations -->
-            <UCard v-if="brain?.priority_recommendations?.length">
-              <h3 class="text-xs font-semibold uppercase tracking-wide text-(--ui-text-dimmed)">{{ t('Priority recommendations') }}</h3>
-              <div class="mt-3 space-y-3">
-                <div
-                  v-for="(rec, i) in brain.priority_recommendations.slice(0, 3)"
-                  :key="i"
-                  class="flex items-start gap-2"
-                >
-                  <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-(--ui-primary)/10 text-[10px] font-bold text-(--ui-primary)">
-                    {{ i + 1 }}
-                  </span>
-                  <div>
-                    <p class="text-xs font-medium text-(--ui-text-highlighted)">{{ rec.title }}</p>
-                    <p class="mt-0.5 text-[11px] leading-relaxed text-(--ui-text-dimmed)">{{ rec.reason }}</p>
-                  </div>
-                </div>
-              </div>
-            </UCard>
+
           </div>
         </div>
       </template>
     </div>
+
+    <QuickRescanModal v-model="showRescanModal" :page-id="pageId" :open-issue-count="openIssuesCount" @started="handleRescanStarted" />
 
     <UpgradeModal
       v-model:open="showUpgradeModal"
@@ -258,6 +277,7 @@
 import { scoreColor } from '~/constants/audit'
 import type { BadgeColor } from '~/types'
 import ScanProgress from '~/components/audit/ScanProgress.vue'
+import QuickRescanModal from '~/components/audit/QuickRescanModal.vue'
 import PlanGate from '~/components/billing/PlanGate.vue'
 import UpgradeModal from '~/components/billing/UpgradeModal.vue'
 
@@ -274,7 +294,18 @@ const projectId = route.params.id as string
 const pageId = route.params.pageId as string
 const scanStore = useScanProgressStore()
 const { isFree, canAudit, auditsThisMonth, auditLimit, fetchBillingStatus, invalidateBillingStatus } = usePlan()
+const { conversionGoals } = useProjectOptions()
 const showUpgradeModal = ref(false)
+
+const conversionGoalOptions = computed(() => {
+  const options = conversionGoals.value.map(g => g)
+  // If current value isn't in the predefined list, add it as first option
+  const currentGoal = page.value?.conversion_goal
+  if (currentGoal && !options.some(o => o.value === currentGoal)) {
+    options.unshift({ label: currentGoal, value: currentGoal })
+  }
+  return options
+})
 
 interface PageDetail {
   id: string
@@ -302,9 +333,39 @@ const brain = ref<BrainData | null>(null)
 const loading = ref(true)
 const triggeringAudit = ref(false)
 const scoreHistory = ref<Array<{ overall_score: number, created_at: string }>>([])
+const openIssuesCount = ref(0)
+const showRescanModal = ref(false)
 
 const activeScan = computed(() => scanStore.scanForProject(pageId))
 const showSuccess = ref(false)
+
+// Conversion goal inline editing
+const editingConversionGoal = ref(false)
+const conversionGoalValue = ref('')
+const savingConversionGoal = ref(false)
+
+function startEditConversionGoal() {
+  conversionGoalValue.value = page.value?.conversion_goal || ''
+  editingConversionGoal.value = true
+}
+
+async function saveConversionGoal() {
+  if (!conversionGoalValue.value.trim()) return
+  savingConversionGoal.value = true
+  try {
+    await $api(`/pages/${pageId}`, { method: 'PATCH', body: { conversion_goal: conversionGoalValue.value.trim() } })
+    if (page.value) {
+      page.value.conversion_goal = conversionGoalValue.value.trim()
+    }
+    editingConversionGoal.value = false
+  }
+  catch (e) {
+    apiError.parse(e, t('Failed to save conversion goal.'))
+  }
+  finally {
+    savingConversionGoal.value = false
+  }
+}
 
 // AI note inline editing
 const editingAiNote = ref(false)
@@ -387,14 +448,16 @@ onMounted(async () => {
 
 async function loadPage() {
   try {
-    const [pageData, scoresData, brainData] = await Promise.all([
+    const [pageData, scoresData, brainData, issuesData] = await Promise.all([
       $api<{ data: PageDetail }>(`/pages/${pageId}`),
       $api<{ scores: Array<{ overall_score: number, created_at: string }> }>(`/pages/${pageId}/scores`).catch(() => ({ scores: [] })),
       $api<BrainData>(`/pages/${pageId}/brain`).catch(() => null),
+      $api<{ open_count: number }>(`/pages/${pageId}/issues/open-count`).catch(() => ({ open_count: 0 })),
     ])
     page.value = pageData.data
     scoreHistory.value = scoresData.scores ?? []
     brain.value = brainData
+    openIssuesCount.value = issuesData?.open_count ?? 0
   }
   catch (e) {
     apiError.parse(e, t('Failed to load page.'))
@@ -402,6 +465,21 @@ async function loadPage() {
   finally {
     loading.value = false
   }
+}
+
+function handleAuditClick() {
+  // If the page has been audited before, show confirmation with open issues warning
+  if (page.value && page.value.audits_count > 0) {
+    showRescanModal.value = true
+    return
+  }
+  triggerAudit()
+}
+
+function handleRescanStarted(newAuditId: string) {
+  scanStore.startScan(newAuditId, pageId, page.value?.url ?? '')
+  invalidateBillingStatus()
+  fetchBillingStatus()
 }
 
 async function triggerAudit() {

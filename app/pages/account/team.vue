@@ -1,290 +1,57 @@
 <template>
   <ClientOnly>
     <div class="mx-auto max-w-2xl flex flex-col gap-4">
+      <TeamPageSkeleton v-if="loading" />
 
-    <TeamPageSkeleton v-if="loading" />
-
-    <template v-else>
-      <!-- Member of someone else's team -->
-      <template v-if="membership">
-        <UCard>
-          <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-users" class="h-4 w-4 text-(--ui-primary)" />
-              <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ membership.team_name }}</h2>
-            </div>
-          </template>
-          <p class="text-sm text-(--ui-text-muted)">{{ t('You are a member of this team') }}</p>
-        </UCard>
-
-        <UCard>
-          <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-triangle-alert" class="h-4 w-4 text-red-500" />
-              <h2 class="text-sm font-semibold text-red-500">{{ t('Leave team') }}</h2>
-            </div>
-          </template>
-          <p class="text-sm text-(--ui-text-muted)">{{ t('You will lose access to all shared projects.') }}</p>
-          <div class="mt-3 flex justify-end">
-            <UButton
-              color="error"
-              variant="outline"
-              icon="i-lucide-log-out"
-              :loading="leaveLoading"
-              @click="handleLeave"
-            >
-              {{ t('Leave team') }}
-            </UButton>
-          </div>
-        </UCard>
-      </template>
-
-      <!-- Team owner view -->
-      <template v-else-if="team">
-        <!-- Team name -->
-        <UCard>
-          <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-building-2" class="h-4 w-4 text-(--ui-text-muted)" />
-              <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Team') }}</h2>
-            </div>
-          </template>
-          <div class="flex items-center justify-between gap-4">
-            <div class="min-w-0 flex-1">
-              <p class="text-xs font-medium uppercase tracking-wide text-(--ui-text-dimmed)">{{ t('Team name') }}</p>
-              <UInput
-                v-if="editingName"
-                v-model="teamNameInput"
-                size="lg"
-                class="mt-1 max-w-xs"
-                @keyup.enter="handleSaveName"
-                @keyup.escape="editingName = false"
-              />
-              <p v-else class="mt-1 font-semibold text-(--ui-text-highlighted)">{{ team.name }}</p>
-            </div>
-            <div class="flex gap-2">
-              <template v-if="editingName">
-                <UButton size="sm" :loading="savingName" @click="handleSaveName">{{ t('Save') }}</UButton>
-                <UButton size="sm" variant="ghost" color="neutral" @click="editingName = false">{{ t('Cancel') }}</UButton>
-              </template>
-              <UButton v-else size="sm" variant="ghost" color="neutral" icon="i-lucide-pencil" @click="startEditName">
-                {{ t('Edit') }}
-              </UButton>
-            </div>
-          </div>
-        </UCard>
-
-        <!-- Members -->
-        <UCard>
-          <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-users" class="h-4 w-4 text-(--ui-text-muted)" />
-              <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">
-                {{ t('Members') }}
-                <span class="ml-1 font-normal text-(--ui-text-dimmed)">({{ team.all_members?.length ?? 0 }}/{{ totalSeats }} {{ t('seats used') }})</span>
-              </h2>
-            </div>
-          </template>
-
-          <div v-if="team.all_members && team.all_members.length > 0" class="space-y-3">
-            <div
-              v-for="member in team.all_members"
-              :key="member.id"
-              class="flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 hover:bg-(--ui-bg-elevated)"
-            >
-              <div class="flex items-center gap-2.5">
-                <div class="flex h-7 w-7 items-center justify-center rounded-full bg-(--ui-primary)/15 text-xs font-semibold text-(--ui-primary)">
-                  {{ member.user?.name?.charAt(0).toUpperCase() }}
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-(--ui-text-highlighted)">
-                    {{ member.user?.name }}
-                    <UBadge v-if="member.role === 'owner'" color="neutral" variant="subtle" size="xs" class="ml-1">{{ t('Owner') }}</UBadge>
-                  </p>
-                  <p class="text-xs text-(--ui-text-muted)">{{ member.user?.email }}</p>
-                </div>
-              </div>
-              <UButton
-                v-if="member.role !== 'owner'"
-                size="sm"
-                variant="ghost"
-                color="error"
-                icon="i-lucide-user-minus"
-                :loading="removingMemberId === member.id"
-                @click="handleRemoveMember(member)"
-              >
-                {{ t('Remove') }}
-              </UButton>
-            </div>
-          </div>
-          <p v-else class="text-sm text-(--ui-text-muted)">{{ t('No members yet. Invite someone below.') }}</p>
-        </UCard>
-
-        <!-- Pending invitations -->
-        <UCard v-if="pendingInvitations.length > 0">
-          <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-mail" class="h-4 w-4 text-(--ui-text-muted)" />
-              <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Pending invitations') }}</h2>
-            </div>
-          </template>
-          <div class="space-y-3">
-            <div
-              v-for="inv in pendingInvitations"
-              :key="inv.id"
-              class="flex items-center justify-between gap-3 rounded-lg px-2 py-1.5"
-            >
-              <div>
-                <p class="text-sm text-(--ui-text-highlighted)">{{ inv.email }}</p>
-                <p class="text-xs text-(--ui-text-muted)">{{ t('Expires') }} {{ formatDate(inv.expires_at) }}</p>
-              </div>
-              <UButton
-                size="sm"
-                variant="ghost"
-                color="neutral"
-                icon="i-lucide-x"
-                :loading="revokingInvitationId === inv.id"
-                @click="handleRevokeInvitation(inv.id)"
-              >
-                {{ t('Revoke') }}
-              </UButton>
-            </div>
-          </div>
-        </UCard>
-
-        <!-- Seat management + invite -->
-        <UCard>
-          <template #header>
-            <div class="flex items-center justify-between gap-4">
-              <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-armchair" class="h-4 w-4 text-(--ui-text-muted)" />
-                <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Team seats') }}</h2>
-              </div>
-              <UButton size="sm" variant="outline" color="neutral" icon="i-lucide-plus" @click="showBuySeats = !showBuySeats">
-                {{ t('Buy seats') }}
-              </UButton>
-            </div>
-          </template>
-
-          <div class="space-y-5">
-            <p class="text-sm text-(--ui-text-muted)">
-              {{ t('{used} of {total} seats used', { used: team.all_members?.length ?? 0, total: totalSeats }) }}<span v-if="billingStatus?.included_seats"> · {{ billingStatus.included_seats }} {{ t('included') }}</span><span v-if="billingStatus?.extra_seats">, {{ billingStatus.extra_seats }} {{ t('purchased') }}</span>
-            </p>
-
-            <!-- Buy seats inline form -->
-            <div v-if="showBuySeats" class="rounded-lg border border-(--ui-border) bg-(--ui-bg-elevated) p-3">
-              <p class="mb-2 text-xs text-(--ui-text-muted)">{{ t('Each extra seat costs €10/month and is added to your subscription.') }}</p>
-              <div class="flex items-center gap-2">
-                <UButton size="sm" variant="outline" color="neutral" icon="i-lucide-minus" :disabled="seatsToBuy <= 1" @click="seatsToBuy = Math.max(1, seatsToBuy - 1)" />
-                <span class="w-8 text-center text-sm font-semibold">{{ seatsToBuy }}</span>
-                <UButton size="sm" variant="outline" color="neutral" icon="i-lucide-plus" @click="seatsToBuy++" />
-                <span class="ml-1 text-xs text-(--ui-text-muted)">× €10/mo = <strong>€{{ seatsToBuy * 10 }}/mo</strong></span>
-                <UButton class="ml-auto" :loading="buyingSeats" @click="handleBuySeats">
-                  {{ t('Purchase') }}
-                </UButton>
-              </div>
-            </div>
-
-            <USeparator />
-
-            <!-- Invite form -->
-            <div>
-              <h3 class="mb-3 text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Invite a member') }}</h3>
-
-              <UAlert
-                v-if="seatLimitReached"
-                class="mb-3"
-                color="warning"
-                variant="subtle"
-                icon="i-lucide-alert-triangle"
-                :title="t('No seats available')"
-                :description="t('Purchase additional seats to invite more members.')"
-              />
-
-              <div class="flex gap-2">
-                <UInput
-                  v-model="inviteEmail"
-                  type="email"
-                  size="lg"
-                  placeholder="colleague@example.com"
-                  class="flex-1"
-                  :disabled="seatLimitReached || inviteLoading"
-                  @keyup.enter="handleInvite"
-                />
-                <UButton
-                  :loading="inviteLoading"
-                  :disabled="seatLimitReached || !inviteEmail"
-                  icon="i-lucide-send"
-                  @click="handleInvite"
-                >
-                  {{ t('Invite') }}
-                </UButton>
-              </div>
-            </div>
-          </div>
-        </UCard>
-
-        <!-- Delete team -->
-        <UCard>
-          <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-triangle-alert" class="h-4 w-4 text-red-500" />
-              <h2 class="text-sm font-semibold text-red-500">{{ t('Danger zone') }}</h2>
-            </div>
-          </template>
-          <p class="text-sm text-(--ui-text-muted)">{{ t('All members will lose access. This cannot be undone.') }}</p>
-          <div class="mt-3 flex justify-end">
-            <UButton
-              color="error"
-              variant="outline"
-              icon="i-lucide-trash-2"
-              :loading="deletingTeam"
-              @click="handleDeleteTeam"
-            >
-              {{ t('Delete team') }}
-            </UButton>
-          </div>
-        </UCard>
-      </template>
-
-      <!-- No team yet -->
       <template v-else>
-        <UCard v-if="isFree" class="border-(--ui-primary)/20 bg-(--ui-primary)/3">
-          <div class="flex items-start gap-4">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-(--ui-primary)/10">
-              <UIcon name="i-lucide-users" class="h-5 w-5 text-(--ui-primary)" />
-            </div>
-            <div class="flex-1">
-              <p class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Teams are available on paid plans') }}</p>
-              <p class="mt-0.5 text-xs text-(--ui-text-muted)">
-                {{ t('Upgrade to Pro or Max to invite team members and collaborate on audit pages.') }}
-              </p>
-            </div>
-            <UButton to="/pricing">{{ t('Upgrade plan') }}</UButton>
-          </div>
-        </UCard>
+        <!-- Member of someone else's team -->
+        <TeamMembershipView
+          v-if="membership"
+          :team-name="membership.team_name"
+          :loading="leaveLoading"
+          @leave="handleLeave"
+        />
 
-        <UCard v-else>
-          <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-users" class="h-4 w-4 text-(--ui-primary)" />
-              <h2 class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Create your team') }}</h2>
-            </div>
-          </template>
-          <div class="space-y-4">
-            <p class="text-sm text-(--ui-text-muted)">{{ t('Invite teammates to collaborate on your audit pages.') }}</p>
-            <UInput v-model="newTeamName" :placeholder="t('Team name')" size="lg" />
-            <UButton block :loading="creatingTeam" :disabled="!newTeamName.trim()" @click="handleCreateTeam">
-              {{ t('Create team') }}
-            </UButton>
-          </div>
-        </UCard>
+        <!-- Team owner view -->
+        <template v-else-if="team">
+          <TeamNameCard :team-name="team.name" :loading="savingName" @save="handleSaveName" />
+
+          <TeamMembersCard
+            :members="team.all_members ?? []"
+            :total-seats="totalSeats"
+            :removing-id="removingMemberId"
+            @remove="handleRemoveMember"
+          />
+
+          <TeamPendingInvitationsCard
+            v-if="pendingInvitations.length > 0"
+            :invitations="pendingInvitations"
+            :revoking-id="revokingInvitationId"
+            @revoke="handleRevokeInvitation"
+          />
+
+          <TeamSeatsCard
+            :members-count="team.all_members?.length ?? 0"
+            :total-seats="totalSeats"
+            :billing-status="billingStatus"
+            :seat-limit-reached="seatLimitReached"
+            :invite-loading="inviteLoading"
+            :buying-seats="buyingSeats"
+            @invite="handleInvite"
+            @buy-seats="handleBuySeats"
+          />
+
+          <TeamSeatsUpgradeModal v-model:open="showUpgradePrompt" @close="showUpgradePrompt = false" />
+
+          <TeamDangerZoneCard :loading="deletingTeam" @delete="handleDeleteTeam" />
+        </template>
+
+        <!-- No team yet -->
+        <TeamCreateView v-else :is-free="isFree" :loading="creatingTeam" @create="handleCreateTeam" />
       </template>
-    </template>
     </div>
   </ClientOnly>
 </template>
-
 <script setup lang="ts">
 import type { Team, TeamInvitation, TeamMember, TeamMembership } from '~/composables/useTeam'
 import type { User } from '~/stores/auth'
@@ -293,17 +60,17 @@ definePageMeta({ middleware: 'auth' })
 
 const { t } = useI18n()
 const { isFree, billingStatus, fetchBillingStatus, purchaseSeats } = usePlan()
-const { formatDate } = useFormatters()
 const authStore = useAuthStore()
 const { $api } = useApi()
 const { setNavbar } = usePageNavbar()
+const { confirm } = useConfirm()
 const {
   fetchOwnedTeam,
   fetchMembership,
   createTeam,
   updateTeamName,
-  deleteTeam,
   leaveTeam,
+  deleteTeam,
   inviteMember,
   revokeInvitation,
   removeMember,
@@ -314,22 +81,15 @@ const loading = ref(true)
 const team = ref<Team | null>(null)
 const membership = ref<TeamMembership | null>(null)
 
-const inviteEmail = ref('')
 const inviteLoading = ref(false)
 const revokingInvitationId = ref<string | null>(null)
 const removingMemberId = ref<string | null>(null)
-
-const editingName = ref(false)
-const teamNameInput = ref('')
 const savingName = ref(false)
-
-const newTeamName = ref('')
 const creatingTeam = ref(false)
-const deletingTeam = ref(false)
 const leaveLoading = ref(false)
-const showBuySeats = ref(false)
-const seatsToBuy = ref(1)
+const deletingTeam = ref(false)
 const buyingSeats = ref(false)
+const showUpgradePrompt = ref(false)
 
 const pendingInvitations = computed(() => team.value?.invitations?.filter(i => i.is_pending) ?? [])
 
@@ -338,7 +98,7 @@ const totalSeats = computed(() => {
   return billingStatus.value.included_seats + billingStatus.value.extra_seats
 })
 
-// all_members includes owner — owner counts as a seat
+// all_members includes owner â€” owner counts as a seat
 const seatLimitReached = computed(() =>
   (team.value?.all_members?.length ?? 0) >= totalSeats.value,
 )
@@ -370,18 +130,11 @@ async function loadTeamState() {
   }
 }
 
-function startEditName() {
-  teamNameInput.value = team.value?.name ?? ''
-  editingName.value = true
-}
-
-async function handleSaveName() {
-  if (!teamNameInput.value.trim()) return
+async function handleSaveName(name: string) {
   savingName.value = true
   try {
-    const updated = await updateTeamName(teamNameInput.value.trim())
+    const updated = await updateTeamName(name)
     if (team.value) team.value.name = updated.name
-    editingName.value = false
     toast.add({ title: t('Team name updated.'), color: 'success' })
   }
   catch {
@@ -392,12 +145,10 @@ async function handleSaveName() {
   }
 }
 
-async function handleCreateTeam() {
-  if (!newTeamName.value.trim()) return
+async function handleCreateTeam(name: string) {
   creatingTeam.value = true
   try {
-    team.value = await createTeam(newTeamName.value.trim())
-    newTeamName.value = ''
+    team.value = await createTeam(name)
     toast.add({ title: t('Team created!'), color: 'success' })
   }
   catch {
@@ -408,13 +159,11 @@ async function handleCreateTeam() {
   }
 }
 
-async function handleInvite() {
-  if (!inviteEmail.value) return
+async function handleInvite(email: string) {
   inviteLoading.value = true
   try {
-    const inv = await inviteMember(inviteEmail.value)
+    const inv = await inviteMember(email)
     team.value?.invitations?.push(inv)
-    inviteEmail.value = ''
     toast.add({ title: t('Invitation sent!'), color: 'success' })
   }
   catch (e: unknown) {
@@ -445,7 +194,14 @@ async function handleRevokeInvitation(id: string) {
 
 async function handleRemoveMember(member: TeamMember) {
   const name = member.user?.name ?? t('this member')
-  if (!confirm(t('Remove {name} from the team?', { name }))) return
+  const confirmed = await confirm({
+    title: t('Remove {name}?', { name }),
+    description: t('This member will lose access to all shared projects immediately.'),
+    confirmLabel: t('Remove'),
+    color: 'error',
+    icon: 'i-lucide-user-minus',
+  })
+  if (!confirmed) return
   removingMemberId.value = member.id
   try {
     await removeMember(member.id)
@@ -464,7 +220,14 @@ async function handleRemoveMember(member: TeamMember) {
 }
 
 async function handleDeleteTeam() {
-  if (!confirm(t('Delete your team? All members will lose access.'))) return
+  const confirmed = await confirm({
+    title: t('Delete this team?'),
+    description: t('All members will immediately lose access to shared projects. This action cannot be undone.'),
+    confirmLabel: t('Delete team'),
+    color: 'error',
+    icon: 'i-lucide-trash-2',
+  })
+  if (!confirmed) return
   deletingTeam.value = true
   try {
     await deleteTeam()
@@ -481,17 +244,16 @@ async function handleDeleteTeam() {
   }
 }
 
-async function handleBuySeats() {
+async function handleBuySeats(count: number) {
   buyingSeats.value = true
   try {
-    await purchaseSeats(seatsToBuy.value)
+    await purchaseSeats(count)
     toast.add({ title: t('Seats updated successfully.'), color: 'success' })
     await fetchBillingStatus()
     await loadTeamState()
   }
-  catch (e: unknown) {
-    const err = e as { data?: { message?: string } }
-    toast.add({ title: err?.data?.message ?? t('Failed to purchase seats.'), color: 'error' })
+  catch {
+    showUpgradePrompt.value = true
   }
   finally {
     buyingSeats.value = false
@@ -499,7 +261,14 @@ async function handleBuySeats() {
 }
 
 async function handleLeave() {
-  if (!confirm(t('Leave this team? You will lose access to all shared projects.'))) return
+  const confirmed = await confirm({
+    title: t('Leave this team?'),
+    description: t('You will lose access to all shared projects. This action cannot be undone.'),
+    confirmLabel: t('Leave team'),
+    color: 'error',
+    icon: 'i-lucide-log-out',
+  })
+  if (!confirmed) return
   leaveLoading.value = true
   try {
     await leaveTeam(membership.value?.team_id)

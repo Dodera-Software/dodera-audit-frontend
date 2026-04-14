@@ -1,6 +1,14 @@
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-(--ui-bg)">
-    <div class="w-full max-w-md px-4">
+  <div class="relative flex min-h-screen items-center justify-center overflow-hidden bg-(--ui-bg)">
+    <!-- Background orbs (matches landing hero) -->
+    <div class="pointer-events-none absolute inset-0">
+      <div class="absolute -top-40 left-1/2 h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-emerald-500/20 blur-[150px]" />
+      <div class="absolute bottom-0 left-1/4 h-[400px] w-[400px] rounded-full bg-blue-600/10 blur-[130px]" />
+      <div class="absolute right-1/4 top-1/3 h-[350px] w-[350px] rounded-full bg-violet-600/10 blur-[110px]" />
+      <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:80px_80px]" />
+    </div>
+
+    <div class="relative z-10 w-full max-w-md px-4">
       <div class="mb-8 flex justify-center">
         <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-20 w-auto" />
       </div>

@@ -27,11 +27,26 @@ Web application for PawByTech — an AI-powered website audit platform. Dashboar
 | `/auth/reset-password` | Password reset |
 | `/dashboard` | Project grid with scores |
 | `/projects/new` | Create project |
-| `/projects/[id]` | Project overview (stats, brain feed, quick actions) |
-| `/projects/[id]/history` | Audit history with score trend chart and AG Grid table |
-| `/projects/[id]/board` | Kanban issue board (drag-and-drop, filters, detail slideover) |
-| `/projects/[id]/audits/[auditId]` | Audit report (scores, personas, issues, brain narrative) |
+| `/projects/[id]` | Project detail with pages |
+| `/projects/[id]/pages/[pageId]` | Page overview (scores, brain, quick actions) |
+| `/projects/[id]/pages/[pageId]/history` | Audit history with score trend chart |
+| `/projects/[id]/pages/[pageId]/board` | Kanban issue board (drag-and-drop) |
+| `/projects/[id]/pages/[pageId]/audits/[auditId]` | Audit report (scores, personas, issues) |
 | `/account` | Profile, password, settings |
+| `/account/team` | Team management (members, invitations, seats) |
+| `/account/billing` | Billing and subscription management |
+| `/pricing` | Plan comparison and upgrade |
+| `/admin` | Admin overview dashboard |
+| `/admin/users` | User management (AG Grid, inline editing) |
+| `/admin/analytics` | Conversion funnel, engagement, signups |
+| `/admin/revenue` | Billing and revenue stats |
+| `/admin/ai-agents` | AI agent cost tracking |
+| `/admin/audits` | Audit monitoring |
+| `/admin/issues` | Issue analytics |
+| `/admin/pages` | Page analytics |
+| `/admin/teams` | Team management |
+| `/admin/system` | System health, table sizes, failed jobs |
+| `/admin/activity` | Activity log feed |
 
 ## Key Components
 
@@ -45,13 +60,17 @@ Web application for PawByTech — an AI-powered website audit platform. Dashboar
 | `KanbanBoard` | Drag-and-drop issue board with filters |
 | `IssueCard` | Compact issue card with badges and persona icons |
 | `IssueDetailSlideover` | Full issue detail with timeline and action buttons |
-| `ScanProgress` | Real-time scan steps with agent progress bar |
+| `ScanProgress` | Real-time scan steps with browser frame, exploration viewer |
+| `ExplorationViewer` | Live AI exploration log with action labels |
 | `ScoreTrendChart` | Reusable Chart.js line chart |
 | `BaseDataTable` | Reusable AG Grid wrapper (theme-aware) |
 | `BaseSlideover` | Reusable slideover wrapper |
 | `ConfirmDialog` | Global confirmation modal via `useConfirm()` |
+| `InviteMemberDialog` | Team invite dialog from sidebar |
+| `TeamSwitcher` | Workspace switcher in sidebar |
 | `ThemeSwitcher` | Light/dark/system theme toggle |
 | `BrainFeed` | Project Brain section (narrative, recommendations, alerts) |
+| `QuickRescanModal` | Re-audit confirmation with open issues count |
 
 ## Composables
 
@@ -66,6 +85,10 @@ Web application for PawByTech — an AI-powered website audit platform. Dashboar
 | `useProjectOptions` | Translatable site type and conversion goal options |
 | `useScoreLabel` | Score level labels (Good/Needs improvement/Poor) |
 | `useScanProgress` | WebSocket + polling for real-time scan progress |
+| `useWorkspace` | Workspace listing, switching, leaving |
+| `useTeam` | Team CRUD, invitations, member management |
+| `usePlan` | Billing status, seat purchases, plan checks |
+| `useServerDataTable` | Server-side paginated AG Grid tables |
 
 ## Setup
 

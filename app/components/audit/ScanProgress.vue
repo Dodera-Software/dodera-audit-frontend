@@ -39,20 +39,12 @@
 
             <div class="mt-8 w-full max-w-3xl">
               <BrowserFrame :url="url" :loading="true" :scan-line="true">
-                <div class="flex flex-col items-center gap-5">
-                  <div class="relative">
-                    <div class="absolute -inset-3 animate-ping rounded-full bg-blue-500/20" />
-                    <div class="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-500/10 ring-1 ring-blue-500/30 backdrop-blur-sm">
-                      <UIcon name="i-lucide-globe" class="h-8 w-8 text-blue-400" />
-                    </div>
-                  </div>
-                  <div class="space-y-2">
-                    <p class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Connecting to site') }}</p>
-                    <div class="flex items-center justify-center gap-1.5">
-                      <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-400" style="animation-delay: 0ms" />
-                      <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-400" style="animation-delay: 150ms" />
-                      <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-400" style="animation-delay: 300ms" />
-                    </div>
+                <div class="flex flex-col items-center gap-3">
+                  <p class="text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Connecting to site') }}</p>
+                  <div class="flex items-center justify-center gap-1.5">
+                    <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-400" style="animation-delay: 0ms" />
+                    <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-400" style="animation-delay: 150ms" />
+                    <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-400" style="animation-delay: 300ms" />
                   </div>
                 </div>
               </BrowserFrame>
@@ -71,17 +63,10 @@
           </div>
         </Transition>
 
-        <!-- PHASE: Analyzing (3 sequential passes) -->
+        <!-- PHASE: Analyzing (sequential passes) -->
         <Transition name="phase" mode="out-in">
-          <div v-if="phase === 'analyzing'" key="analyzing" class="flex w-full max-w-2xl flex-col items-center text-center">
-            <div class="relative flex h-28 w-28 items-center justify-center">
-              <div class="absolute inset-0 animate-spin-slow rounded-full border border-dashed border-indigo-500/30" />
-              <div class="flex h-20 w-20 items-center justify-center rounded-3xl bg-indigo-500/10 ring-1 ring-indigo-500/20">
-                <UIcon name="i-lucide-brain" class="h-10 w-10 text-indigo-400" />
-              </div>
-            </div>
-
-            <p class="mt-6 text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
+          <div v-if="phase === 'analyzing'" key="analyzing" class="flex w-full flex-col items-center text-center">
+            <p class="text-xs font-bold uppercase tracking-[0.25em] text-(--ui-text-dimmed)">
               {{ t('Deep analysis') }}
             </p>
             <Transition name="step-text" mode="out-in">
@@ -89,42 +74,50 @@
                 {{ passHeadline }}
               </h1>
             </Transition>
-            <p class="mt-4 text-lg text-(--ui-text-muted)">
-              {{ passSubtitle }}
-            </p>
 
-            <!-- Pass indicators -->
-            <!-- Pass indicators: currentPass is 1-based from backend, idx is 0-based -->
-            <div class="mt-10 flex items-center gap-4">
-              <div
-                v-for="(p, idx) in analysisPasses"
-                :key="p.key"
-                class="flex items-center gap-2.5 rounded-xl border px-5 py-3 transition-all duration-500"
-                :class="idx < activePassIdx
-                  ? 'border-green-500/30 bg-green-500/5'
-                  : idx === activePassIdx
-                    ? 'border-indigo-500/30 bg-indigo-500/5 shadow-[0_0_30px_rgba(99,102,241,0.15)]'
-                    : 'border-(--ui-border)/50 bg-(--ui-bg-elevated)/30'"
+            <div class="mt-8 w-full max-w-3xl">
+              <BrowserFrame
+                :url="url"
+                :screenshot="lastScreenshot"
+                :screenshot-blurred="true"
               >
-                <UIcon
-                  v-if="idx < activePassIdx"
-                  name="i-lucide-check-circle-2"
-                  class="h-5 w-5 text-green-500"
-                />
-                <UIcon
-                  v-else-if="idx === activePassIdx"
-                  name="i-lucide-loader-2"
-                  class="h-5 w-5 animate-spin text-indigo-400"
-                />
-                <UIcon
-                  v-else
-                  :name="p.icon"
-                  class="h-5 w-5 text-(--ui-text-dimmed)"
-                />
-                <span class="text-sm font-semibold" :class="idx === scan.currentPass ? 'text-(--ui-text-highlighted)' : 'text-(--ui-text-dimmed)'">
-                  {{ p.label }}
-                </span>
-              </div>
+                <div class="flex flex-col items-center gap-4">
+                  <p class="text-sm font-semibold text-white drop-shadow-md">{{ passSubtitle }}</p>
+
+                  <!-- Pass indicators -->
+                  <div class="flex items-center gap-3">
+                    <div
+                      v-for="(p, idx) in analysisPasses"
+                      :key="p.key"
+                      class="flex items-center gap-2 rounded-xl border px-4 py-2 transition-all duration-500"
+                      :class="idx < activePassIdx
+                        ? 'border-green-500/30 bg-green-500/10'
+                        : idx === activePassIdx
+                          ? 'border-indigo-400/40 bg-indigo-500/10 shadow-[0_0_20px_rgba(99,102,241,0.2)]'
+                          : 'border-white/10 bg-white/5'"
+                    >
+                      <UIcon
+                        v-if="idx < activePassIdx"
+                        name="i-lucide-check-circle-2"
+                        class="h-4 w-4 text-green-400"
+                      />
+                      <UIcon
+                        v-else-if="idx === activePassIdx"
+                        name="i-lucide-loader-2"
+                        class="h-4 w-4 animate-spin text-indigo-300"
+                      />
+                      <UIcon
+                        v-else
+                        :name="p.icon"
+                        class="h-4 w-4 text-white/40"
+                      />
+                      <span class="text-xs font-semibold" :class="idx <= activePassIdx ? 'text-white/90' : 'text-white/40'">
+                        {{ p.label }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </BrowserFrame>
             </div>
           </div>
         </Transition>
@@ -145,15 +138,13 @@
                 :screenshot="lastScreenshot"
                 :screenshot-blurred="true"
               >
-                <div class="flex flex-col items-center gap-5">
-                  <div class="relative">
-                    <div class="absolute -inset-4 animate-spin-slow rounded-full border border-dashed border-purple-400/40" />
-                    <div class="absolute -inset-8 animate-spin-slow-reverse rounded-full border border-dashed border-indigo-400/20" />
-                    <div class="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-500/15 ring-1 ring-purple-500/30 backdrop-blur-sm">
-                      <UIcon name="i-lucide-sparkles" class="h-8 w-8 text-purple-400" />
-                    </div>
-                  </div>
+                <div class="flex flex-col items-center gap-3">
                   <p class="text-sm font-semibold text-white drop-shadow-md">{{ t('Combining all findings into a coherent report') }}</p>
+                  <div class="flex items-center justify-center gap-1.5">
+                    <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-purple-400" style="animation-delay: 0ms" />
+                    <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-purple-400" style="animation-delay: 150ms" />
+                    <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-purple-400" style="animation-delay: 300ms" />
+                  </div>
                 </div>
               </BrowserFrame>
             </div>
@@ -177,17 +168,12 @@
                 :screenshot-blurred="true"
                 :scan-line="true"
               >
-                <div class="flex flex-col items-center gap-5">
-                  <div class="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-green-500/15 ring-1 ring-green-500/30 backdrop-blur-sm">
-                    <UIcon name="i-lucide-file-check" class="h-8 w-8 text-green-400" />
-                  </div>
-                  <div class="space-y-1">
-                    <p class="text-sm font-semibold text-white drop-shadow-md">{{ t('Your scored audit report is almost ready') }}</p>
-                    <div class="flex items-center justify-center gap-1.5">
-                      <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-green-400" style="animation-delay: 0ms" />
-                      <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-green-400" style="animation-delay: 150ms" />
-                      <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-green-400" style="animation-delay: 300ms" />
-                    </div>
+                <div class="flex flex-col items-center gap-3">
+                  <p class="text-sm font-semibold text-white drop-shadow-md">{{ t('Your scored audit report is almost ready') }}</p>
+                  <div class="flex items-center justify-center gap-1.5">
+                    <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-green-400" style="animation-delay: 0ms" />
+                    <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-green-400" style="animation-delay: 150ms" />
+                    <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-green-400" style="animation-delay: 300ms" />
                   </div>
                 </div>
               </BrowserFrame>
@@ -266,7 +252,7 @@ const analysisPasses = computed(() => [
 const passHeadline = computed(() => {
   const map: Record<string, () => string> = {
     deep_analysis: () => t('Analyzing your page'),
-    persona_simulation: () => t('Simulating visitor perspectives'),
+    persona_simulation: () => t('Personas are visiting your page'),
     brain_synthesis: () => t('Synthesizing insights'),
   }
   return map[props.scan.currentPassName || '']?.() ?? t('Running deep analysis')
@@ -274,8 +260,8 @@ const passHeadline = computed(() => {
 
 const passSubtitle = computed(() => {
   const map: Record<string, () => string> = {
-    deep_analysis: () => t('Evaluating clarity, trust, conversion, and SEO from exploration data'),
-    persona_simulation: () => t('Three visitor personas are reacting to what the AI explored'),
+    deep_analysis: () => t('Evaluating clarity, trust, conversion, and SEO'),
+    persona_simulation: () => t('Three visitor personas are inspecting your website right now'),
     brain_synthesis: () => t('Combining all findings into a coherent report'),
   }
   return map[props.scan.currentPassName || '']?.() ?? t('Processing exploration findings')
