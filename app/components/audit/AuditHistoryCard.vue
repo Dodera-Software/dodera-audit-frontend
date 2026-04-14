@@ -19,7 +19,7 @@
         </span>
         <span class="text-xs text-(--ui-text-dimmed)">{{ formatRelativeDate(audit.created_at) }}</span>
         <UBadge v-if="audit.is_latest" color="success" variant="subtle" size="xs">{{ t('Latest') }}</UBadge>
-        <UBadge v-if="audit.status === 'failed'" color="error" variant="subtle" size="xs">{{ t('Failed') }}</UBadge>
+        <UBadge v-if="audit.status === AuditStatus.Failed" color="error" variant="subtle" size="xs">{{ t('Failed') }}</UBadge>
         <span
           v-if="audit.delta != null && audit.delta !== 0"
           class="text-xs font-semibold"
@@ -45,10 +45,11 @@
 
 <script setup lang="ts">
 import { scoreCircleClass } from '~/constants/audit'
+import { AuditStatus } from '~/types'
 
 interface AuditRow {
   id: string
-  status: string
+  status: AuditStatus
   trigger_type: string
   overall_score: number | null
   issues_count: number | null

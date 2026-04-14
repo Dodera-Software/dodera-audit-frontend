@@ -8,7 +8,7 @@
     />
 
     <!-- ====== FAILED ====== -->
-    <div v-if="scan.status === 'failed'" class="relative z-10 flex flex-col items-center gap-6 px-6 text-center">
+    <div v-if="scan.status === AuditStatus.Failed" class="relative z-10 flex flex-col items-center gap-6 px-6 text-center">
       <div class="flex h-24 w-24 items-center justify-center rounded-3xl bg-red-500/10 ring-1 ring-red-500/20">
         <UIcon name="i-lucide-alert-circle" class="h-12 w-12 text-red-500" />
       </div>
@@ -199,12 +199,13 @@
 import { SCAN_STEPS } from '~/constants/scan'
 import type { ScanStepStatus } from '~/constants/scan'
 import type { ExplorationStep } from '~/stores/scanProgress'
+import { AuditStatus } from '~/types'
 import ExplorationViewer from '~/components/audit/ExplorationViewer.vue'
 import BrowserFrame from '~/components/audit/BrowserFrame.vue'
 
 const props = defineProps<{
   scan: {
-    status: string
+    status: AuditStatus
     currentStep: string
     stepStatuses: Record<string, ScanStepStatus>
     error: string | null

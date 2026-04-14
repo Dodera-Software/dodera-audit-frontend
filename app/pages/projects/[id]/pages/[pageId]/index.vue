@@ -275,6 +275,7 @@
 
 <script setup lang="ts">
 import { scoreColor } from '~/constants/audit'
+import { AuditStatus } from '~/types'
 import type { BadgeColor } from '~/types'
 import ScanProgress from '~/components/audit/ScanProgress.vue'
 import QuickRescanModal from '~/components/audit/QuickRescanModal.vue'
@@ -512,7 +513,7 @@ watchEffect(() => {
 })
 
 watch(() => activeScan.value?.status, async (status) => {
-  if (status !== 'complete') return
+  if (status !== AuditStatus.Complete) return
   const completedAuditId = activeScan.value?.auditId
   showSuccess.value = true
   invalidateBillingStatus()

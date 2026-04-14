@@ -78,6 +78,7 @@
 
 <script setup lang="ts">
 import type { VelocityData } from '~/components/audit/AuditVelocity.vue'
+import { AuditStatus } from '~/types'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -94,7 +95,7 @@ const pageId = route.params.pageId as string
 
 interface AuditRow {
   id: string
-  status: string
+  status: AuditStatus
   trigger_type: string
   overall_score: number | null
   issues_count: number | null
@@ -146,7 +147,7 @@ async function loadAudits() {
     const data = await $api<{
       data: Array<{
         id: string
-        status: string
+        status: AuditStatus
         trigger_type: string
         overall_score: number | null
         issues_count: number | null
@@ -173,17 +174,16 @@ async function loadAudits() {
 }
 
 const completedAudits = computed(() =>
-  audits.value.filter(a => a.status === 'complete' && a.overall_score != null),
+  audits.value.filter(a => a.status === AuditStatus.Complete && a.overall_score != null),
 )
 const scores = computed(() => completedAudits.value.map(a => a.overall_score!))
 const bestScore = computed(() => scores.value.length > 0 ? Math.max(...scores.value) : null)
 const latestScore = computed(() => completedAudits.value[0]?.overall_score ?? null)
 const latestAuditId = computed(() => completedAudits.value[0]?.id ?? null)
-const firstScore = computed(() =>
-  completedAudits.value.length > 0
-    ? (completedAudits.value[completedAudits.value.length - 1]?.overall_score ?? null)
-    : null,
-)
+const firstScore = computed(() => {
+  if (!completedAudits.value.length) return null
+  return completedAudits.value[completedAudits.value.length - 1]?.overall_score ?? null
+})
 const totalImprovement = computed(() => {
   if (firstScore.value == null || latestScore.value == null) return 0
   return latestScore.value - firstScore.value
@@ -191,16 +191,20 @@ const totalImprovement = computed(() => {
 
 const chartAudits = computed(() =>
   audits.value
-    .filter(a => a.status === 'complete' && a.overall_score != null)
+    .filter(a => a.status === AuditStatus.Complete && a.overall_score != null)
     .map(a => ({ ...a, overall_score: a.overall_score as number }))
     .reverse(),
 )
 
+const SCORE_GRADIENTS: Array<{ min: number, className: string }> = [
+  { min: 80, className: 'bg-gradient-to-br from-green-500/5 via-transparent to-transparent' },
+  { min: 50, className: 'bg-gradient-to-br from-yellow-500/5 via-transparent to-transparent' },
+  { min: 0, className: 'bg-gradient-to-br from-red-500/5 via-transparent to-transparent' },
+]
+
 const heroGradient = computed(() => {
   if (latestScore.value == null) return ''
-  if (latestScore.value >= 80) return 'bg-gradient-to-br from-green-500/5 via-transparent to-transparent'
-  if (latestScore.value >= 50) return 'bg-gradient-to-br from-yellow-500/5 via-transparent to-transparent'
-  return 'bg-gradient-to-br from-red-500/5 via-transparent to-transparent'
+  return SCORE_GRADIENTS.find(g => latestScore.value! >= g.min)?.className ?? ''
 })
 
 const velocity = computed((): VelocityData | null => {

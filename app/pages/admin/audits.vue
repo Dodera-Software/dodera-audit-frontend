@@ -54,6 +54,7 @@
 
 <script setup lang="ts">
 import type { ColDef } from 'ag-grid-community'
+import { AuditStatus } from '~/types'
 
 definePageMeta({ middleware: ['auth', 'admin'] })
 
@@ -79,18 +80,18 @@ const table = useServerDataTable({
 
 const statusOptions = [
   { label: 'All', value: 'all' },
-  { label: 'Pending', value: 'pending' },
-  { label: 'Scanning', value: 'scanning' },
-  { label: 'Analyzing', value: 'analyzing' },
-  { label: 'Complete', value: 'complete' },
-  { label: 'Failed', value: 'failed' },
+  { label: 'Pending', value: AuditStatus.Pending },
+  { label: 'Scanning', value: AuditStatus.Scanning },
+  { label: 'Analyzing', value: AuditStatus.Analyzing },
+  { label: 'Complete', value: AuditStatus.Complete },
+  { label: 'Failed', value: AuditStatus.Failed },
 ]
 
 const columnDefs = computed<ColDef[]>(() => [
   {
     headerName: t('Status'), field: 'status', width: 110,
     cellClass: (p: any) => {
-      const map: Record<string, string> = { complete: 'text-emerald-600', failed: 'text-red-500', scanning: 'text-blue-500', analyzing: 'text-purple-500' }
+      const map: Record<string, string> = { [AuditStatus.Complete]: 'text-emerald-600', [AuditStatus.Failed]: 'text-red-500', [AuditStatus.Scanning]: 'text-blue-500', [AuditStatus.Analyzing]: 'text-purple-500' }
       return map[p.value] || ''
     },
   },
