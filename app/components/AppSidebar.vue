@@ -78,8 +78,8 @@
       </div>
     </nav>
 
-    <!-- Upgrade CTA (hidden only for Max users) -->
-    <div v-if="!isMax" class="px-3 pb-2">
+    <!-- Upgrade CTA (hidden for Max users and team members) -->
+    <div v-if="canUpgrade" class="px-3 pb-2">
       <UButton
         to="/pricing"
         icon="i-lucide-zap"
@@ -117,8 +117,11 @@ const { t } = useI18n()
 const route = useRoute()
 const authStore = useAuthStore()
 const { isFree, isMax } = usePlan()
+const { activeWorkspace } = useWorkspace()
 
 const user = computed(() => authStore.user)
+
+const canUpgrade = computed(() => !isMax.value && activeWorkspace.value?.role !== 'member')
 
 const contextRef = ref<{ projectId: string | null, pageId: string | null, isAdmin: boolean }>()
 

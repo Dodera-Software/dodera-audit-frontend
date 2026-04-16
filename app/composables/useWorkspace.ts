@@ -1,4 +1,5 @@
 import { useAuthStore } from '~/stores/auth'
+import { usePlan } from '~/composables/usePlan'
 
 export interface Workspace {
   id: string
@@ -54,6 +55,8 @@ export function useWorkspace() {
       if (userData.data) {
         authStore.setUser(userData.data)
       }
+
+      usePlan().invalidateBillingStatus()
 
       toast.add({ title: t('Team switched'), color: 'success' })
       await navigateTo('/dashboard')
