@@ -261,6 +261,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 
 interface Category {
   label: string
@@ -304,14 +305,14 @@ interface Persona {
   concern: string
 }
 
-const categories: Category[] = [
-  { label: 'Clarity', icon: 'i-lucide-eye', score: 82, color: 'text-emerald-400', barColor: 'bg-emerald-500', description: 'How clear and understandable your messaging is' },
-  { label: 'Trust', icon: 'i-lucide-shield-check', score: 71, color: 'text-yellow-400', barColor: 'bg-yellow-500', description: 'How trustworthy your page appears to visitors' },
-  { label: 'Conversion', icon: 'i-lucide-target', score: 78, color: 'text-yellow-400', barColor: 'bg-yellow-500', description: 'How effectively your page drives user actions' },
-  { label: 'Performance', icon: 'i-lucide-zap', score: 93, color: 'text-emerald-400', barColor: 'bg-emerald-500', description: 'Page load speed and Core Web Vitals' },
-  { label: 'Technical', icon: 'i-lucide-code-2', score: 85, color: 'text-emerald-400', barColor: 'bg-emerald-500', description: 'JavaScript errors, network failures, and code quality' },
-  { label: 'SEO', icon: 'i-lucide-search', score: 63, color: 'text-yellow-400', barColor: 'bg-yellow-500', description: 'Meta tags, headings, Open Graph, and structured data' },
-]
+const categories = computed<Category[]>(() => [
+  { label: t('Clarity'), icon: 'i-lucide-eye', score: 82, color: 'text-emerald-400', barColor: 'bg-emerald-500', description: t('How clear and understandable your messaging is') },
+  { label: t('Trust'), icon: 'i-lucide-shield-check', score: 71, color: 'text-yellow-400', barColor: 'bg-yellow-500', description: t('How trustworthy your page appears to visitors') },
+  { label: t('Conversion'), icon: 'i-lucide-target', score: 78, color: 'text-yellow-400', barColor: 'bg-yellow-500', description: t('How effectively your page drives user actions') },
+  { label: t('Performance'), icon: 'i-lucide-zap', score: 93, color: 'text-emerald-400', barColor: 'bg-emerald-500', description: t('Page load speed and Core Web Vitals') },
+  { label: t('Technical'), icon: 'i-lucide-code-2', score: 85, color: 'text-emerald-400', barColor: 'bg-emerald-500', description: t('JavaScript errors, network failures, and code quality') },
+  { label: t('SEO'), icon: 'i-lucide-search', score: 63, color: 'text-yellow-400', barColor: 'bg-yellow-500', description: t('Meta tags, headings, Open Graph, and structured data') },
+])
 
 const perfRows: PerfRow[] = [
   { metric: 'LCP', desktop: '1,240 ms', mobile: '890 ms', desktopDot: 'bg-emerald-500', mobileDot: 'bg-emerald-500', mobileAlert: false },
@@ -321,94 +322,94 @@ const perfRows: PerfRow[] = [
   { metric: 'Total load', desktop: '1,080 ms', mobile: '620 ms', desktopDot: 'bg-zinc-500', mobileDot: 'bg-zinc-500', mobileAlert: false },
 ]
 
-const topIssues: Issue[] = [
+const topIssues = computed<Issue[]>(() => [
   {
     score: '6.7',
-    title: 'Primary CTA anchor is lost once the hero section scrolls out of view',
+    title: t('Primary CTA anchor is lost once the hero section scrolls out of view'),
     badgeClass: 'bg-amber-500 text-black',
     tags: [
-      { label: 'Conversion', class: 'bg-teal-500/15 text-teal-400' },
-      { label: 'High', class: 'bg-zinc-700/60 text-zinc-300' },
-      { label: 'Quick fix', class: 'bg-zinc-700/60 text-zinc-300' },
+      { label: t('Conversion'), class: 'bg-teal-500/15 text-teal-400' },
+      { label: t('High'), class: 'bg-zinc-700/60 text-zinc-300' },
+      { label: t('Quick fix'), class: 'bg-zinc-700/60 text-zinc-300' },
     ],
   },
   {
     score: '5.9',
-    title: 'Hero headline and features section use inconsistent benefit framing',
+    title: t('Hero headline and features section use inconsistent benefit framing'),
     badgeClass: 'bg-amber-500 text-black',
     tags: [
-      { label: 'Clarity', class: 'bg-blue-500/15 text-blue-400' },
-      { label: 'High', class: 'bg-zinc-700/60 text-zinc-300' },
-      { label: 'Quick fix', class: 'bg-zinc-700/60 text-zinc-300' },
+      { label: t('Clarity'), class: 'bg-blue-500/15 text-blue-400' },
+      { label: t('High'), class: 'bg-zinc-700/60 text-zinc-300' },
+      { label: t('Quick fix'), class: 'bg-zinc-700/60 text-zinc-300' },
     ],
   },
   {
     score: '5.5',
-    title: 'Metadata and structured data signals are too thin for a product landing page',
+    title: t('Metadata and structured data signals are too thin for a product landing page'),
     badgeClass: 'bg-amber-500 text-black',
     tags: [
-      { label: 'SEO', class: 'bg-emerald-500/15 text-emerald-400' },
-      { label: 'High', class: 'bg-zinc-700/60 text-zinc-300' },
-      { label: 'Quick fix', class: 'bg-zinc-700/60 text-zinc-300' },
+      { label: t('SEO'), class: 'bg-emerald-500/15 text-emerald-400' },
+      { label: t('High'), class: 'bg-zinc-700/60 text-zinc-300' },
+      { label: t('Quick fix'), class: 'bg-zinc-700/60 text-zinc-300' },
     ],
   },
   {
     score: '5.2',
-    title: 'Contrast ratios fall below WCAG AA in several secondary text elements',
+    title: t('Contrast ratios fall below WCAG AA in several secondary text elements'),
     badgeClass: 'bg-blue-500 text-white',
     tags: [
-      { label: 'Conversion', class: 'bg-teal-500/15 text-teal-400' },
-      { label: 'Medium', class: 'bg-zinc-700/60 text-zinc-300' },
-      { label: 'Quick fix', class: 'bg-zinc-700/60 text-zinc-300' },
+      { label: t('Conversion'), class: 'bg-teal-500/15 text-teal-400' },
+      { label: t('Medium'), class: 'bg-zinc-700/60 text-zinc-300' },
+      { label: t('Quick fix'), class: 'bg-zinc-700/60 text-zinc-300' },
     ],
   },
   {
     score: '4.4',
-    title: 'Value proposition is not segmented by visitor type or use case',
+    title: t('Value proposition is not segmented by visitor type or use case'),
     badgeClass: 'bg-blue-500 text-white',
     tags: [
-      { label: 'Clarity', class: 'bg-blue-500/15 text-blue-400' },
-      { label: 'Medium', class: 'bg-zinc-700/60 text-zinc-300' },
-      { label: 'Quick fix', class: 'bg-zinc-700/60 text-zinc-300' },
+      { label: t('Clarity'), class: 'bg-blue-500/15 text-blue-400' },
+      { label: t('Medium'), class: 'bg-zinc-700/60 text-zinc-300' },
+      { label: t('Quick fix'), class: 'bg-zinc-700/60 text-zinc-300' },
     ],
   },
-]
+])
 
-const personaVerdicts: Persona[] = [
+const personaVerdicts = computed<Persona[]>(() => [
   {
-    name: 'The Skeptic',
-    subtitle: 'Needs proof before trusting any claim',
+    name: t('The Skeptic'),
+    subtitle: t('Needs proof before trusting any claim'),
     icon: 'i-lucide-search',
     iconBg: 'bg-amber-500/20 ring-1 ring-amber-500/30',
     iconColor: 'text-amber-400',
-    verdict: 'Would convert',
+    verdict: t('Would convert'),
     badgeClass: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
-    quote: 'I land on this page and the value proposition registers quickly. The headline communicates what the product does, and I can reach pricing without hunting. Social proof is present but thin — I need named customers and measurable outcomes before I commit to anything paid. I\'ll keep reading and look for the evidence trail...',
-    concern: 'Trust signals are present but lack specificity — named customers and measurable outcomes would improve credibility significantly.',
+    quote: t("I land on this page and the value proposition registers quickly. The headline communicates what the product does, and I can reach pricing without hunting. Social proof is present but thin — I need named customers and measurable outcomes before I commit to anything paid. I'll keep reading and look for the evidence trail..."),
+    concern: t('Trust signals are present but lack specificity — named customers and measurable outcomes would improve credibility significantly.'),
   },
   {
-    name: 'The Impulse Visitor',
-    subtitle: 'Decides in seconds based on first impression',
+    name: t('The Impulse Visitor'),
+    subtitle: t('Decides in seconds based on first impression'),
     icon: 'i-lucide-zap',
     iconBg: 'bg-blue-500/20 ring-1 ring-blue-500/30',
     iconColor: 'text-blue-400',
-    verdict: 'Would convert',
+    verdict: t('Would convert'),
     badgeClass: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
-    quote: 'Three seconds in, I understand what this is and who it\'s for. The hero is clean, the primary CTA is visible, and the free trial option removes my main hesitation. I don\'t read pages — I scan them. This one passes the scan. A slightly more prominent button would have had me clicking before I finished reading the headline...',
-    concern: 'The above-the-fold experience is strong, but the secondary CTA in the pricing section sends mixed signals about the primary conversion goal.',
+    quote: t("Three seconds in, I understand what this is and who it's for. The hero is clean, the primary CTA is visible, and the free trial option removes my main hesitation. I don't read pages — I scan them. This one passes the scan. A slightly more prominent button would have had me clicking before I finished reading the headline..."),
+    concern: t('The above-the-fold experience is strong, but the secondary CTA in the pricing section sends mixed signals about the primary conversion goal.'),
   },
   {
-    name: 'The Comparison Shopper',
-    subtitle: 'Evaluates multiple options before committing',
+    name: t('The Comparison Shopper'),
+    subtitle: t('Evaluates multiple options before committing'),
     icon: 'i-lucide-scale',
     iconBg: 'bg-violet-500/20 ring-1 ring-violet-500/30',
     iconColor: 'text-violet-400',
-    verdict: 'Uncertain',
+    verdict: t('Uncertain'),
     badgeClass: 'border-amber-500/30 bg-amber-500/10 text-amber-400',
-    quote: 'I\'m running this against three other tools in this category. Feature coverage looks competitive, but the pricing page doesn\'t give me enough granularity to build a proper side-by-side. I need to know exactly what I give up on the lower tier. Until I can map features cleanly, this stays in the maybe column...',
-    concern: 'Plan differentiation is unclear — a direct feature-by-feature matrix would significantly support the comparison decision.',
+    quote: t("I'm running this against three other tools in this category. Feature coverage looks competitive, but the pricing page doesn't give me enough granularity to build a proper side-by-side. I need to know exactly what I give up on the lower tier. Until I can map features cleanly, this stays in the maybe column..."),
+    concern: t('Plan differentiation is unclear — a direct feature-by-feature matrix would significantly support the comparison decision.'),
   },
-]
+])
 </script>
 
 <style scoped>
