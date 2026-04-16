@@ -1,7 +1,7 @@
 <template>
   <footer class="border-t border-white/10 px-6 py-16">
     <div class="mx-auto max-w-7xl">
-      <div class="grid grid-cols-2 gap-12 md:grid-cols-4">
+      <div class="grid grid-cols-2 gap-12 md:grid-cols-3">
         <!-- Brand -->
         <div class="col-span-2 md:col-span-1">
           <NuxtLink to="/" class="flex items-center gap-2.5">
@@ -39,28 +39,6 @@
           </ul>
         </div>
 
-        <!-- Newsletter -->
-        <div>
-          <h4 class="mb-4 text-sm font-semibold text-zinc-300">{{ t('Newsletter') }}</h4>
-          <p class="mb-4 text-sm leading-relaxed text-zinc-500">
-            {{ t('Get audit tips & product updates straight to your inbox.') }}
-          </p>
-          <form class="flex gap-2" @submit.prevent="handleSubscribe">
-            <input
-              v-model="email"
-              type="email"
-              :placeholder="t('Your email')"
-              required
-              class="w-full rounded-xl border border-white/12 bg-black/20 px-3.5 py-2 text-sm text-white placeholder-zinc-500 outline-none backdrop-blur-sm transition-all focus:border-white/25 focus:bg-white/10"
-            />
-            <button
-              type="submit"
-              class="shrink-0 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-400"
-            >
-              {{ t('Subscribe') }}
-            </button>
-          </form>
-        </div>
       </div>
 
       <div class="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row">
@@ -79,24 +57,7 @@ const { t } = useI18n()
 
 const currentYear = computed(() => new Date().getFullYear())
 
-const email = ref('')
-
-function handleSubscribe() {
-  // TODO: PBT-XX — wire newsletter subscription endpoint
-  email.value = ''
-}
-
-interface SocialLink {
-  label: string
-  href: string
-  icon: string
-}
-
-const socials: SocialLink[] = [
-  { label: 'LinkedIn', href: '#', icon: 'i-simple-icons-linkedin' },
-  { label: 'X (Twitter)', href: '#', icon: 'i-simple-icons-x' },
-  { label: 'Instagram', href: '#', icon: 'i-simple-icons-instagram' },
-]
+const socials = useLandingSocials()
 
 interface FooterLink {
   label: string
