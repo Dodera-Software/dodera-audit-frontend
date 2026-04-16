@@ -27,6 +27,19 @@
         >
           {{ t('Get started free') }}
         </NuxtLink>
+        <div class="ml-1 hidden items-center gap-1.5 md:flex">
+          <a
+            v-for="social in socials"
+            :key="social.label"
+            :href="social.href"
+            :aria-label="social.label"
+            target="_blank"
+            rel="noopener"
+            class="flex h-8 w-8 items-center justify-center rounded-lg border border-white/12 bg-black/20 text-zinc-400 backdrop-blur-sm transition-all hover:border-white/25 hover:bg-white/10 hover:text-white"
+          >
+            <UIcon :name="social.icon" class="h-3.5 w-3.5" />
+          </a>
+        </div>
       </div>
     </div>
   </header>
@@ -35,9 +48,11 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
+const socials = useLandingSocials()
+
 const navLinks = computed(() => [
   { label: t('How it works'), href: '#how-it-works' },
   { label: t('Features'), href: '#features' },
-  { label: t('Pricing'), href: '/pricing' },
+  { label: t('Pricing'), href: '#pricing' },
 ])
 </script>

@@ -1,7 +1,7 @@
 <template>
   <footer class="border-t border-white/10 px-6 py-16">
     <div class="mx-auto max-w-7xl">
-      <div class="grid grid-cols-2 gap-12 md:grid-cols-4">
+      <div class="grid grid-cols-2 gap-12 md:grid-cols-3">
         <!-- Brand -->
         <div class="col-span-2 md:col-span-1">
           <NuxtLink to="/" class="flex items-center gap-2.5">
@@ -38,11 +38,15 @@
             </li>
           </ul>
         </div>
+
       </div>
 
       <div class="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row">
         <p class="text-sm text-zinc-400">© {{ currentYear }} {{ t('Dodera Software. All rights reserved.') }}</p>
-        <p class="text-xs text-zinc-500">{{ t('Built with AI. Powered by curiosity.') }}</p>
+        <p class="text-xs text-zinc-500">
+          {{ t('Made with') }} <span class="inline-block animate-pulse">❤️</span> {{ t('by') }}
+          <a href="https://www.doderasoft.com/" target="_blank" rel="noopener" class="text-zinc-400 transition-colors hover:text-white">Dodera Software</a>
+        </p>
       </div>
     </div>
   </footer>
@@ -53,17 +57,7 @@ const { t } = useI18n()
 
 const currentYear = computed(() => new Date().getFullYear())
 
-interface SocialLink {
-  label: string
-  href: string
-  icon: string
-}
-
-const socials: SocialLink[] = [
-  { label: 'LinkedIn', href: '#', icon: 'i-simple-icons-linkedin' },
-  { label: 'X (Twitter)', href: '#', icon: 'i-simple-icons-x' },
-  { label: 'Instagram', href: '#', icon: 'i-simple-icons-instagram' },
-]
+const socials = useLandingSocials()
 
 interface FooterLink {
   label: string
@@ -80,16 +74,7 @@ const footerLinks = computed<FooterColumn[]>(() => [
     heading: t('Product'),
     links: [
       { label: t('Features'), to: '#features' },
-      { label: t('Pricing'), to: '/pricing' },
-      { label: t('Dashboard'), to: '/dashboard' },
-    ],
-  },
-  {
-    heading: t('Company'),
-    links: [
-      { label: t('About'), to: '#' },
-      { label: t('Blog'), to: '#' },
-      { label: t('Careers'), to: '#' },
+      { label: t('Pricing'), to: '#pricing' },
     ],
   },
   {

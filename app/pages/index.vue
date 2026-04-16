@@ -5,6 +5,7 @@
     <LandingFeatures />
     <LandingHowItWorks />
     <LandingPersonas />
+    <LandingPricing />
     <LandingCta />
     <LandingFooter />
   </div>
