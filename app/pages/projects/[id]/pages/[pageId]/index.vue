@@ -9,12 +9,12 @@
         </span>
         <UButton
           size="lg"
-          :icon="!canAudit ? 'i-lucide-lock' : 'i-lucide-scan'"
+          :icon="!canAudit ? 'i-lucide-lock' : page.audits_count > 0 ? 'i-lucide-refresh-cw' : 'i-lucide-scan'"
           :loading="triggeringAudit"
           :disabled="!!activeScan"
           @click="!canAudit ? showUpgradeModal = true : handleAuditClick()"
         >
-          {{ !canAudit ? t('Limit reached') : t('Audit this page') }}
+          {{ !canAudit ? t('Limit reached') : page.audits_count > 0 ? t('Re-audit page') : t('Audit this page') }}
         </UButton>
       </Teleport>
 
@@ -114,6 +114,13 @@
                 </div>
               </UCard>
             </div>
+
+            <!-- Certified badge -->
+            <AuditCertifiedBadge
+              v-if="(page.latest_score ?? 0) >= 80"
+              :score="page.latest_score!"
+              :page-url="page.url"
+            />
 
             <!-- Brain -->
             <PlanGate
@@ -279,6 +286,7 @@ import { AuditStatus } from '~/types'
 import type { BadgeColor } from '~/types'
 import ScanProgress from '~/components/audit/ScanProgress.vue'
 import QuickRescanModal from '~/components/audit/QuickRescanModal.vue'
+import AuditCertifiedBadge from '~/components/audit/AuditCertifiedBadge.vue'
 import PlanGate from '~/components/billing/PlanGate.vue'
 import UpgradeModal from '~/components/billing/UpgradeModal.vue'
 
