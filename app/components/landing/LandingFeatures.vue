@@ -110,7 +110,7 @@ const { t } = useI18n()
 
 const tickerItems = computed(() => [
   { id: 1, icon: 'i-lucide-users', text: t('7 AI Persona Agents') },
-  { id: 2, icon: 'i-lucide-target', text: t('5 Score Dimensions') },
+  { id: 2, icon: 'i-lucide-target', text: t('6 Score Dimensions') },
   { id: 3, icon: 'i-lucide-zap', text: t('Results in under 3 minutes') },
   { id: 4, icon: 'i-lucide-kanban', text: t('Kanban Issue Board') },
   { id: 5, icon: 'i-lucide-brain', text: t('AI-Powered Insights') },
