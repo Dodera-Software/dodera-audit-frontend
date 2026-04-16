@@ -136,6 +136,7 @@ async function handleSaveName(name: string) {
   try {
     const updated = await updateTeamName(name)
     if (team.value) team.value.name = updated.name
+    await fetchWorkspaces()
     toast.add({ title: t('Team name updated.'), color: 'success' })
   }
   catch {
@@ -241,6 +242,7 @@ async function handleDeleteTeam() {
     team.value = null
     const userData = await $api<{ data: User }>('/auth/me')
     if (userData.data) authStore.setUser(userData.data)
+    await fetchWorkspaces()
     await fetchWorkspaces()
     toast.add({ title: t('Team deleted.'), color: 'success' })
   }
