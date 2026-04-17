@@ -78,6 +78,11 @@
       </div>
     </nav>
 
+    <!-- Get Certified CTA (visible when sidebar is expanded and not on admin routes) -->
+    <div v-if="isTextVisible && !isAdminRoute" class="px-3 pb-2">
+      <SidebarGetCertified />
+    </div>
+
     <!-- Upgrade CTA (hidden for Max users and team members) -->
     <div v-if="canUpgrade" class="px-3 pb-2">
       <UButton

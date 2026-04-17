@@ -93,6 +93,11 @@
         :score-history="scoreHistory"
       />
 
+      <!-- Certified badge — shown when overall score >= 80 -->
+      <div v-if="audit.overall_score != null && audit.overall_score >= 80" class="mt-6">
+        <AuditCertifiedBadge :score="audit.overall_score" />
+      </div>
+
       <UCard v-else class="mt-4 py-8 text-center">
         <UIcon name="i-lucide-brain" class="mx-auto h-10 w-10 text-(--ui-text-muted)" />
         <p class="mt-3 text-sm text-(--ui-text-muted)">
@@ -195,6 +200,7 @@
 <script setup lang="ts">
 import ScanProgress from '~/components/audit/ScanProgress.vue'
 import ScoreDashboard from '~/components/audit/ScoreDashboard.vue'
+import AuditCertifiedBadge from '~/components/audit/AuditCertifiedBadge.vue'
 import FiveSecondTest from '~/components/audit/FiveSecondTest.vue'
 import AuditNarrative from '~/components/audit/AuditNarrative.vue'
 import PersonaCard from '~/components/audit/PersonaCard.vue'

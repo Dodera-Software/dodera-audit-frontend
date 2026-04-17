@@ -81,12 +81,18 @@
                   @error="($event.target as HTMLImageElement).remove()"
                 >
                 <!-- Score overlay -->
-                <div
-                  v-if="page.latest_score != null"
-                  class="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full border-2 bg-(--ui-bg)/90 backdrop-blur-sm"
-                  :class="scoreCircleClass(page.latest_score)"
-                >
-                  <span class="text-sm font-bold">{{ page.latest_score }}</span>
+                <div class="absolute right-3 top-3 flex items-center gap-1.5">
+                  <UiCertifiedBadgeIcon
+                    v-if="(page.latest_score ?? 0) >= 80"
+                    class="h-11 w-11 drop-shadow-md"
+                  />
+                  <div
+                    v-if="page.latest_score != null"
+                    class="flex h-11 w-11 items-center justify-center rounded-full border-2 bg-(--ui-bg)/90 backdrop-blur-sm"
+                    :class="scoreCircleClass(page.latest_score)"
+                  >
+                    <span class="text-sm font-bold">{{ page.latest_score }}</span>
+                  </div>
                 </div>
                 <UBadge
                   v-if="page.latest_score == null && page.audits_count === 0"
