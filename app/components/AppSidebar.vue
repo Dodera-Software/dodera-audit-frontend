@@ -145,6 +145,7 @@ const adminNavItems = computed(() => [
   { to: '/admin/issues', icon: 'i-lucide-bug', label: t('Issues') },
   { to: '/admin/pages', icon: 'i-lucide-globe', label: t('Pages') },
   { to: '/admin/teams', icon: 'i-lucide-users-round', label: t('Teams') },
+  { to: '/admin/announcements', icon: 'i-lucide-megaphone', label: t('Announcements') },
   { to: '/admin/system', icon: 'i-lucide-server', label: t('System') },
   { to: '/admin/activity', icon: 'i-lucide-scroll-text', label: t('Activity') },
 ])
