@@ -82,10 +82,8 @@
                 >
                 <!-- Score overlay -->
                 <div class="absolute right-3 top-3 flex items-center gap-1.5">
-                  <img
+                  <UiCertifiedBadgeIcon
                     v-if="(page.latest_score ?? 0) >= 80"
-                    src="~/assets/logo/pawbytech-certified.png"
-                    :alt="t('PawByTech Certified')"
                     class="h-11 w-11 drop-shadow-md"
                   />
                   <div

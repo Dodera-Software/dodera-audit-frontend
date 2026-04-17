@@ -4,6 +4,7 @@
     <LandingHero />
     <LandingFeatures />
     <LandingHowItWorks />
+    <LandingReportPreview />
     <LandingPersonas />
     <LandingPricing />
     <LandingCta />

@@ -6,11 +6,7 @@
     :aria-label="t('Get Certified')"
     @click="open = true"
   >
-    <img
-      src="~/assets/logo/pawbytech-certified.png"
-      :alt="t('PawByTech Certified')"
-      class="h-9 w-9 shrink-0 drop-shadow-sm transition-transform duration-200 group-hover:scale-105"
-    />
+    <UiCertifiedBadgeIcon class="h-9 w-9 shrink-0 drop-shadow-sm transition-transform duration-200 group-hover:scale-105" />
     <div class="min-w-0">
       <p class="truncate text-sm font-semibold text-amber-900 dark:text-amber-200">
         {{ t('Get Certified') }}
@@ -26,22 +22,14 @@
   <BaseSlideover v-model:open="open">
     <template #title>
       <div class="flex items-center gap-2.5">
-        <img
-          src="~/assets/logo/pawbytech-certified.png"
-          :alt="t('PawByTech Certified')"
-          class="h-7 w-7"
-        />
+        <UiCertifiedBadgeIcon class="h-7 w-7" />
         <span>{{ t('PawByTech Certified') }}</span>
       </div>
     </template>
 
     <!-- Stamp hero -->
     <div class="mb-6 flex flex-col items-center rounded-2xl bg-gradient-to-b from-amber-50 to-yellow-50/50 px-6 py-8 text-center dark:from-amber-950/30 dark:to-yellow-950/10">
-      <img
-        src="~/assets/logo/pawbytech-certified.png"
-        :alt="t('PawByTech Certified')"
-        class="h-28 w-28 drop-shadow-md"
-      />
+      <UiCertifiedBadgeIcon class="h-28 w-28 drop-shadow-md" />
       <h3 class="mt-4 text-lg font-bold text-amber-900 dark:text-amber-200">
         {{ t('PawByTech Certified') }}
       </h3>

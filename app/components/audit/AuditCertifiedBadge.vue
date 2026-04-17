@@ -8,11 +8,7 @@
     <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
       <!-- Stamp -->
       <div class="shrink-0">
-        <img
-          src="~/assets/logo/pawbytech-certified.png"
-          :alt="t('PawByTech Certified')"
-          class="h-32 w-32 drop-shadow-md"
-        />
+        <UiCertifiedBadgeIcon class="h-32 w-32 drop-shadow-md" />
       </div>
 
       <!-- Content -->
