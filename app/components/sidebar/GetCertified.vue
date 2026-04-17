@@ -2,7 +2,7 @@
   <!-- Trigger button -->
   <button
     type="button"
-    class="group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border border-amber-200/70 bg-gradient-to-r from-amber-50 to-yellow-50 px-3 py-2.5 text-left transition-all hover:border-amber-300 hover:shadow-sm dark:border-amber-800/30 dark:from-amber-950/30 dark:to-yellow-950/20 dark:hover:border-amber-700/50"
+    class="group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border border-amber-200/70 bg-gradient-to-r from-amber-50 to-yellow-50 px-3 py-2.5 text-left transition-all hover:border-amber-300 hover:shadow-sm dark:border-amber-800/30 dark:from-amber-950/30 dark:to-yellow-950/20 dark:hover:border-amber-700/50 hover:cursor-pointer"
     :aria-label="t('Get Certified')"
     @click="open = true"
   >
