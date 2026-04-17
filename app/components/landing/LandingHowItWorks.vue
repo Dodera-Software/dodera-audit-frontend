@@ -37,6 +37,11 @@
         </div>
       </div>
 
+      <!-- CTA -->
+      <div class="mt-16 flex flex-col items-center gap-3">
+        <LandingAuditButton :label="t('Audit for free')" />
+      </div>
+
     </div>
   </section>
 </template>
