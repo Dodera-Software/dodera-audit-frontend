@@ -7,15 +7,15 @@
         <h2 class="mb-4 text-center text-4xl font-black tracking-tight text-white md:text-5xl">
           {{ t('Meet your') }} <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">{{ t('virtual team.') }}</span>
         </h2>
-        <p class=\"mx-auto mb-16 max-w-2xl text-center text-lg text-zinc-300\">
+        <p class="mx-auto mb-16 max-w-2xl text-center text-lg text-zinc-300">
           {{ t('Our AI personalities audit your page simultaneously — each with different goals and perspectives, just like a real human.') }}
         </p>
 
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="flex flex-wrap justify-center gap-4">
           <div
             v-for="persona in personas"
             :key="persona.name"
-            class="group relative overflow-hidden rounded-3xl border p-6 transition-all duration-500 hover:-translate-y-1"
+            class="group relative w-full overflow-hidden rounded-3xl border p-6 transition-all duration-500 hover:-translate-y-1 sm:w-[calc(50%-0.5rem)] lg:w-[calc(25%-0.75rem)]"
             :class="persona.cardClass"
           >
             <div

@@ -7,6 +7,7 @@
     <LandingHowItWorks />
     <LandingCertification />
     <LandingPersonas />
+    <LandingComparison />
     <LandingPricing />
     <LandingCta />
     <LandingFooter />

@@ -11,7 +11,7 @@
         {{ t('This is') }}
         <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">{{ t('what you get.') }}</span>
       </h2>
-      <p class="mx-auto mb-16 max-w-xl text-center text-lg text-zinc-400">
+      <p class="mx-auto mb-16 max-w-xl text-center text-lg text-zinc-300">
         {{ t('Real output from an audit of a web page. Every audit includes scores, persona verdicts, annotated issues, and a full action plan.') }}
       </p>
 
