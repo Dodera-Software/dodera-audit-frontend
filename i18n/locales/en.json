@@ -1179,5 +1179,10 @@
   "Delete this team?": "Delete this team?",
   "All members will immediately lose access to shared projects. This action cannot be undone.": "All members will immediately lose access to shared projects. This action cannot be undone.",
   "Leave this team?": "Leave this team?",
-  "You will lose access to all shared projects. This action cannot be undone.": "You will lose access to all shared projects. This action cannot be undone."
+  "You will lose access to all shared projects. This action cannot be undone.": "You will lose access to all shared projects. This action cannot be undone.",
+  "Quick wins on": "Quick wins on",
+  "Showing only critical/high issues with quick fix effort. Other filters are paused.": "Showing only critical/high issues with quick fix effort. Other filters are paused.",
+  "AI only": "AI only",
+  "The system verifies fixed issues on the next audit.": "The system verifies fixed issues on the next audit.",
+  "Drop here": "Drop here"
 }
