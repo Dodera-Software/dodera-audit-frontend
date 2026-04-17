@@ -37,6 +37,7 @@ export function useWebSocket() {
       connectedUserId = userId
 
       bindScanEvents(userChannel)
+      bindNotificationEvents(userChannel)
     }
     catch {
       // WebSocket unavailable
@@ -83,6 +84,22 @@ export function useWebSocket() {
     })
   }
 
+  function bindNotificationEvents(channel: Channel) {
+    const notificationsStore = useNotificationsStore()
+
+    channel.bind('NotificationReceived', (payload: {
+      id: string
+      type?: string | null
+      title?: string | null
+      body?: string | null
+      icon?: string | null
+      link?: string | null
+      meta?: Record<string, unknown> | null
+    }) => {
+      notificationsStore.prependFromWs(payload)
+    })
+  }
+
   function getChannel(): Channel | null {
     return userChannel
   }
@@ -92,11 +109,15 @@ export function useWebSocket() {
   }
 
   watch(() => authStore.user, (user) => {
+    const notificationsStore = useNotificationsStore()
+
     if (user) {
       connect()
+      notificationsStore.fetchUnreadCount()
     }
     else {
       disconnect()
+      notificationsStore.reset()
     }
   }, { immediate: true })
 

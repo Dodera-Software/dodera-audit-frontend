@@ -3,8 +3,9 @@
     <LandingNavbar />
     <LandingHero />
     <LandingFeatures />
-    <LandingHowItWorks />
     <LandingReportPreview />
+    <LandingHowItWorks />
+    <LandingCertification />
     <LandingPersonas />
     <LandingPricing />
     <LandingCta />

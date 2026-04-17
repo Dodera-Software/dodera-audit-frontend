@@ -101,17 +101,9 @@
       <ThemeSwitcher size="sm" />
 
       <!-- Notifications -->
-      <UTooltip :text="t('Notifications — coming soon')">
-        <UButton
-          variant="ghost"
-          color="neutral"
-          size="sm"
-          icon="i-lucide-bell"
-          square
-          aria-label="Notifications"
-          disabled
-        />
-      </UTooltip>
+      <ClientOnly>
+        <NotificationBell />
+      </ClientOnly>
 
       <!-- Settings -->
       <UButton
@@ -151,6 +143,7 @@
 </template>
 
 <script setup lang="ts">
+import NotificationBell from '~/components/notifications/NotificationBell.vue'
 import ThemeSwitcher from '~/components/ThemeSwitcher.vue'
 
 defineEmits<{
