@@ -14,4 +14,6 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: false })
+
+useLandingSeo()
 </script>

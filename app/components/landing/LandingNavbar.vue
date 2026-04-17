@@ -11,14 +11,14 @@
           v-for="link in navLinks"
           :key="link.label"
           :href="link.href"
-          class="text-sm font-medium text-zinc-400 transition-colors duration-200 hover:text-white"
+          class="text-sm font-medium text-zinc-300 transition-colors duration-200 hover:text-white"
         >
           {{ link.label }}
         </a>
       </nav>
 
       <div class="flex items-center gap-3">
-        <NuxtLink to="/login" class="hidden text-sm font-medium text-zinc-400 transition-colors hover:text-white md:block">
+        <NuxtLink to="/login" class="hidden text-sm font-medium text-zinc-300 transition-colors hover:text-white md:block">
           {{ t('Sign in') }}
         </NuxtLink>
         <NuxtLink
@@ -35,7 +35,7 @@
             :aria-label="social.label"
             target="_blank"
             rel="noopener"
-            class="flex h-8 w-8 items-center justify-center rounded-lg border border-white/12 bg-black/20 text-zinc-400 backdrop-blur-sm transition-all hover:border-white/25 hover:bg-white/10 hover:text-white"
+            class="flex h-8 w-8 items-center justify-center rounded-lg border border-white/12 bg-black/20 text-zinc-300 backdrop-blur-sm transition-all hover:border-white/25 hover:bg-white/10 hover:text-white"
           >
             <UIcon :name="social.icon" class="h-3.5 w-3.5" />
           </a>

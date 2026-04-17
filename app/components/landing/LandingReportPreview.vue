@@ -25,15 +25,15 @@
             <div class="h-3 w-3 rounded-full bg-green-500/70" />
           </div>
           <div class="flex flex-1 items-center gap-2 rounded-lg bg-zinc-800/80 px-3 py-1.5">
-            <UIcon name="i-lucide-lock" class="h-3 w-3 shrink-0 text-zinc-500" />
-            <span class="text-xs text-zinc-400">app.pawbytech.com / my-website / homepage / audit</span>
+            <UIcon name="i-lucide-lock" class="h-3 w-3 shrink-0 text-zinc-400" />
+            <span class="text-xs text-zinc-300">app.pawbytech.com / my-website / homepage / audit</span>
           </div>
         </div>
 
         <LandingReportMockup />
       </div>
 
-      <p class="mt-5 text-center text-sm text-zinc-600">
+      <p class="mt-5 text-center text-sm text-zinc-400">
         {{ t('Sample data only. Scroll to explore the full report.') }}
       </p>
     </div>

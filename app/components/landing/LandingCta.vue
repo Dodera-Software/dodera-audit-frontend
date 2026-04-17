@@ -21,7 +21,7 @@
         </span>
       </h2>
 
-      <p class="mx-auto mt-7 max-w-xl text-xl text-zinc-400">
+      <p class="mx-auto mt-7 max-w-xl text-xl text-zinc-300">
         {{ t('Paste your URL and get a full AI audit in under 3 minutes.') }}
       </p>
 
@@ -35,7 +35,7 @@
         </a>
       </div>
 
-      <p class="mt-6 text-sm text-zinc-600">{{ t('Results in under 3 minutes. Cancel anytime.') }}</p>
+      <p class="mt-6 text-sm text-zinc-400">{{ t('Results in under 3 minutes. Cancel anytime.') }}</p>
     </div>
   </section>
 </template>

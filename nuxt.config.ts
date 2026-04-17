@@ -5,11 +5,30 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'PawByTech',
+      title: 'AI Website Audit Tool for Clarity, Trust & Conversion | PawByTech',
+      htmlAttrs: {
+        lang: 'en',
+      },
       meta: [
-        { name: 'description', content: 'AI-powered website audit platform' },
+        { name: 'description', content: 'Get AI-powered website audits with 7+ AI personas. Analyze clarity, trust, conversion potential & UX. Fix issues faster with Kanban boards. Free audit, no credit card needed.' },
+        { name: 'keywords', content: 'website audit tool, AI audit, conversion optimization, UX audit, CRO tool, web analysis, AI personas' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'robots', content: 'index, follow' },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:title', content: 'AI Website Audit Tool for Clarity, Trust & Conversion | PawByTech' },
+        { property: 'og:description', content: 'Get AI-powered website audits with 7+ AI personas. Analyze clarity, trust, conversion potential & UX. Fix issues faster with Kanban boards.' },
+        { property: 'og:url', content: 'https://pawbytech.com' },
+        { property: 'og:image', content: 'https://pawbytech.com/og-image.png' },
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'AI Website Audit Tool for Clarity, Trust & Conversion | PawByTech' },
+        { name: 'twitter:description', content: 'Get AI-powered website audits with 7+ AI personas. Analyze clarity, trust, conversion potential & UX. Fix issues faster with Kanban boards.' },
+        { name: 'twitter:image', content: 'https://pawbytech.com/og-image.png' },
+        { name: 'theme-color', content: '#10b981' },
       ],
       link: [
+        { rel: 'canonical', href: 'https://pawbytech.com' },
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
         { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },

@@ -7,7 +7,7 @@
         <h2 class="mb-4 text-center text-4xl font-black tracking-tight text-white md:text-5xl">
           {{ t('Meet your') }} <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">{{ t('virtual team.') }}</span>
         </h2>
-        <p class="mx-auto mb-16 max-w-2xl text-center text-lg text-zinc-400">
+        <p class=\"mx-auto mb-16 max-w-2xl text-center text-lg text-zinc-300\">
           {{ t('Our AI personalities audit your page simultaneously — each with different goals and perspectives, just like a real human.') }}
         </p>
 
@@ -28,7 +28,7 @@
               </div>
               <h3 class="mt-4 text-base font-black text-white">{{ persona.name }}</h3>
               <p class="mt-1 text-xs font-semibold" :class="persona.iconColor">{{ persona.tagline }}</p>
-              <p class="mt-3 text-sm leading-relaxed text-zinc-400">{{ persona.description }}</p>
+              <p class="mt-3 text-sm leading-relaxed text-zinc-300">{{ persona.description }}</p>
             </div>
           </div>
         </div>
