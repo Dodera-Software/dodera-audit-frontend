@@ -1,12 +1,12 @@
 <template>
   <header class="fixed top-0 z-50 w-full border-b border-white/8 bg-zinc-800/80 backdrop-blur-xl">
-    <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+    <div class="relative mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
       <NuxtLink to="/" class="flex items-center gap-2.5">
         <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-8 w-auto" />
         <span class="text-lg font-bold tracking-tight text-white">PawByTech</span>
       </NuxtLink>
 
-      <nav class="hidden items-center gap-8 md:flex">
+      <nav class="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 md:flex">
         <a
           v-for="link in navLinks"
           :key="link.label"
