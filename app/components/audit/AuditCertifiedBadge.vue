@@ -44,15 +44,6 @@
             <span class="text-xs text-amber-700/60 dark:text-amber-400/50">{{ t('Certified score') }}</span>
           </div>
 
-          <UButton
-            size="sm"
-            color="warning"
-            variant="solid"
-            icon="i-lucide-download"
-            @click="downloadCertificate"
-          >
-            {{ t('Download certificate') }}
-          </UButton>
         </div>
       </div>
     </div>
@@ -68,10 +59,5 @@ interface Props {
 const props = defineProps<Props>()
 const { t } = useI18n()
 
-function downloadCertificate() {
-  const link = document.createElement('a')
-  link.href = '/images/pawbytech-certified.png'
-  link.download = 'pawbytech-certified.png'
-  link.click()
-}
+
 </script>
