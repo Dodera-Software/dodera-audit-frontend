@@ -6,8 +6,8 @@ export interface SocialLink {
 
 export function useLandingSocials(): SocialLink[] {
     return [
-        { label: 'LinkedIn', href: '#', icon: 'i-simple-icons-linkedin' },
-        { label: 'X (Twitter)', href: '#', icon: 'i-simple-icons-x' },
-        { label: 'Instagram', href: '#', icon: 'i-simple-icons-instagram' },
+        { label: 'LinkedIn', href: 'https://www.linkedin.com/company/pawbytech', icon: 'i-simple-icons-linkedin' },
+        { label: 'X (Twitter)', href: 'https://x.com/pawbytech', icon: 'i-simple-icons-x' },
+        { label: 'Instagram', href: 'https://www.instagram.com/pawbytech', icon: 'i-simple-icons-instagram' },
     ]
 }

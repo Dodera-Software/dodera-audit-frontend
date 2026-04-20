@@ -8,9 +8,9 @@
             <img src="~/assets/logo/pawbytech-logo.png" alt="PawByTech" class="h-8 w-auto" />
             <span class="font-bold text-white">PawByTech</span>
           </NuxtLink>
-          <p class="mt-4 text-sm leading-relaxed text-zinc-500">
+          <p class="mt-4 text-sm leading-relaxed text-zinc-400">
             {{ t('AI-powered website audit platform by') }}
-            <a href="https://doderasoft.com" target="_blank" rel="noopener" class="text-zinc-400 transition-colors hover:text-white">Dodera Software</a>.
+            <a href="https://doderasoft.com" target="_blank" rel="noopener" class="text-zinc-300 transition-colors hover:text-white">Dodera Software</a>.
           </p>
           <div class="mt-6 flex gap-3">
             <a
@@ -20,7 +20,7 @@
               :aria-label="social.label"
               target="_blank"
               rel="noopener"
-              class="flex h-9 w-9 items-center justify-center rounded-xl border border-white/12 bg-black/20 text-zinc-400 transition-all backdrop-blur-sm hover:border-white/25 hover:bg-white/10 hover:text-white"
+              class="flex h-9 w-9 items-center justify-center rounded-xl border border-white/12 bg-black/20 text-zinc-300 transition-all backdrop-blur-sm hover:border-white/25 hover:bg-white/10 hover:text-white"
             >
               <UIcon :name="social.icon" class="h-4 w-4" />
             </a>
@@ -32,7 +32,7 @@
           <h4 class="mb-4 text-sm font-semibold text-zinc-300">{{ col.heading }}</h4>
           <ul class="space-y-3">
             <li v-for="link in col.links" :key="link.label">
-              <NuxtLink :to="link.to" class="text-sm text-zinc-500 transition-colors hover:text-white">
+              <NuxtLink :to="link.to" class="text-sm text-zinc-400 transition-colors hover:text-white">
                 {{ link.label }}
               </NuxtLink>
             </li>
@@ -43,9 +43,9 @@
 
       <div class="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row">
         <p class="text-sm text-zinc-400">© {{ currentYear }} {{ t('Dodera Software. All rights reserved.') }}</p>
-        <p class="text-xs text-zinc-500">
+        <p class="text-xs text-zinc-400">
           {{ t('Made with') }} <span class="inline-block animate-pulse">❤️</span> {{ t('by') }}
-          <a href="https://www.doderasoft.com/" target="_blank" rel="noopener" class="text-zinc-400 transition-colors hover:text-white">Dodera Software</a>
+          <a href="https://www.doderasoft.com/" target="_blank" rel="noopener" class="text-zinc-300 transition-colors hover:text-white">Dodera Software</a>
         </p>
       </div>
     </div>

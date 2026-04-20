@@ -30,7 +30,7 @@
       </h1>
 
       <!-- Subtitle -->
-      <p class="mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-zinc-400 sm:text-xl">
+      <p class="mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-zinc-300 sm:text-xl">
         {{ t('Paste any URL. Our AI personas browse your page') }}
         <span class="italic text-zinc-300">{{ t('like real visitors would') }}</span>
         {{ t('and tell you exactly why people leave and what to fix. Score your page with confidence for clarity, trust and conversion.') }}
@@ -42,7 +42,7 @@
       </div>
 
       <!-- Trust micro-copy -->
-      <div class="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-zinc-500">
+      <div class="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-zinc-300">
         <span class="flex items-center gap-1.5">
           <UIcon name="i-lucide-check-circle" class="h-4 w-4 shrink-0 text-emerald-500" />
           {{ t('No credit card') }}
@@ -62,7 +62,7 @@
 
     <!-- Scroll hint -->
     <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-      <UIcon name="i-lucide-chevrons-down" class="h-6 w-6 text-zinc-600" />
+      <UIcon name="i-lucide-chevrons-down" class="h-6 w-6 text-zinc-400" />
     </div>
   </section>
 </template>

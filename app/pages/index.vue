@@ -7,6 +7,7 @@
     <LandingHowItWorks />
     <LandingCertification />
     <LandingPersonas />
+    <LandingComparison />
     <LandingPricing />
     <LandingCta />
     <LandingFooter />
@@ -15,4 +16,6 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: false })
+
+useLandingSeo()
 </script>

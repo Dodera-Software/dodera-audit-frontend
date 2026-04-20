@@ -6,7 +6,7 @@
         {{ t('Audit in') }}
         <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">{{ t('3 steps') }}</span>
       </h2>
-      <p class="mx-auto mb-20 max-w-lg text-center text-lg text-zinc-400">
+      <p class="mx-auto mb-20 max-w-lg text-center text-lg text-zinc-300">
         {{ t('No integration. No code changes. Just an URL.') }}
       </p>
 
@@ -33,7 +33,7 @@
 
           <!-- Text -->
           <h3 class="mt-5 text-xl font-black text-white transition-colors duration-300 group-hover:text-emerald-300">{{ step.title }}</h3>
-          <p class="mt-2 max-w-xs text-sm leading-relaxed text-zinc-400">{{ step.description }}</p>
+          <p class="mt-2 max-w-xs text-sm leading-relaxed text-zinc-300">{{ step.description }}</p>
         </div>
       </div>
 

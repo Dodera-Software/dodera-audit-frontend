@@ -24,7 +24,7 @@
         </span>
         {{ t(' badge') }}
       </h2>
-      <p class="mx-auto mb-16 max-w-xl text-center text-lg text-zinc-400">
+      <p class="mx-auto mb-16 max-w-xl text-center text-lg text-zinc-300">
         {{ t('Score 80 or above on any audit and earn the quality mark that signals your page meets a high standard for clarity, trust, conversion, and performance.') }}
       </p>
 
@@ -44,14 +44,14 @@
             <p class="mt-1 text-xs font-semibold uppercase tracking-widest text-amber-400/80">
               {{ t('Premium Compliance & Performance') }}
             </p>
-            <p class="mt-4 max-w-sm text-sm leading-relaxed text-zinc-400">
+            <p class="mt-4 max-w-sm text-sm leading-relaxed text-zinc-300">
               {{ t('A quality mark awarded to pages that score 80 or above on our AI audit. It signals to visitors — and to you — that your page meets a high standard.') }}
             </p>
           </div>
 
           <!-- How to get it -->
           <div class="mt-8 space-y-2 text-left">
-            <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">
+            <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-400">
               {{ t('How to get it') }}
             </p>
             <div
@@ -82,7 +82,7 @@
             </div>
             <div>
               <p class="font-semibold text-white">{{ benefit.title }}</p>
-              <p class="mt-1 text-sm leading-relaxed text-zinc-400">{{ benefit.description }}</p>
+              <p class="mt-1 text-sm leading-relaxed text-zinc-300">{{ benefit.description }}</p>
             </div>
           </article>
 

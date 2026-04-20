@@ -6,7 +6,7 @@
         {{ t('Simple, transparent') }}
         <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">{{ t('pricing.') }}</span>
       </h2>
-      <p class="mx-auto mb-16 max-w-lg text-center text-lg text-zinc-400">
+      <p class="mx-auto mb-16 max-w-lg text-center text-lg text-zinc-300">
         <span class="font-bold text-white">{{ t('Start free.') }}</span> {{ t('Upgrade when you need more audits or your team grows.') }}
       </p>
 
@@ -14,18 +14,18 @@
         <!-- Free -->
         <NuxtLink to="/register" class="flex flex-col rounded-3xl border border-white/10 bg-black/25 p-7 backdrop-blur-sm transition-all duration-300 hover:scale-[1.03] hover:border-emerald-400/60 hover:shadow-[0_8px_50px_rgba(16,185,129,0.12)]">
           <h3 class="text-xl font-black text-white">Free</h3>
-          <p class="mt-1 text-sm text-zinc-500">{{ t('Try it out') }}</p>
+          <p class="mt-1 text-sm text-zinc-300">{{ t('Try it out') }}</p>
           <div class="my-5">
             <span class="text-4xl font-black text-white">€0</span>
-            <span class="text-sm text-zinc-500"> / {{ t('forever') }}</span>
+            <span class="text-sm text-zinc-300"> / {{ t('forever') }}</span>
           </div>
           <ul class="mb-6 flex-1 space-y-3">
             <li v-for="f in freeFeatures" :key="f" class="flex items-start gap-2.5 text-sm text-zinc-300">
               <UIcon name="i-lucide-check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
               {{ f }}
             </li>
-            <li v-for="f in freeLocked" :key="f" class="flex items-start gap-2.5 text-sm text-zinc-600 line-through">
-              <UIcon name="i-lucide-x" class="mt-0.5 h-4 w-4 shrink-0 text-zinc-700" />
+            <li v-for="f in freeLocked" :key="f" class="flex items-start gap-2.5 text-sm text-zinc-400 line-through">
+              <UIcon name="i-lucide-x" class="mt-0.5 h-4 w-4 shrink-0 text-zinc-500" />
               {{ f }}
             </li>
           </ul>
@@ -39,26 +39,26 @@
         <!-- Pro -->
         <NuxtLink to="/register" class="flex flex-col rounded-3xl border border-white/10 bg-black/25 p-7 backdrop-blur-sm transition-all duration-300 hover:scale-[1.03] hover:border-emerald-400/60 hover:shadow-[0_8px_50px_rgba(16,185,129,0.12)]">
           <h3 class="text-xl font-black text-white">Pro</h3>
-          <p class="mt-1 text-sm text-zinc-500">{{ t('For individuals & small teams') }}</p>
+          <p class="mt-1 text-sm text-zinc-300">{{ t('For individuals & small teams') }}</p>
           <div class="my-5">
             <span class="text-4xl font-black text-white">€20</span>
-            <span class="text-sm text-zinc-500"> / {{ t('month') }}</span>
+            <span class="text-sm text-zinc-300"> / {{ t('month') }}</span>
           </div>
           <ul class="mb-4 flex-1 space-y-3">
             <li v-for="f in proFeatures" :key="f" class="flex items-start gap-2.5 text-sm text-zinc-300">
               <UIcon name="i-lucide-check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
               {{ f }}
             </li>
-            <li v-for="f in proLocked" :key="f" class="flex items-start gap-2.5 text-sm text-zinc-600 line-through">
-              <UIcon name="i-lucide-x" class="mt-0.5 h-4 w-4 shrink-0 text-zinc-700" />
+            <li v-for="f in proLocked" :key="f" class="flex items-start gap-2.5 text-sm text-zinc-400 line-through">
+              <UIcon name="i-lucide-x" class="mt-0.5 h-4 w-4 shrink-0 text-zinc-500" />
               {{ f }}
             </li>
           </ul>
           <div class="mb-4 flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-2.5">
-            <span class="text-xs text-zinc-400">{{ t('Extra members') }} <span class="font-semibold text-zinc-200">{{ t('€10/mo') }}</span></span>
+            <span class="text-xs text-zinc-300">{{ t('Extra members') }} <span class="font-semibold text-zinc-100">{{ t('€10/mo') }}</span></span>
             <div class="flex items-center gap-2.5">
               <button
-                class="flex h-6 w-6 items-center justify-center rounded-lg border border-white/10 text-zinc-400 transition-colors hover:border-white/20 hover:text-white disabled:opacity-30"
+                class="flex h-6 w-6 items-center justify-center rounded-lg border border-white/10 text-zinc-300 transition-colors hover:border-white/20 hover:text-white disabled:opacity-30"
                 :disabled="proSeats <= 0"
                 :aria-label="t('Remove seat')"
                 @click.prevent="proSeats--"
@@ -67,7 +67,7 @@
               </button>
               <span class="w-4 text-center text-sm font-bold text-white">{{ proSeats }}</span>
               <button
-                class="flex h-6 w-6 items-center justify-center rounded-lg border border-white/10 text-zinc-400 transition-colors hover:border-white/20 hover:text-white"
+                class="flex h-6 w-6 items-center justify-center rounded-lg border border-white/10 text-zinc-300 transition-colors hover:border-white/20 hover:text-white"
                 :aria-label="t('Add seat')"
                 @click.prevent="proSeats++"
               >
@@ -90,10 +90,10 @@
             </span>
           </div>
           <h3 class="text-xl font-black text-white">Max</h3>
-          <p class="mt-1 text-sm text-zinc-500">{{ t('For agencies & power users') }}</p>
+          <p class="mt-1 text-sm text-zinc-300">{{ t('For agencies & power users') }}</p>
           <div class="my-5">
             <span class="text-4xl font-black text-white">€100</span>
-            <span class="text-sm text-zinc-500"> / {{ t('month') }}</span>
+            <span class="text-sm text-zinc-300"> / {{ t('month') }}</span>
           </div>
           <ul class="mb-4 flex-1 space-y-3">
             <li v-for="f in maxFeatures" :key="f" class="flex items-start gap-2.5 text-sm text-zinc-300">
@@ -102,10 +102,10 @@
             </li>
           </ul>
           <div class="mb-4 flex items-center justify-between rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-2.5">
-            <span class="text-xs text-zinc-400">{{ t('Extra members') }} <span class="font-semibold text-zinc-200">{{ t('€10/mo') }}</span></span>
+            <span class="text-xs text-zinc-300">{{ t('Extra members') }} <span class="font-semibold text-zinc-100">{{ t('€10/mo') }}</span></span>
             <div class="flex items-center gap-2.5">
               <button
-                class="flex h-6 w-6 items-center justify-center rounded-lg border border-emerald-500/20 text-zinc-400 transition-colors hover:border-emerald-500/40 hover:text-white disabled:opacity-30"
+                class="flex h-6 w-6 items-center justify-center rounded-lg border border-emerald-500/20 text-zinc-300 transition-colors hover:border-emerald-500/40 hover:text-white disabled:opacity-30"
                 :disabled="maxSeats <= 0"
                 :aria-label="t('Remove seat')"
                 @click.prevent="maxSeats--"
@@ -114,7 +114,7 @@
               </button>
               <span class="w-4 text-center text-sm font-bold text-white">{{ maxSeats }}</span>
               <button
-                class="flex h-6 w-6 items-center justify-center rounded-lg border border-emerald-500/20 text-zinc-400 transition-colors hover:border-emerald-500/40 hover:text-white"
+                class="flex h-6 w-6 items-center justify-center rounded-lg border border-emerald-500/20 text-zinc-300 transition-colors hover:border-emerald-500/40 hover:text-white"
                 :aria-label="t('Add seat')"
                 @click.prevent="maxSeats++"
               >
@@ -140,7 +140,7 @@
             faqs.length % 2 === 1 && index === faqs.length - 1 && 'md:col-span-2 md:mx-auto md:max-w-[calc(50%-0.5rem)]',
           ]">
             <p class="text-sm font-semibold text-white">{{ faq.q }}</p>
-            <p class="mt-2 text-sm leading-relaxed text-zinc-400">{{ faq.a }}</p>
+            <p class="mt-2 text-sm leading-relaxed text-zinc-300">{{ faq.a }}</p>
           </div>
         </div>
       </div>
