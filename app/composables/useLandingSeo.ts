@@ -30,12 +30,29 @@ export function useLandingSeo(): void {
                     description: 'AI website audit tool that analyzes clarity, trust, conversion potential and UX with 7+ AI personas',
                     url: 'https://pawbytech.com',
                     applicationCategory: 'BusinessApplication',
-                    offers: {
-                        '@type': 'Offer',
-                        price: '0',
-                        priceCurrency: 'EUR',
-                        description: 'Free AI website audit with no credit card required',
-                    },
+                    offers: [
+                        {
+                            '@type': 'Offer',
+                            name: 'Free',
+                            price: '0',
+                            priceCurrency: 'EUR',
+                            description: 'Free AI website audit — no credit card required',
+                        },
+                        {
+                            '@type': 'Offer',
+                            name: 'Pro',
+                            price: '20',
+                            priceCurrency: 'EUR',
+                            description: 'Pro plan for individuals and small teams — €20/month',
+                        },
+                        {
+                            '@type': 'Offer',
+                            name: 'Max',
+                            price: '100',
+                            priceCurrency: 'EUR',
+                            description: 'Max plan for agencies and power users — €100/month',
+                        },
+                    ],
                     featureList: [
                         '7+ AI Persona Agents',
                         'Conversion Scoring',
@@ -60,50 +77,42 @@ export function useLandingSeo(): void {
                     mainEntity: [
                         {
                             '@type': 'Question',
-                            name: 'What is PawByTech?',
+                            name: 'What counts as an audit?',
                             acceptedAnswer: {
                                 '@type': 'Answer',
-                                text: 'PawByTech is an AI-powered website audit platform that analyzes your website through the lens of 7+ different AI personas (like The Skeptic, Impulse Visitor, and Comparison Shopper) to evaluate clarity, trust, conversion potential, and overall UX.',
+                                text: 'One full page scan and AI analysis counts as one audit. Partial re-scans also count.',
                             },
                         },
                         {
                             '@type': 'Question',
-                            name: 'How does the AI audit work?',
+                            name: 'Can I cancel anytime?',
                             acceptedAnswer: {
                                 '@type': 'Answer',
-                                text: 'Simply paste your URL. Our AI personas browse your page like real visitors would and provide scores across 6 dimensions: clarity, trust, conversion intent, mobile experience, visual hierarchy, and technical performance. Results are delivered in under 3 minutes.',
+                                text: 'Yes. Cancel from the billing portal and your plan remains active until the end of the billing period.',
                             },
                         },
                         {
                             '@type': 'Question',
-                            name: 'Do I need to change my code?',
+                            name: 'What are extra members?',
                             acceptedAnswer: {
                                 '@type': 'Answer',
-                                text: 'No. PawByTech requires no code changes, no integration, and no installation. Simply paste your URL and get your audit results.',
+                                text: 'Each extra member gets their own login to collaborate on projects and view audit reports. Team management is coming soon.',
                             },
                         },
                         {
                             '@type': 'Question',
-                            name: 'Is there a free plan?',
+                            name: 'What is the custom OpenAI API key?',
                             acceptedAnswer: {
                                 '@type': 'Answer',
-                                text: 'Yes. PawByTech offers a free plan with no credit card required. You can run your first audit immediately and explore all core features.',
+                                text: 'Max plan users can connect their own OpenAI API key to run unlimited audits at their own cost. Add your key in account settings.',
                             },
                         },
                         {
                             '@type': 'Question',
-                            name: 'What is the Kanban Issue Board?',
+                            name: 'Is there a tutorial for new users?',
                             acceptedAnswer: {
                                 '@type': 'Answer',
-                                text: 'The Kanban Issue Board is a visual task management system where each audit issue is a card. You can drag and prioritize issues, assign status, and track fixes from detection through verification.',
-                            },
-                        },
-                        {
-                            '@type': 'Question',
-                            name: 'What is Project Brain?',
-                            acceptedAnswer: {
-                                '@type': 'Answer',
-                                text: 'Project Brain is an AI-powered learning system that learns from all your audits over time, detects patterns, identifies regressions, and narrates your improvement story.',
+                                text: 'Yes! Every new user gets a free interactive tutorial inside the app that walks you through your first audit step by step — no prior experience needed.',
                             },
                         },
                     ],
