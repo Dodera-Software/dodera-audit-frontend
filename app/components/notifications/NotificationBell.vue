@@ -106,6 +106,9 @@ const listRef = ref<HTMLElement | null>(null)
 watch(open, (isOpen) => {
   if (isOpen) {
     notificationsStore.fetchFirstPage()
+    if (notificationsStore.unreadCount > 0) {
+      notificationsStore.markAllRead()
+    }
   }
 })
 
