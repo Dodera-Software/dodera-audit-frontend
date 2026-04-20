@@ -13,8 +13,9 @@ export interface User {
   email_verified_at: string | null
   created_at: string
   team_role: 'owner' | 'member' | null
-  owned_team_name: string | null
-  active_workspace_user_id: string | null
+  active_team_id: string | null
+  active_team_name: string | null
+  default_project_id: string | null
 }
 
 export const useAuthStore = defineStore('auth', {

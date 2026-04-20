@@ -57,6 +57,7 @@
 
 <script setup lang="ts">
 const open = defineModel<boolean>('open', { default: false })
+const props = defineProps<{ teamId: string }>()
 
 const { t } = useI18n()
 const { inviteMember } = useTeam()
@@ -80,7 +81,7 @@ async function handleInvite() {
   loading.value = true
   errorMsg.value = ''
   try {
-    await inviteMember(trimmed)
+    await inviteMember(props.teamId, trimmed)
     sentEmails.value.push(trimmed)
     email.value = ''
   }

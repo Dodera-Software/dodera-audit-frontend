@@ -3,8 +3,9 @@ import type { Channel } from 'pusher-js'
 
 let pusherInstance: Pusher | null = null
 let userChannel: Channel | null = null
+let teamChannel: Channel | null = null
 let connectedUserId: string | null = null
-let eventsBound = false
+let connectedTeamId: string | null = null
 
 export function useWebSocket() {
   const config = useRuntimeConfig()
@@ -12,35 +13,49 @@ export function useWebSocket() {
 
   function connect() {
     const userId = authStore.user?.id
-    if (!userId || connectedUserId === userId) return
+    const teamId = authStore.user?.active_team_id ?? null
+    if (!userId) return
 
-    disconnect()
+    // Bring up the Pusher instance once per user session.
+    if (connectedUserId !== userId) {
+      disconnect()
 
-    const key = config.public.reverbKey || 'pawbytech-key'
-    const host = config.public.reverbHost || 'localhost'
-    const port = Number(config.public.reverbPort) || 8080
-    const scheme = config.public.reverbScheme || 'ws'
-    const tls = scheme === 'wss'
+      const key = config.public.reverbKey || 'pawbytech-key'
+      const host = config.public.reverbHost || 'localhost'
+      const port = Number(config.public.reverbPort) || 8080
+      const scheme = config.public.reverbScheme || 'ws'
+      const tls = scheme === 'wss'
 
-    try {
-      pusherInstance = new Pusher(key as string, {
-        cluster: 'mt1',
-        wsHost: host as string,
-        wsPort: port,
-        wssPort: port,
-        forceTLS: tls,
-        enabledTransports: ['ws', 'wss'],
-        disableStats: true,
-      })
+      try {
+        pusherInstance = new Pusher(key as string, {
+          cluster: 'mt1',
+          wsHost: host as string,
+          wsPort: port,
+          wssPort: port,
+          forceTLS: tls,
+          enabledTransports: ['ws', 'wss'],
+          disableStats: true,
+        })
 
-      userChannel = pusherInstance.subscribe(`user.${userId}`)
-      connectedUserId = userId
-
-      bindScanEvents(userChannel)
-      bindNotificationEvents(userChannel)
+        userChannel = pusherInstance.subscribe(`user.${userId}`)
+        bindNotificationEvents(userChannel)
+        connectedUserId = userId
+      }
+      catch {
+        // WebSocket unavailable
+        return
+      }
     }
-    catch {
-      // WebSocket unavailable
+
+    // Team channel follows the active workspace — resubscribe on switch.
+    if (pusherInstance && teamId && connectedTeamId !== teamId) {
+      if (teamChannel && connectedTeamId) {
+        try { pusherInstance.unsubscribe(`team.${connectedTeamId}`) } catch {}
+      }
+
+      teamChannel = pusherInstance.subscribe(`team.${teamId}`)
+      bindScanEvents(teamChannel)
+      connectedTeamId = teamId
     }
   }
 
@@ -49,18 +64,19 @@ export function useWebSocket() {
       try { userChannel.unbind_all() } catch {}
       userChannel = null
     }
+    if (teamChannel) {
+      try { teamChannel.unbind_all() } catch {}
+      teamChannel = null
+    }
     if (pusherInstance) {
       try { pusherInstance.disconnect() } catch {}
       pusherInstance = null
     }
     connectedUserId = null
-    eventsBound = false
+    connectedTeamId = null
   }
 
   function bindScanEvents(channel: Channel) {
-    if (eventsBound) return
-    eventsBound = true
-
     const scanStore = useScanProgressStore()
 
     channel.bind('ScanStarted', (e: { audit_id: string }) => {
@@ -101,7 +117,7 @@ export function useWebSocket() {
   }
 
   function getChannel(): Channel | null {
-    return userChannel
+    return teamChannel ?? userChannel
   }
 
   function isConnected(): boolean {
@@ -120,6 +136,11 @@ export function useWebSocket() {
       notificationsStore.reset()
     }
   }, { immediate: true })
+
+  // Follow workspace switches — rebind the team channel when active_team_id changes.
+  watch(() => authStore.user?.active_team_id, () => {
+    if (authStore.user) connect()
+  })
 
   return { connect, disconnect, getChannel, isConnected }
 }

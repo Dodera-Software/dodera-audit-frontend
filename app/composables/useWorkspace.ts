@@ -2,10 +2,10 @@ import { useAuthStore } from '~/stores/auth'
 import { usePlan } from '~/composables/usePlan'
 
 export interface Workspace {
-  id: string
-  team_id?: string
+  id: string // always the team_id in the new API
+  team_id: string
   name: string
-  type: 'personal' | 'team'
+  type: 'owned' | 'member'
   role: 'owner' | 'member'
   owner_name?: string
   is_active: boolean
@@ -23,8 +23,8 @@ export function useWorkspace() {
   const leaving = ref<string | null>(null)
 
   const activeWorkspace = computed(() => workspaces.value.find(w => w.is_active) ?? workspaces.value[0] ?? null)
-  const personalWorkspace = computed(() => workspaces.value.find(w => w.type === 'personal') ?? null)
-  const memberWorkspaces = computed(() => workspaces.value.filter(w => w.type === 'team' && w.role === 'member'))
+  const ownedWorkspaces = computed(() => workspaces.value.filter(w => w.type === 'owned'))
+  const memberWorkspaces = computed(() => workspaces.value.filter(w => w.type === 'member'))
 
   async function fetchWorkspaces() {
     loading.value = true
@@ -40,16 +40,19 @@ export function useWorkspace() {
     }
   }
 
-  async function switchWorkspace(workspaceId: string) {
+  async function switchWorkspace(teamId: string | null) {
     if (switching.value) return
     switching.value = true
     try {
       await $api('/workspaces/switch', {
         method: 'POST',
-        body: { workspace_id: workspaceId },
+        body: { team_id: teamId },
       })
 
-      workspaces.value = workspaces.value.map(w => ({ ...w, is_active: w.id === workspaceId }))
+      workspaces.value = workspaces.value.map(w => ({
+        ...w,
+        is_active: teamId === null ? w.type === 'owned' && w === workspaces.value.find(x => x.type === 'owned') : w.id === teamId,
+      }))
 
       const userData = await $api<{ data: typeof authStore.user }>('/auth/me')
       if (userData.data) {
@@ -58,31 +61,30 @@ export function useWorkspace() {
 
       usePlan().invalidateBillingStatus()
 
-      toast.add({ title: t('Team switched'), color: 'success' })
+      toast.add({ title: t('Workspace switched'), color: 'success' })
       await navigateTo('/dashboard')
     }
     catch {
-      toast.add({ title: t('Failed to switch team'), color: 'error' })
+      toast.add({ title: t('Failed to switch workspace'), color: 'error' })
     }
     finally {
       switching.value = false
     }
   }
 
-  async function leaveWorkspace(teamId: string, workspaceId: string) {
-    leaving.value = workspaceId
+  async function leaveWorkspace(teamId: string) {
+    leaving.value = teamId
     try {
-      await $api('/team/leave', {
-        method: 'POST',
-        body: { team_id: teamId },
-      })
+      await $api(`/teams/${teamId}/leave`, { method: 'POST' })
 
-      workspaces.value = workspaces.value.filter(w => w.id !== workspaceId || w.type === 'personal')
+      workspaces.value = workspaces.value.filter(w => w.id !== teamId)
 
-      // If we just left our active workspace, switch back to personal
       const stillActive = workspaces.value.find(w => w.is_active)
-      if (!stillActive && personalWorkspace.value) {
-        await switchWorkspace(personalWorkspace.value.id)
+      if (!stillActive) {
+        const firstOwned = workspaces.value.find(w => w.type === 'owned')
+        if (firstOwned) {
+          await switchWorkspace(firstOwned.id)
+        }
       }
       else {
         const userData = await $api<{ data: typeof authStore.user }>('/auth/me')
@@ -99,25 +101,24 @@ export function useWorkspace() {
     }
   }
 
-  async function deleteOwnedTeam() {
+  async function deleteWorkspace(teamId: string) {
     try {
-      await $api('/team', { method: 'DELETE' })
-      workspaces.value = workspaces.value.map(w =>
-        w.type === 'personal' ? { ...w, name: w.name } : w,
-      )
+      await $api(`/teams/${teamId}`, { method: 'DELETE' })
+      await fetchWorkspaces()
       const userData = await $api<{ data: typeof authStore.user }>('/auth/me')
       if (userData.data) authStore.setUser(userData.data)
       toast.add({ title: t('Team deleted'), color: 'success' })
     }
-    catch {
-      toast.add({ title: t('Failed to delete team'), color: 'error' })
+    catch (e: unknown) {
+      const err = e as { data?: { message?: string } }
+      toast.add({ title: err?.data?.message ?? t('Failed to delete team'), color: 'error' })
     }
   }
 
   return {
     workspaces,
     activeWorkspace,
-    personalWorkspace,
+    ownedWorkspaces,
     memberWorkspaces,
     loading,
     switching,
@@ -125,6 +126,6 @@ export function useWorkspace() {
     fetchWorkspaces,
     switchWorkspace,
     leaveWorkspace,
-    deleteOwnedTeam,
+    deleteWorkspace,
   }
 }

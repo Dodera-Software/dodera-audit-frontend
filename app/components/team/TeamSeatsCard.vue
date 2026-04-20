@@ -31,10 +31,10 @@
         </div>
       </div>
 
-      <USeparator />
+      <USeparator v-if="!props.hideInvite" />
 
       <!-- Invite form -->
-      <div>
+      <div v-if="!props.hideInvite">
         <h3 class="mb-3 text-sm font-semibold text-(--ui-text-highlighted)">{{ t('Invite a member') }}</h3>
 
         <UAlert
@@ -81,6 +81,7 @@ interface Props {
   seatLimitReached: boolean
   inviteLoading: boolean
   buyingSeats: boolean
+  hideInvite?: boolean
 }
 
 const props = defineProps<Props>()

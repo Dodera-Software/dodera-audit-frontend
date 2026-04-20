@@ -43,52 +43,57 @@ export interface InvitationInfo {
 export function useTeam() {
   const { $api } = useApi()
 
-  async function fetchOwnedTeam(): Promise<Team> {
-    return $api<Team>('/team')
+  async function listTeams(): Promise<Team[]> {
+    const { data } = await $api<{ data: Team[] }>('/teams')
+    return data
   }
 
-  async function fetchMembership(): Promise<TeamMembership> {
-    return $api<TeamMembership>('/team/membership')
+  async function listMemberships(): Promise<TeamMembership[]> {
+    const { data } = await $api<{ data: TeamMembership[] }>('/teams/memberships')
+    return data
+  }
+
+  async function fetchTeam(teamId: string): Promise<Team> {
+    // TeamResource::$wrap = null — single resource is not data-wrapped.
+    return $api<Team>(`/teams/${teamId}`)
   }
 
   async function createTeam(name: string): Promise<Team> {
-    return $api<Team>('/team', {
+    return $api<Team>('/teams', {
       method: 'POST',
       body: { name },
     })
   }
 
-  async function updateTeamName(name: string): Promise<Team> {
-    return $api<Team>('/team', {
+  async function updateTeamName(teamId: string, name: string): Promise<Team> {
+    return $api<Team>(`/teams/${teamId}`, {
       method: 'PATCH',
       body: { name },
     })
   }
 
-  async function deleteTeam(): Promise<void> {
-    await $api('/team', { method: 'DELETE' })
+  async function deleteTeam(teamId: string): Promise<void> {
+    await $api(`/teams/${teamId}`, { method: 'DELETE' })
   }
 
-  async function leaveTeam(teamId?: string): Promise<void> {
-    await $api('/team/leave', {
-      method: 'POST',
-      body: teamId ? { team_id: teamId } : undefined,
-    })
+  async function leaveTeam(teamId: string): Promise<void> {
+    await $api(`/teams/${teamId}/leave`, { method: 'POST' })
   }
 
-  async function inviteMember(email: string): Promise<TeamInvitation> {
-    return $api<TeamInvitation>('/team/invitations', {
+  async function inviteMember(teamId: string, email: string): Promise<TeamInvitation> {
+    // TeamInvitationResource doesn't wrap either.
+    return $api<TeamInvitation>(`/teams/${teamId}/invitations`, {
       method: 'POST',
       body: { email },
     })
   }
 
-  async function revokeInvitation(id: string): Promise<void> {
-    await $api(`/team/invitations/${id}`, { method: 'DELETE' })
+  async function revokeInvitation(teamId: string, invitationId: string): Promise<void> {
+    await $api(`/teams/${teamId}/invitations/${invitationId}`, { method: 'DELETE' })
   }
 
-  async function removeMember(memberId: string): Promise<void> {
-    await $api(`/team/members/${memberId}`, { method: 'DELETE' })
+  async function removeMember(teamId: string, memberId: string): Promise<void> {
+    await $api(`/teams/${teamId}/members/${memberId}`, { method: 'DELETE' })
   }
 
   async function fetchInvitation(token: string): Promise<InvitationInfo> {
@@ -104,8 +109,9 @@ export function useTeam() {
   }
 
   return {
-    fetchOwnedTeam,
-    fetchMembership,
+    listTeams,
+    listMemberships,
+    fetchTeam,
     createTeam,
     updateTeamName,
     deleteTeam,
