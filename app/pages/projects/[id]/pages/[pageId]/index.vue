@@ -87,8 +87,8 @@
                 @click="navigateTo(`/projects/${projectId}/pages/${pageId}/history`)"
               >
                 <div class="flex items-center gap-3">
-                  <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-(--ui-bg-accented)">
-                    <UIcon name="i-lucide-history" class="h-4.5 w-4.5 text-(--ui-text-muted)" />
+                  <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-50 dark:bg-primary-950">
+                    <UIcon name="i-lucide-history" class="h-4.5 w-4.5 text-(--ui-primary)" />
                   </div>
                   <div class="flex-1">
                     <p class="text-sm font-semibold text-(--ui-text-highlighted) group-hover:text-(--ui-primary)">{{ t('Audit history') }}</p>
@@ -103,8 +103,8 @@
                 @click="navigateTo(`/projects/${projectId}/pages/${pageId}/board`)"
               >
                 <div class="flex items-center gap-3">
-                  <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-(--ui-bg-accented)">
-                    <UIcon name="i-lucide-kanban" class="h-4.5 w-4.5 text-(--ui-text-muted)" />
+                  <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-50 dark:bg-primary-950">
+                    <UIcon name="i-lucide-kanban" class="h-4.5 w-4.5 text-(--ui-primary)" />
                   </div>
                   <div class="flex-1">
                     <p class="text-sm font-semibold text-(--ui-text-highlighted) group-hover:text-(--ui-primary)">{{ t('Issue board') }}</p>
