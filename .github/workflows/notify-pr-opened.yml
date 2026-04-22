@@ -1,0 +1,37 @@
+name: Notify on PR opened
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram notification
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import os, urllib.parse, urllib.request
+          token = os.environ['TELEGRAM_BOT_TOKEN']
+          chat_id = os.environ['TELEGRAM_CHAT_ID']
+          title = os.environ['PR_TITLE']
+          url = os.environ['PR_URL']
+          author = os.environ['PR_AUTHOR']
+          repo = os.environ['REPO']
+          text = f"🔔 New PR opened in {repo}\n\nTitle: {title}\nAuthor: @{author}\nLink: {url}"
+          data = urllib.parse.urlencode({'chat_id': chat_id, 'text': text}).encode()
+          req = urllib.request.Request(
+              f'https://api.telegram.org/bot{token}/sendMessage',
+              data=data,
+              headers={'Content-Type': 'application/x-www-form-urlencoded'}
+          )
+          with urllib.request.urlopen(req) as resp:
+              print(resp.read().decode())
+          PY
