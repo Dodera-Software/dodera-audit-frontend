@@ -16,38 +16,6 @@ Web application for PawByTech — an AI-powered website audit platform. Dashboar
 - **date-fns** — date formatting
 - **vue-i18n** — internationalization (English, extensible)
 
-## Pages
-
-| Route | Description |
-|-------|-------------|
-| `/login` | Login |
-| `/register` | Registration |
-| `/auth/verify-email` | Email verification |
-| `/auth/forgot-password` | Password reset request |
-| `/auth/reset-password` | Password reset |
-| `/dashboard` | Project grid with scores |
-| `/projects/new` | Create project |
-| `/projects/[id]` | Project detail with pages |
-| `/projects/[id]/pages/[pageId]` | Page overview (scores, brain, quick actions) |
-| `/projects/[id]/pages/[pageId]/history` | Audit history with score trend chart |
-| `/projects/[id]/pages/[pageId]/board` | Kanban issue board (drag-and-drop) |
-| `/projects/[id]/pages/[pageId]/audits/[auditId]` | Audit report (scores, personas, issues) |
-| `/account` | Profile, password, settings |
-| `/account/team` | Team management (members, invitations, seats) |
-| `/account/billing` | Billing and subscription management |
-| `/pricing` | Plan comparison and upgrade |
-| `/admin` | Admin overview dashboard |
-| `/admin/users` | User management (AG Grid, inline editing) |
-| `/admin/analytics` | Conversion funnel, engagement, signups |
-| `/admin/revenue` | Billing and revenue stats |
-| `/admin/ai-agents` | AI agent cost tracking |
-| `/admin/audits` | Audit monitoring |
-| `/admin/issues` | Issue analytics |
-| `/admin/pages` | Page analytics |
-| `/admin/teams` | Team management |
-| `/admin/system` | System health, table sizes, failed jobs |
-| `/admin/activity` | Activity log feed |
-
 ## Key Components
 
 | Component | Description |
